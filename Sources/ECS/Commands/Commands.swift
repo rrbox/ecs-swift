@@ -1,8 +1,24 @@
 //
-//  File.swift
+//  Commands.swift
 //  
 //
 //  Created by rrbox on 2023/08/09.
 //
 
-import Foundation
+final public class Commands: SystemParameter {
+    var commandQueue = [Command]()
+    
+    /// Commands では, World への登録時には何もしません.
+    public static func register(to worldBuffer: WorldBuffer) {
+        
+    }
+    
+    public static func getParameter(from worldBuffer: WorldBuffer) -> Commands? {
+        worldBuffer.commandsBuffer.commands()
+    }
+    
+    /// CommandQueue にコマンドを追加します.
+    public func push(command: Command) {
+        self.commandQueue.append(command)
+    }
+}
