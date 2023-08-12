@@ -6,7 +6,12 @@
 //
 
 final public class World {
-    public init() {
-        
+    var entities: [Entity: Archetype]
+    public let worldBuffer: WorldBuffer
+    
+    init(entities: [Entity: Archetype], worldBuffer: WorldBuffer) {
+        self.entities = entities
+        self.worldBuffer = worldBuffer
     }
+    
 }

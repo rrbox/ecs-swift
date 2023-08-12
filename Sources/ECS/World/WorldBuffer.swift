@@ -10,4 +10,3 @@ import GameplayKit
 final public class WorldBuffer: GKEntity {
     
 }
-
