@@ -7,7 +7,7 @@
 
 import GameplayKit
 
-typealias Archetype = GKEntity
-typealias ArchetypeComponent = GKComponent
-typealias Buffer = GKEntity
-typealias BufferElement = GKComponent
+public typealias Archetype = GKEntity
+public typealias ArchetypeComponent = GKComponent
+public typealias Buffer = GKEntity
+public typealias BufferElement = GKComponent

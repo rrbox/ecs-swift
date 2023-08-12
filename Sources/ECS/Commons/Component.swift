@@ -5,13 +5,13 @@
 //  Created by rrbox on 2023/08/05.
 //
 
-import GameplayKit
+import Foundation
 
 public protocol Component {
     
 }
 
-final public class ComponentRef<ComponentType: Component>: GKComponent {
+final public class ComponentRef<ComponentType: Component>: ArchetypeComponent {
     var value: ComponentType
     
     public init(component: ComponentType) {
