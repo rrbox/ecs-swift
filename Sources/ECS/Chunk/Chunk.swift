@@ -1,8 +1,11 @@
 //
-//  File.swift
+//  Chunk.swift
 //  
 //
 //  Created by rrbox on 2023/08/11.
 //
 
-import Foundation
+public class Chunk {
+    func spawn(entity: Entity, value: Archetype) {}
+    func despawn(entity: Entity) {}
+}
