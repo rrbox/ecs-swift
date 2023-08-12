@@ -1,5 +1,5 @@
 import Foundation
 
-public struct Entity {
+public struct Entity: Hashable {
     let id = UUID()
 }

@@ -5,6 +5,8 @@
 //  Created by rrbox on 2023/08/06.
 //
 
-class World {
-    
+final public class World {
+    public init() {
+        
+    }
 }
