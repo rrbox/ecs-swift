@@ -15,8 +15,8 @@ extension ChunkBuffer {
         self.buffer.component(ofType: ChunkEntityInterface.self)!.add(chunk: chunk)
     }
     
-    func push(entity: Entity, value: Archetype) {
-        self.buffer.component(ofType: ChunkEntityInterface.self)!.push(entity: entity, value: value)
+    func push(entity: Entity, entityRecord: EntityRecord) {
+        self.buffer.component(ofType: ChunkEntityInterface.self)!.push(entity: entity, entityRecord: entityRecord)
     }
     
     func applyEntityQueue() {

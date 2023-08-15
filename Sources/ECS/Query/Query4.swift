@@ -8,11 +8,11 @@
 final public class Query4<C0: Component, C1: Component, C2: Component, C3: Component>: Chunk, SystemParameter {
     var components = [Entity: (ComponentRef<C0>, ComponentRef<C1>, ComponentRef<C2>, ComponentRef<C3>)]()
     
-    override func spawn(entity: Entity, value: Archetype) {
-        guard let c0 = value.component(ofType: ComponentRef<C0>.self) else { return }
-        guard let c1 = value.component(ofType: ComponentRef<C1>.self) else { return }
-        guard let c2 = value.component(ofType: ComponentRef<C2>.self) else { return }
-        guard let c3 = value.component(ofType: ComponentRef<C3>.self) else { return }
+    override func spawn(entity: Entity, entityRecord: EntityRecord) {
+        guard let c0 = entityRecord.component(ofType: ComponentRef<C0>.self),
+              let c1 = entityRecord.component(ofType: ComponentRef<C1>.self),
+              let c2 = entityRecord.component(ofType: ComponentRef<C2>.self),
+              let c3 = entityRecord.component(ofType: ComponentRef<C3>.self) else { return }
         self.components[entity] = (c0, c1, c2, c3)
     }
     

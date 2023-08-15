@@ -14,7 +14,7 @@ public extension Commands {
     /// Entity を追加して変更を加えます.
     func spawn() -> EntityCommands {
         let entity = Entity()
-        self.commandQueue.append(SpawnCommand(id: entity, value: Archetype()))
+        self.commandQueue.append(SpawnCommand(id: entity, entityRecord: EntityRecord()))
         return EntityCommands(entity: entity, commands: self)
     }
     

@@ -6,6 +6,6 @@
 //
 
 public class Chunk {
-    func spawn(entity: Entity, value: Archetype) {}
+    func spawn(entity: Entity, entityRecord: EntityRecord) {}
     func despawn(entity: Entity) {}
 }

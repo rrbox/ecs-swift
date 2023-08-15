@@ -7,15 +7,15 @@
 
 class SpawnCommand: Command {
     let id: Entity
-    let value: Archetype
+    let entityRecord: EntityRecord
     
-    init(id: Entity, value: Archetype) {
+    init(id: Entity, entityRecord: EntityRecord) {
         self.id = id
-        self.value = value
+        self.entityRecord = entityRecord
     }
     
     override func runCommand(in world: World) {
-        world.push(entity: self.id, value: self.value)
+        world.push(entity: self.id, entityRecord: self.entityRecord)
     }
 }
 

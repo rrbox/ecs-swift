@@ -8,8 +8,8 @@
 final public class Query<ComponentType: Component>: Chunk, SystemParameter {
     var components = [Entity: ComponentRef<ComponentType>]()
     
-    override func spawn(entity: Entity, value: Archetype) {
-        guard let componentRef = value.component(ofType: ComponentRef<ComponentType>.self) else { return }
+    override func spawn(entity: Entity, entityRecord: EntityRecord) {
+        guard let componentRef = entityRecord.component(ofType: ComponentRef<ComponentType>.self) else { return }
         self.components[entity] = componentRef
     }
     

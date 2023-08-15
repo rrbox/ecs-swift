@@ -10,18 +10,18 @@ extension World {
     ///
     /// ``Commands/spawn()`` が実行された後, フレームが終了するタイミングでこの関数が実行されます.
     /// entity へのコンポーネントの登録などは, push の後に行われます.
-    func push(entity: Entity, value: Archetype) {
-        self.entities[entity] = value
+    func push(entity: Entity, entityRecord: EntityRecord) {
+        self.entities.insert(entity: entity, entityRecord: entityRecord)
         self.worldBuffer
             .chunkBuffer
-            .push(entity: entity, value: value)
+            .push(entity: entity, entityRecord: entityRecord)
     }
     
     /// Entity を削除します.
     ///
     /// ``Commands/despawn()`` が実行された後, フレームが終了するタイミングでこの関数が実行されます.
     func despawn(entity: Entity) {
-        self.entities.removeValue(forKey: entity)
+        self.entities.remove(entity: entity)
         self.worldBuffer
             .chunkBuffer
             .despawn(entity: entity)
