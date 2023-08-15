@@ -54,6 +54,7 @@ extension Target {
 
 let package = Package(
     name: "ECS_Swift",
+    platforms: [.macOS(.v10_15)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
