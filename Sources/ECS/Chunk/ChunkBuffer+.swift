@@ -27,4 +27,9 @@ extension ChunkBuffer {
         self.buffer.component(ofType: ChunkEntityInterface.self)!.despawn(entity: entity)
     }
     
+    // entity を最新の状態に更新します.
+    func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {
+        self.buffer.component(ofType: ChunkEntityInterface.self)!.applyCurrentState(entityRecord, forEntity: entity)
+    }
+    
 }

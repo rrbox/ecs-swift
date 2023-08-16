@@ -43,8 +43,14 @@ class ChunkEntityInterface: BufferElement {
     ///
     /// フレームの終わりに全ての chunk から entity を削除します.
     func despawn(entity: Entity) {
-        for chunk in chunks {
+        for chunk in self.chunks {
             chunk.despawn(entity: entity)
+        }
+    }
+    
+    func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {
+        for chunk in self.chunks {
+            chunk.applyCurrentState(entityRecord, forEntity: entity)
         }
     }
     

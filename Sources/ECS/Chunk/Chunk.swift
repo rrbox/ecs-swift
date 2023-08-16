@@ -8,4 +8,5 @@
 public class Chunk {
     func spawn(entity: Entity, entityRecord: EntityRecord) {}
     func despawn(entity: Entity) {}
+    func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {}
 }

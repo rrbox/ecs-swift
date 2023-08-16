@@ -17,6 +17,14 @@ final public class Query<ComponentType: Component>: Chunk, SystemParameter {
         self.components.removeValue(forKey: entity)
     }
     
+    override func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {
+        guard let componentRef = entityRecord.component(ofType: ComponentRef<ComponentType>.self) else {
+            self.components.removeValue(forKey: entity)
+            return
+        }
+        self.components[entity] = componentRef
+    }
+    
     /// Query で指定した Component を持つ entity を world から取得し, イテレーションします.
     public func update(_ execute: (Entity, inout ComponentType) -> ()) {
         for (entity, _) in self.components {
