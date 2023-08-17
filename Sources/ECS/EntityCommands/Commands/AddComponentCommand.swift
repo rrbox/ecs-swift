@@ -15,11 +15,6 @@ class AddComponent<ComponentType: Component>: Command {
     }
     
     override func runCommand(in world: World) {
-        guard let componentRef = world.entities[self.entity]?
-            .component(ofType: ComponentRef<ComponentType>.self) else {
-            world.entities[self.entity]?.addComponent(ComponentRef(component: self.componnet))
-            return
-        }
-        componentRef.value = self.componnet
+        world.addComponent(self.componnet, forEntity: self.entity)
     }
 }

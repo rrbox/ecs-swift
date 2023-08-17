@@ -13,6 +13,6 @@ class RemoveComponent<ComponentType: Component>: Command {
     }
     
     override func runCommand(in world: World) {
-        world.entities[self.entity]?.removeComponent(ofType: ComponentRef<ComponentType>.self)
+        world.removeComponent(ofType: ComponentType.self, fromEntity: self.entity)
     }
 }
