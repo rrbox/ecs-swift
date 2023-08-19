@@ -14,6 +14,10 @@ final public class EntityCommands {
         self.commands = commands
     }
     
+    public func pushCommand(_ command: Command) {
+        self.commands.commandQueue.append(command)
+    }
+    
     /// Commands で操作した Entity を受け取ります.
     /// - Returns: ID としての Entity をそのまま返します.
     public func id() -> Entity {
