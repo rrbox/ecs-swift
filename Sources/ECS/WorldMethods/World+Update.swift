@@ -9,18 +9,28 @@ import Foundation
 
 public extension World {
     func update(currentTime: TimeInterval) {
-        let lastTime = self.worldBuffer.resourceBuffer.resource(ofType: CurrentTime.self)!.resource.value
+        let currentTimeResource = self.worldBuffer.resourceBuffer.resource(ofType: CurrentTime.self)!
         
-        self.worldBuffer.resourceBuffer.resource(ofType: DeltaTime.self)?.resource = DeltaTime(value: currentTime - lastTime)
+        self.worldBuffer.resourceBuffer.resource(ofType: DeltaTime.self)?.resource = DeltaTime(value: currentTime - currentTimeResource.resource.value)
+        
+        currentTimeResource.resource = CurrentTime(value: currentTime)
         
         for system in self.worldBuffer.systemBuffer.systems(ofType: UpdateExecute.self) {
             system.update(worldBuffer: self.worldBuffer)
         }
         
+        // world が受信した event を event system に発信します.
+        self.applyEventQueue()
+        
         self.applyCommands()
+        
+        // will despawn event を配信します.
+        self.applyCommandsEventQueue(eventOfType: WillDespawnEvent.self)
+        
         // apply commands の際に push された entity を chunk に割り振ります.
         self.worldBuffer.chunkBuffer.applyEntityQueue()
         
-        self.worldBuffer.resourceBuffer.resource(ofType: CurrentTime.self)?.resource = CurrentTime(value: currentTime)
+        // Did Spawn event を event system に発信します.
+        self.applyCommandsEventQueue(eventOfType: DidSpawnEvent.self)
     }
 }
