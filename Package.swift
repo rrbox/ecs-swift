@@ -21,6 +21,7 @@ struct Module {
 extension Module {
     static let ecs = Module(name: "ECS")
     static let plugIns = Module(name: "PlugIns")
+    static let graphic = Module(name: "ECS_Graphic", path: "Sources/PlugIns/Graphic")
     static let keyboard = Module(name: "ECS_Keyboard", path: "Sources/PlugIns/Keyboard")
     static let mouse = Module(name: "ECS_Mouse", path: "Sources/PlugIns/Mouse")
     static let objectLink = Module(name: "ECS_ObjectLink", path: "Sources/PlugIns/ObjectLink")
@@ -28,6 +29,7 @@ extension Module {
     static let scroll = Module(name: "ECS_Scroll", path: "Sources/PlugIns/Scroll")
     
     static let ecs_swiftTests = Module(name: "ecs-swiftTests")
+    static let graphicPlugInTests = Module(name: "GraphicPlugInTests")
     static let keyBoardPlugInTests = Module(name: "KeyBoardPlugInTests")
     static let mousePlugInTests = Module(name: "MousePlugInTests")
     static let objectLinkPlugInTests = Module(name: "ObjectLinkPlugInTests")
@@ -63,6 +65,7 @@ let package = Package(
         .library(
             name: Module.plugIns.name,
             targets: [
+                Module.graphic.name,
                 Module.keyboard.name,
                 Module.mouse.name,
                 Module.objectLink.name,
@@ -81,6 +84,9 @@ let package = Package(
             module: .ecs,
             dependencies: []),
         .target(
+            module: .graphic,
+            dependencies: [.ecs]),
+        .target(
             module: .keyboard,
             dependencies: [.ecs]),
         .target(
@@ -98,6 +104,9 @@ let package = Package(
         .testTarget(
             module: .ecs_swiftTests,
             dependencies: [.ecs]),
+        .testTarget(
+            module: .graphicPlugInTests,
+            dependencies: [.graphic]),
         .testTarget(
             module: .keyBoardPlugInTests,
             dependencies: [.keyboard]),
