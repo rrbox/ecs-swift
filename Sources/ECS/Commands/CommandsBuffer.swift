@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CommandsBuffer {
+final public class CommandsBuffer {
     class CommandsRegistry: BufferElement {
         let commands: Commands
         init(commands: Commands) {
@@ -25,7 +25,7 @@ class CommandsBuffer {
         self.buffer = buffer
     }
     
-    func commands() -> Commands? {
+    public func commands() -> Commands? {
         self.buffer.component(ofType: CommandsRegistry.self)?.commands
     }
     
@@ -35,7 +35,7 @@ class CommandsBuffer {
 }
 
 // WorldBuffer + Commands
-extension WorldBuffer {
+public extension WorldBuffer {
     var commandsBuffer: CommandsBuffer {
         CommandsBuffer(buffer: self)
     }

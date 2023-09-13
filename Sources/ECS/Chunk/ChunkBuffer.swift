@@ -8,7 +8,7 @@
 import Foundation
 
 /// Chunk を種類別で格納します
-class ChunkBuffer {
+final public class ChunkBuffer {
     class ChunkRegistry<ChunkType: Chunk>: BufferElement {
         let chunk: ChunkType
         init(chunk: ChunkType) {
@@ -26,12 +26,12 @@ class ChunkBuffer {
         self.buffer = buffer
     }
     
-    func chunk<ChunkType: Chunk>(ofType type: ChunkType.Type) -> ChunkType? {
+    public func chunk<ChunkType: Chunk>(ofType type: ChunkType.Type) -> ChunkType? {
         self.buffer.component(ofType: ChunkRegistry<ChunkType>.self)?.chunk
     }
 }
 
-extension WorldBuffer {
+public extension WorldBuffer {
     var chunkBuffer: ChunkBuffer {
         ChunkBuffer(buffer: self)
     }

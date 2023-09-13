@@ -5,7 +5,7 @@
 //  Created by rrbox on 2023/08/12.
 //
 
-class ResourceBuffer {
+final public class ResourceBuffer {
     let buffer: Buffer
     init(buffer: Buffer) {
         self.buffer = buffer
@@ -15,12 +15,12 @@ class ResourceBuffer {
         self.buffer.addComponent(Resource<T>(resource))
     }
     
-    func resource<T: ResourceProtocol>(ofType type: T.Type) -> Resource<T>? {
+    public func resource<T: ResourceProtocol>(ofType type: T.Type) -> Resource<T>? {
         self.buffer.component(ofType: Resource<T>.self)
     }
 }
 
-extension WorldBuffer {
+public extension WorldBuffer {
     var resourceBuffer: ResourceBuffer {
         ResourceBuffer(buffer: self)
     }

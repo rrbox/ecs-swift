@@ -6,6 +6,7 @@
 //
 
 open class Command {
+    public init() {}
     open func runCommand(in world: World) {
         
     }

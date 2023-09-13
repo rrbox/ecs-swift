@@ -6,10 +6,10 @@
 //
 
 open class SystemExecute {
-    
+    public init() {}
 }
 
-class SystemBuffer {
+final public class SystemBuffer {
     final class SystemRegisotry<Execute: SystemExecute>: BufferElement {
         var systems = [Execute]()
     }
@@ -19,7 +19,7 @@ class SystemBuffer {
         self.buffer = buffer
     }
     
-    func systems<System: SystemExecute>(ofType: System.Type) -> [System] {
+    public func systems<System: SystemExecute>(ofType: System.Type) -> [System] {
         self.buffer.component(ofType: SystemRegisotry<System>.self)!.systems
     }
     
@@ -35,7 +35,7 @@ class SystemBuffer {
     }
 }
 
-extension WorldBuffer {
+public extension WorldBuffer {
     var systemBuffer: SystemBuffer {
         SystemBuffer(buffer: self)
     }
