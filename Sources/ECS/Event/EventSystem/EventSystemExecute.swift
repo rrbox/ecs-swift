@@ -1,8 +1,12 @@
 //
-//  File.swift
+//  EventSystemExecute.swift
 //  
 //
 //  Created by rrbox on 2023/08/14.
 //
 
-import Foundation
+public class EventSystemExecute<T>: SystemExecute {
+    func receive(event: EventReader<T>, worldBuffer: WorldBuffer) {
+        
+    }
+}

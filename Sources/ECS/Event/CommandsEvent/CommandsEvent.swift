@@ -1,8 +1,11 @@
 //
-//  File.swift
+//  CommandsEvent.swift
 //  
 //
 //  Created by rrbox on 2023/08/29.
 //
 
-import Foundation
+/// Commands 実行中に発信されるイベントです.
+protocol CommandsEventProtocol {
+    
+}

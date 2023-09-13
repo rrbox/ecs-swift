@@ -17,12 +17,31 @@ public extension World {
 }
 
 extension World {
+    func addCommandsEventStreamer<T: CommandsEventProtocol>(eventType: T.Type) {
+        self.worldBuffer.systemBuffer.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
+        self.worldBuffer.eventBuffer.registerCommandsEventWriter(eventType: T.self)
+    }
+}
+
+extension World {
     func applyEventQueue() {
         let eventQueue = self.worldBuffer.eventBuffer.eventQueue()!
         eventQueue.sendingEvents = eventQueue.eventQueue
         eventQueue.eventQueue = []
         for event in eventQueue.sendingEvents {
             event.runEventReceiver(worldBuffer: self.worldBuffer)
+        }
+        eventQueue.sendingEvents = []
+    }
+    
+    func applyCommandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) {
+        let eventQueue = self.worldBuffer.eventBuffer.commandsEventQueue(eventOfType: T.self)!
+        eventQueue.sendingEvents = eventQueue.eventQueue
+        eventQueue.eventQueue = []
+        for event in eventQueue.sendingEvents {
+            for system in self.worldBuffer.systemBuffer.systems(ofType: EventSystemExecute<T>.self) {
+                system.receive(event: EventReader(value: event), worldBuffer: self.worldBuffer)
+            }
         }
         eventQueue.sendingEvents = []
     }
