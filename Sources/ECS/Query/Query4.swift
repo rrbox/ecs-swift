@@ -38,6 +38,16 @@ final public class Query4<C0: Component, C1: Component, C2: Component, C3: Compo
         }
     }
     
+    public func update(_ entity: Entity, _ execute: (inout C0, inout C1, inout C2, inout C3) -> ()) {
+        guard let group = self.components[entity] else { return }
+        execute(&group.0.value, &group.1.value, &group.2.value, &group.3.value)
+    }
+    
+    public func components(forEntity entity: Entity) -> (C0, C1, C2, C3)? {
+        guard let references = components[entity] else { return nil }
+        return (references.0.value, references.1.value, references.2.value, references.3.value)
+    }
+    
     public static func register(to worldBuffer: WorldBuffer) {
         guard worldBuffer.chunkBuffer.chunk(ofType: Self.self) == nil else {
             return

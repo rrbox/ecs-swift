@@ -32,6 +32,15 @@ final public class Query<ComponentType: Component>: Chunk, SystemParameter {
         }
     }
     
+    public func update(_ entity: Entity, _ execute: (inout ComponentType) -> ()) {
+        guard let componentRef = self.components[entity] else { return }
+        execute(&componentRef.value)
+    }
+    
+    public func component(forEntity entity: Entity) -> ComponentType? {
+        self.components[entity]?.value
+    }
+    
     public static func register(to worldBuffer: WorldBuffer) {
         guard worldBuffer.chunkBuffer.chunk(ofType: Self.self) == nil else {
             return
