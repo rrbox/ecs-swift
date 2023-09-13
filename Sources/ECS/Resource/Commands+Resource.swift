@@ -21,7 +21,8 @@ public extension Commands {
     /// world に対して resource を追加します.
     ///
     /// resource はフレームの終了直前に追加されます.
-    func addResource<T: ResourceProtocol>(_ resource: T) {
+    @discardableResult func addResource<T: ResourceProtocol>(_ resource: T) -> Commands {
         self.push(command: AddResource(resrouce: resource))
+        return self
     }
 }
