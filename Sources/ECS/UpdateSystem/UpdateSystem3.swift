@@ -12,7 +12,7 @@ public protocol UpdateSystemProtocol3: SystemProtocol3, UpdateExecute {
 final public class UpdateSystem3<P0: SystemParameter, P1: SystemParameter, P2: SystemParameter>: UpdateExecute, UpdateSystemProtocol3 {
     let execute: (P0, P1, P2) -> ()
     
-    init(execute: @escaping (P0, P1, P2) -> Void) {
+    public init(_ execute: @escaping (P0, P1, P2) -> Void) {
         self.execute = execute
     }
     
@@ -31,6 +31,6 @@ public extension World {
     }
     
     @discardableResult func addUpdateSystem<P0: SystemParameter, P1: SystemParameter, P2: SystemParameter>(_ execute: @escaping (P0, P1, P2) -> ()) -> World {
-        self.addUpdateSystem(UpdateSystem3(execute: execute))
+        self.addUpdateSystem(UpdateSystem3(execute))
     }
 }

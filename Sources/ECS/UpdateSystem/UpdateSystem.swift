@@ -12,7 +12,7 @@ public protocol UpdateSystemProtocol: SystemProtocol, UpdateExecute {
 final public class UpdateSystem<Parameter: SystemParameter>: UpdateExecute, UpdateSystemProtocol {
     let execute: (Parameter) -> ()
     
-    init(execute: @escaping (Parameter) -> Void) {
+    public init(_ execute: @escaping (Parameter) -> Void) {
         self.execute = execute
     }
     
@@ -29,6 +29,6 @@ public extension World {
     }
     
     @discardableResult func addUpdateSystem<Parameter: SystemParameter>(_ execute: @escaping (Parameter) -> ()) -> World {
-        self.addUpdateSystem(UpdateSystem(execute: execute))
+        self.addUpdateSystem(UpdateSystem(execute))
     }
 }
