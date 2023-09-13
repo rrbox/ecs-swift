@@ -5,13 +5,12 @@
 //  Created by rrbox on 2023/08/10.
 //
 
-class AddComponent<ComponentType: Component>: Command {
-    let entity: Entity
+class AddComponent<ComponentType: Component>: EntityCommand {
     let componnet: ComponentType
     
     init(entity: Entity, componnet: ComponentType) {
-        self.entity = entity
         self.componnet = componnet
+        super.init(entity: entity)
     }
     
     override func runCommand(in world: World) {

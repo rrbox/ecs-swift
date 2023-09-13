@@ -14,7 +14,7 @@ final public class EntityCommands {
         self.commands = commands
     }
     
-    public func pushCommand(_ command: Command) {
+    public func pushCommand(_ command: EntityCommand) {
         self.commands.commandQueue.append(command)
     }
     
