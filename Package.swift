@@ -21,7 +21,7 @@ struct Module {
 extension Module {
     static let ecs = Module(name: "ECS")
     static let plugIns = Module(name: "PlugIns")
-    static let graphic = Module(name: "ECS_Graphic", path: "Sources/PlugIns/Graphic")
+    static let graphic2d = Module(name: "ECS_Graphic", path: "Sources/PlugIns/Graphic2D")
     static let keyboard = Module(name: "ECS_Keyboard", path: "Sources/PlugIns/Keyboard")
     static let mouse = Module(name: "ECS_Mouse", path: "Sources/PlugIns/Mouse")
     static let objectLink = Module(name: "ECS_ObjectLink", path: "Sources/PlugIns/ObjectLink")
@@ -65,7 +65,7 @@ let package = Package(
         .library(
             name: Module.plugIns.name,
             targets: [
-                Module.graphic.name,
+                Module.graphic2d.name,
                 Module.keyboard.name,
                 Module.mouse.name,
                 Module.objectLink.name,
@@ -84,7 +84,7 @@ let package = Package(
             module: .ecs,
             dependencies: []),
         .target(
-            module: .graphic,
+            module: .graphic2d,
             dependencies: [.ecs]),
         .target(
             module: .keyboard,
@@ -106,7 +106,7 @@ let package = Package(
             dependencies: [.ecs]),
         .testTarget(
             module: .graphicPlugInTests,
-            dependencies: [.graphic]),
+            dependencies: [.graphic2d]),
         .testTarget(
             module: .keyBoardPlugInTests,
             dependencies: [.keyboard]),
