@@ -6,30 +6,87 @@
 //
 
 import XCTest
+import ECS
+
+func testSetUp(commands: Commands) {
+    print("set up")
+    commands.spawn()
+        .addComponent(TestComponent(content: "sample_1010"))
+    
+    commands.spawn()
+        .addComponent(TestComponent(content: "sample_120391-2"))
+}
+
+func currentTimeTestSystem(time: Resource<CurrentTime>) {
+    print(time.resource)
+}
+
+func deltaTimeTestSystem(deltaTime: Resource<DeltaTime>) {
+    print(deltaTime.resource)
+}
+
+func apiTestSystem(
+    q0: Query<TestComponent>
+) {
+    q0.update { _, component in
+        print(component)
+    }
+}
+
+func apiTestSystem(
+    q0: Query<TestComponent>,
+    q1: Query2<TestComponent, TestComponent>
+) {
+    
+}
+
+func apiTestSystem(
+    q0: Query<TestComponent>,
+    q1: Query2<TestComponent, TestComponent>,
+    q2: Query3<TestComponent, TestComponent, TestComponent>
+) {
+    
+}
+
+func apiTestSystem(
+    q0: Query<TestComponent>,
+    q1: Query2<TestComponent, TestComponent>,
+    q2: Query3<TestComponent, TestComponent, TestComponent>,
+    q3: Query4<TestComponent, TestComponent, TestComponent, TestComponent>
+) {
+    
+}
+
+func apiTestSystem(
+    q0: Query<TestComponent>,
+    q1: Query2<TestComponent, TestComponent>,
+    q2: Query3<TestComponent, TestComponent, TestComponent>,
+    q3: Query4<TestComponent, TestComponent, TestComponent, TestComponent>,
+    q4: Query5<TestComponent, TestComponent, TestComponent, TestComponent, TestComponent>
+) {
+    q0.update { _, component in
+        print(component)
+    }
+}
 
 final class SystemTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func testUpdateSystem() {
+        let world = World()
+            .addSetUpSystem(testSetUp(commands:))
+            .addUpdateSystem(currentTimeTestSystem(time:))
+            .addUpdateSystem(deltaTimeTestSystem(deltaTime:))
+            .addUpdateSystem(apiTestSystem(q0:))
+            .addUpdateSystem(apiTestSystem(q0:q1:))
+            .addUpdateSystem(apiTestSystem(q0:q1:q2:))
+            .addUpdateSystem(apiTestSystem(q0:q1:q2:q3:))
+            .addUpdateSystem(apiTestSystem(q0:q1:q2:q3:q4:))
+        
+        world.setUpWorld()
+        
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+        world.update(currentTime: 2)
+        world.update(currentTime: 3)
+        world.update(currentTime: 4)
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
 }
