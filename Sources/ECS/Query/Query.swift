@@ -8,12 +8,14 @@
 final public class Query<ComponentType: Component>: Chunk, SystemParameter {
     var components = [Entity: ComponentRef<ComponentType>]()
     
-    override func spawn(entity: Entity, entityRecord: EntityRecord) {
+    public override init() {}
+    
+    public override func spawn(entity: Entity, entityRecord: EntityRecord) {
         guard let componentRef = entityRecord.component(ofType: ComponentRef<ComponentType>.self) else { return }
         self.components[entity] = componentRef
     }
     
-    override func despawn(entity: Entity) {
+    public override func despawn(entity: Entity) {
         self.components.removeValue(forKey: entity)
     }
     
@@ -37,7 +39,7 @@ final public class Query<ComponentType: Component>: Chunk, SystemParameter {
         execute(&componentRef.value)
     }
     
-    public func component(forEntity entity: Entity) -> ComponentType? {
+    public func components(forEntity entity: Entity) -> ComponentType? {
         self.components[entity]?.value
     }
     
