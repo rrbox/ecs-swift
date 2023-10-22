@@ -9,17 +9,17 @@ extension World {
     /// Entity に Component を追加します.
     func addComponent<ComponentType: Component>(_ component: ComponentType, forEntity entity: Entity) {
         let archetype = self.entityRecord(forEntity: entity)!
-        if let componentRef = archetype.component(ofType: ComponentRef<ComponentType>.self) {
+        if let componentRef = archetype.componentRef(ComponentType.self) {
             componentRef.value = component
         }
-        archetype.addComponent(ComponentRef(component: component))
+        archetype.addComponent(component)
         self.worldBuffer.chunkBuffer.applyCurrentState(archetype, forEntity: entity)
     }
     
     /// Entity から Component を削除します.
     func removeComponent<ComponentType: Component>(ofType type: ComponentType.Type, fromEntity entity: Entity) {
         let archetype = self.entityRecord(forEntity: entity)!
-        archetype.removeComponent(ofType: ComponentRef<ComponentType>.self)
+        archetype.removeComponent(ofType: ComponentType.self)
         self.worldBuffer.chunkBuffer.applyCurrentState(archetype, forEntity: entity)
     }
 }
