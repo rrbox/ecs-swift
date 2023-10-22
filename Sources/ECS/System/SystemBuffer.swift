@@ -6,31 +6,37 @@
 //
 
 open class SystemExecute {
+    public init() {}
+}
+
+final public class SystemBuffer {
+    final class SystemRegisotry<Execute: SystemExecute>: BufferElement {
+        var systems = [Execute]()
+    }
     
-}
-
-final class SystemRegisotry<Execute: SystemExecute>: BufferElement {
-    var systems = [Execute]()
-}
-
-class SystemBuffer {
     let buffer: Buffer
     init(buffer: Buffer) {
         self.buffer = buffer
     }
     
-    func plugInSystems<System: SystemExecute>(ofType: System.Type) -> [System] {
+    public func systems<System: SystemExecute>(ofType: System.Type) -> [System] {
         self.buffer.component(ofType: SystemRegisotry<System>.self)!.systems
     }
     
-    func registerPlugIn<System: SystemExecute>(ofType type: System.Type) {
+    func registerSystemRegistry<System: SystemExecute>(ofType type: System.Type) {
         self.buffer.addComponent(SystemRegisotry<System>.init())
     }
     
-    func addPlugInSystem<System: SystemExecute>(_ system: System, as type: System.Type) {
+    func addSystem<System: SystemExecute>(_ system: System, as type: System.Type) {
         self.buffer
             .component(ofType: SystemRegisotry<System>.self)!
             .systems
             .append(system)
+    }
+}
+
+public extension WorldBuffer {
+    var systemBuffer: SystemBuffer {
+        SystemBuffer(buffer: self)
     }
 }

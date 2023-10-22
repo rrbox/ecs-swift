@@ -15,8 +15,8 @@ extension ChunkBuffer {
         self.buffer.component(ofType: ChunkEntityInterface.self)!.add(chunk: chunk)
     }
     
-    func push(entity: Entity, value: Archetype) {
-        self.buffer.component(ofType: ChunkEntityInterface.self)!.push(entity: entity, value: value)
+    func push(entity: Entity, entityRecord: EntityRecord) {
+        self.buffer.component(ofType: ChunkEntityInterface.self)!.push(entity: entity, entityRecord: entityRecord)
     }
     
     func applyEntityQueue() {
@@ -25,6 +25,11 @@ extension ChunkBuffer {
     
     func despawn(entity: Entity) {
         self.buffer.component(ofType: ChunkEntityInterface.self)!.despawn(entity: entity)
+    }
+    
+    // entity を最新の状態に更新します.
+    func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {
+        self.buffer.component(ofType: ChunkEntityInterface.self)!.applyCurrentState(entityRecord, forEntity: entity)
     }
     
 }

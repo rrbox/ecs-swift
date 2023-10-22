@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import ObjectLink
+@testable import ECS_ObjectLink
 
 final class ObjectLinkTests: XCTestCase {
     

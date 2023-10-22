@@ -6,30 +6,33 @@
 //
 
 import XCTest
+@testable import ECS
 
 final class EntityCommandsTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func testEntityCommands() {
+        let commands = Commands()
+        let world = World()
+        world.worldBuffer.commandsBuffer.setCommands(commands)
+        
+        // world に entity を生成し, component を追加し, id(id としての entity) を受け取ります.
+        let entity = commands.spawn()
+            .addComponent(TestComponent(content: "test"))
+            .id()
+        world.applyCommands()
+        
+        XCTAssertEqual(world.entityRecord(forEntity: entity)!.component(ofType: ComponentRef<TestComponent>.self)!.value.content, "test")
+        
+        commands.entity(entity)?.removeComponent(ofType: TestComponent.self)
+        world.applyCommands()
+        
+        // world 内に entity が存在し, component が削除されていることをテストします.
+        XCTAssertNotNil(world.entityRecord(forEntity: entity))
+        XCTAssertNil(world.entityRecord(forEntity: entity)!.component(ofType: ComponentRef<TestComponent>.self))
+        
+        commands.despawn(entity: entity)
+        world.applyCommands()
+        
+        // world から entity が削除されたことをテストします.
+        XCTAssertNil(world.entityRecord(forEntity: entity))
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
 }

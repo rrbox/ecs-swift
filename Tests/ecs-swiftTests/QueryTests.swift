@@ -6,30 +6,85 @@
 //
 
 import XCTest
+@testable import ECS
 
 final class QueryTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func testQuery() {
+        let testQuery = Query<TestComponent>()
+        let testQuery2 = Query2<TestComponent, TestComponent2>()
+        let testQuery3 = Query3<TestComponent, TestComponent2, TestComponent3>()
+        let testQuery4 = Query4<TestComponent, TestComponent2, TestComponent3, TestComponent4>()
+        let testQuery5 = Query5<TestComponent, TestComponent2, TestComponent3, TestComponent4, TestComponent5>()
+        
+        let world = World()
+        
+        world.worldBuffer.chunkBuffer.addChunk(testQuery)
+        world.worldBuffer.chunkBuffer.addChunk(testQuery2)
+        world.worldBuffer.chunkBuffer.addChunk(testQuery3)
+        world.worldBuffer.chunkBuffer.addChunk(testQuery4)
+        world.worldBuffer.chunkBuffer.addChunk(testQuery5)
+        
+        let commands = world.worldBuffer.commandsBuffer.commands()!
+        
+        let testEntity = commands.spawn().addComponent(TestComponent(content: "test")).id()
+        
+        world.applyCommands()
+        
+        XCTAssertEqual(testQuery.components.count, 1)
+        XCTAssertEqual(testQuery2.components.count, 0)
+        XCTAssertEqual(testQuery3.components.count, 0)
+        XCTAssertEqual(testQuery4.components.count, 0)
+        XCTAssertEqual(testQuery5.components.count, 0)
+        
+        commands.entity(testEntity)?.addComponent(TestComponent2(content: "test2"))
+        
+        world.applyCommands()
+        
+        XCTAssertEqual(testQuery.components.count, 1)
+        XCTAssertEqual(testQuery2.components.count, 1)
+        XCTAssertEqual(testQuery3.components.count, 0)
+        XCTAssertEqual(testQuery4.components.count, 0)
+        XCTAssertEqual(testQuery5.components.count, 0)
+        
+        commands.entity(testEntity)?.addComponent(TestComponent3(content: "test2"))
+        
+        world.applyCommands()
+        
+        XCTAssertEqual(testQuery.components.count, 1)
+        XCTAssertEqual(testQuery2.components.count, 1)
+        XCTAssertEqual(testQuery3.components.count, 1)
+        XCTAssertEqual(testQuery4.components.count, 0)
+        XCTAssertEqual(testQuery5.components.count, 0)
+        
+        commands.entity(testEntity)?.addComponent(TestComponent4(content: "test2"))
+        
+        world.applyCommands()
+        
+        XCTAssertEqual(testQuery.components.count, 1)
+        XCTAssertEqual(testQuery2.components.count, 1)
+        XCTAssertEqual(testQuery3.components.count, 1)
+        XCTAssertEqual(testQuery4.components.count, 1)
+        XCTAssertEqual(testQuery5.components.count, 0)
+        
+        commands.entity(testEntity)?.addComponent(TestComponent5(content: "test2"))
+        
+        world.applyCommands()
+        
+        XCTAssertEqual(testQuery.components.count, 1)
+        XCTAssertEqual(testQuery2.components.count, 1)
+        XCTAssertEqual(testQuery3.components.count, 1)
+        XCTAssertEqual(testQuery4.components.count, 1)
+        XCTAssertEqual(testQuery5.components.count, 1)
+        
+        commands.entity(testEntity)?.removeComponent(ofType: TestComponent.self)
+        
+        world.applyCommands()
+        
+        XCTAssertEqual(testQuery.components.count, 0)
+        XCTAssertEqual(testQuery2.components.count, 0)
+        XCTAssertEqual(testQuery3.components.count, 0)
+        XCTAssertEqual(testQuery4.components.count, 0)
+        XCTAssertEqual(testQuery5.components.count, 0)
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
+    
 }

@@ -6,7 +6,6 @@
 //
 
 import XCTest
-import ObjectLink
 
 final class ScrollPlugInTests: XCTestCase {
 

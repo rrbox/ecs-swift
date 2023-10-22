@@ -21,6 +21,7 @@ struct Module {
 extension Module {
     static let ecs = Module(name: "ECS")
     static let plugIns = Module(name: "PlugIns")
+    static let graphic2d = Module(name: "ECS_Graphic", path: "Sources/PlugIns/Graphic2D")
     static let keyboard = Module(name: "ECS_Keyboard", path: "Sources/PlugIns/Keyboard")
     static let mouse = Module(name: "ECS_Mouse", path: "Sources/PlugIns/Mouse")
     static let objectLink = Module(name: "ECS_ObjectLink", path: "Sources/PlugIns/ObjectLink")
@@ -28,6 +29,7 @@ extension Module {
     static let scroll = Module(name: "ECS_Scroll", path: "Sources/PlugIns/Scroll")
     
     static let ecs_swiftTests = Module(name: "ecs-swiftTests")
+    static let graphicPlugInTests = Module(name: "GraphicPlugInTests")
     static let keyBoardPlugInTests = Module(name: "KeyBoardPlugInTests")
     static let mousePlugInTests = Module(name: "MousePlugInTests")
     static let objectLinkPlugInTests = Module(name: "ObjectLinkPlugInTests")
@@ -35,8 +37,26 @@ extension Module {
     static let scrollPlugInTests = Module(name: "ScrollPlugInTests")
 }
 
+extension Target {
+    static func target(module: Module, dependencies: [Module]) -> Target {
+        .target(
+            name: module.name,
+            dependencies: dependencies.map { $0.dependency },
+            path: module.path)
+    }
+    
+    static func testTarget(module: Module, dependencies: [Module]) -> Target {
+        .testTarget(
+            name: module.name,
+            dependencies: dependencies.map { $0.dependency },
+            path: module.path
+        )
+    }
+}
+
 let package = Package(
     name: "ECS_Swift",
+    platforms: [.macOS(.v10_15)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
@@ -45,6 +65,7 @@ let package = Package(
         .library(
             name: Module.plugIns.name,
             targets: [
+                Module.graphic2d.name,
                 Module.keyboard.name,
                 Module.mouse.name,
                 Module.objectLink.name,
@@ -60,45 +81,46 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
-            name: Module.ecs.name,
+            module: .ecs,
             dependencies: []),
         .target(
-            name: Module.keyboard.name,
-            dependencies: [Module.ecs.dependency],
-            path: Module.keyboard.path),
+            module: .graphic2d,
+            dependencies: [.ecs]),
         .target(
-            name: Module.mouse.name,
-            dependencies: [Module.ecs.dependency],
-            path: Module.mouse.path),
+            module: .keyboard,
+            dependencies: [.ecs]),
         .target(
-            name: Module.objectLink.name,
-            dependencies: [Module.ecs.dependency],
-            path: Module.objectLink.path),
+            module: .mouse,
+            dependencies: [.ecs]),
         .target(
-            name: Module.scene.name,
-            dependencies: [Module.ecs.dependency],
-            path: Module.scene.path),
+            module: .objectLink,
+            dependencies: [.ecs]),
         .target(
-            name: Module.scroll.name,
-            dependencies: [Module.ecs.dependency],
-            path: Module.scroll.path),
+            module: .scene,
+            dependencies: [.ecs]),
+        .target(
+            module: .scroll,
+            dependencies: [.ecs]),
         .testTarget(
-            name: Module.ecs_swiftTests.name,
-            dependencies: [Module.ecs.dependency]),
+            module: .ecs_swiftTests,
+            dependencies: [.ecs]),
         .testTarget(
-            name: Module.keyBoardPlugInTests.name,
-            dependencies: [Module.keyboard.dependency]),
+            module: .graphicPlugInTests,
+            dependencies: [.graphic2d]),
         .testTarget(
-            name: Module.mousePlugInTests.name,
-            dependencies: [Module.mouse.dependency]),
+            module: .keyBoardPlugInTests,
+            dependencies: [.keyboard]),
         .testTarget(
-            name: Module.objectLinkPlugInTests.name,
-            dependencies: [Module.objectLink.dependency]),
+            module: .mousePlugInTests,
+            dependencies: [.mouse]),
         .testTarget(
-            name: Module.scenePlugInTests.name,
-            dependencies: [Module.scene.dependency]),
+            module: .objectLinkPlugInTests,
+            dependencies: [.objectLink]),
         .testTarget(
-            name: Module.scrollPlugInTests.name,
-            dependencies: [Module.scroll.dependency]),
+            module: .scenePlugInTests,
+            dependencies: [.scene]),
+        .testTarget(
+            module: .scrollPlugInTests,
+            dependencies: [.scroll]),
     ]
 )

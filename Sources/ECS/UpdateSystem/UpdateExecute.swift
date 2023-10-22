@@ -1,8 +1,12 @@
 //
-//  File.swift
+//  UpdateExecute.swift
 //  
 //
 //  Created by rrbox on 2023/08/12.
 //
 
-import Foundation
+public class UpdateExecute: SystemExecute {
+    func update(worldBuffer: WorldBuffer) {
+        
+    }
+}
