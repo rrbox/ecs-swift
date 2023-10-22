@@ -6,30 +6,58 @@
 //
 
 import XCTest
+@testable import ECS
+
+class TestChunk: Chunk {
+    var entities = [Entity: EntityRecord]()
+    override func spawn(entity: Entity, entityRecord: EntityRecord) {
+        self.entities[entity] = entityRecord
+    }
+    
+    override func despawn(entity: Entity) {
+        self.entities.removeValue(forKey: entity)
+    }
+}
+
+class TestChunk_2: Chunk {
+    var entities = [Entity: EntityRecord]()
+    override func spawn(entity: Entity, entityRecord: EntityRecord) {
+        self.entities[entity] = entityRecord
+    }
+    
+    override func despawn(entity: Entity) {
+        self.entities.removeValue(forKey: entity)
+    }
+}
 
 final class ChunkTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    func testInterface() {
+        let mockEntities = [Entity(), Entity(), Entity(), Entity(), Entity()]
+        let world = World()
+        
+        // Spawn された entity を単に蓄積するだけの test 用の chunk です.
+        let testChunk = TestChunk()
+        let testChunk_2 = TestChunk_2()
+        world.worldBuffer.chunkBuffer.addChunk(testChunk)
+        world.worldBuffer.chunkBuffer.addChunk(testChunk_2)
+        
+        // chunk interface を介して chunk に entity を push します（回数: 5回）.
+        for entity in mockEntities {
+            world.push(entity: entity, entityRecord: EntityRecord())
         }
+        
+        world.worldBuffer.chunkBuffer.applyEntityQueue()
+        
+        XCTAssertEqual(testChunk.entities.count, 5)
+        XCTAssertEqual(testChunk_2.entities.count, 5)
+        
+        // chunk interface を介して chunk から entity を削除します.
+        for entity in mockEntities {
+            world.despawn(entity: entity)
+        }
+        
+        XCTAssertEqual(testChunk.entities.count, 0)
+        XCTAssertEqual(testChunk_2.entities.count, 0)
+        
     }
-
 }

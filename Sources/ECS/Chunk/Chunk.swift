@@ -1,8 +1,12 @@
 //
-//  File.swift
+//  Chunk.swift
 //  
 //
 //  Created by rrbox on 2023/08/11.
 //
 
-import Foundation
+public class Chunk {
+    func spawn(entity: Entity, entityRecord: EntityRecord) {}
+    func despawn(entity: Entity) {}
+    func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {}
+}
