@@ -16,7 +16,7 @@ final public class UpdateSystem5<P0: SystemParameter, P1: SystemParameter, P2: S
         self.execute = execute
     }
     
-    override func update(worldBuffer: WorldBuffer) {
+    override func update(worldBuffer: BufferRef) {
         self.execute(P0.getParameter(from: worldBuffer)!, P1.getParameter(from: worldBuffer)!, P2.getParameter(from: worldBuffer)!, P3.getParameter(from: worldBuffer)!, P4.getParameter(from: worldBuffer)!)
     }
 }

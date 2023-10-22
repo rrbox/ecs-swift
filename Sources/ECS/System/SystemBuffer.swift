@@ -14,28 +14,30 @@ final public class SystemBuffer {
         var systems = [Execute]()
     }
     
-    let buffer: Buffer
-    init(buffer: Buffer) {
+    let buffer: BufferRef
+    init(buffer: BufferRef) {
         self.buffer = buffer
     }
     
     public func systems<System: SystemExecute>(ofType: System.Type) -> [System] {
-        self.buffer.component(ofType: SystemRegisotry<System>.self)!.systems
+        self.buffer.map.valueRef(ofType: SystemRegisotry<System>.self)!.body.systems
     }
     
     func registerSystemRegistry<System: SystemExecute>(ofType type: System.Type) {
-        self.buffer.addComponent(SystemRegisotry<System>.init())
+        self.buffer.map.push(SystemRegisotry<System>.init())
     }
     
     func addSystem<System: SystemExecute>(_ system: System, as type: System.Type) {
         self.buffer
-            .component(ofType: SystemRegisotry<System>.self)!
+            .map
+            .valueRef(ofType: SystemRegisotry<System>.self)!
+            .body
             .systems
             .append(system)
     }
 }
 
-public extension WorldBuffer {
+public extension BufferRef {
     var systemBuffer: SystemBuffer {
         SystemBuffer(buffer: self)
     }

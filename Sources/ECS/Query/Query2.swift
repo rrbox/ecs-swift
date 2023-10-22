@@ -11,9 +11,9 @@ final public class Query2<C0: Component, C1: Component>: Chunk, SystemParameter 
     
     public override init() {}
     
-    public override func spawn(entity: Entity, entityRecord: EntityRecord) {
-        guard let c0 = entityRecord.component(ofType: ComponentRef<C0>.self),
-              let c1 = entityRecord.component(ofType: ComponentRef<C1>.self) else { return }
+    public override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
+        guard let c0 = entityRecord.componentRef(C0.self),
+              let c1 = entityRecord.componentRef(C1.self) else { return }
         self.components[entity] = (c0, c1)
     }
     
@@ -21,9 +21,9 @@ final public class Query2<C0: Component, C1: Component>: Chunk, SystemParameter 
         self.components.removeValue(forKey: entity)
     }
     
-    override func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {
-        guard let c0 = entityRecord.component(ofType: ComponentRef<C0>.self),
-              let c1 = entityRecord.component(ofType: ComponentRef<C1>.self) else {
+    override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
+        guard let c0 = entityRecord.componentRef(C0.self),
+              let c1 = entityRecord.componentRef(C1.self) else {
             self.components.removeValue(forKey: entity)
             return
         }
@@ -49,7 +49,7 @@ final public class Query2<C0: Component, C1: Component>: Chunk, SystemParameter 
     }
 
     
-    public static func register(to worldBuffer: WorldBuffer) {
+    public static func register(to worldBuffer: BufferRef) {
         guard worldBuffer.chunkBuffer.chunk(ofType: Self.self) == nil else {
             return
         }
@@ -60,7 +60,7 @@ final public class Query2<C0: Component, C1: Component>: Chunk, SystemParameter 
         
     }
     
-    public static func getParameter(from worldBuffer: WorldBuffer) -> Self? {
+    public static func getParameter(from worldBuffer: BufferRef) -> Self? {
         worldBuffer.chunkBuffer.chunk(ofType: Self.self)
     }
     

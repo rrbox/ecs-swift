@@ -16,7 +16,7 @@ final public class UpdateSystem<Parameter: SystemParameter>: UpdateExecute, Upda
         self.execute = execute
     }
     
-    override func update(worldBuffer: WorldBuffer) {
+    override func update(worldBuffer: BufferRef) {
         self.execute(Parameter.getParameter(from: worldBuffer)!)
     }
 }

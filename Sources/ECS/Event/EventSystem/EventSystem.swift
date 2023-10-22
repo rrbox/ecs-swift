@@ -12,7 +12,7 @@ final public class EventSystem<T, Parameter: SystemParameter>: EventSystemExecut
         self.execute = execute
     }
     
-    override func receive(event: EventReader<T>, worldBuffer: WorldBuffer) {
+    override func receive(event: EventReader<T>, worldBuffer: BufferRef) {
         self.execute(event, Parameter.getParameter(from: worldBuffer)!)
     }
 }

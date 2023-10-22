@@ -10,8 +10,8 @@ final public class Query<ComponentType: Component>: Chunk, SystemParameter {
     
     public override init() {}
     
-    public override func spawn(entity: Entity, entityRecord: EntityRecord) {
-        guard let componentRef = entityRecord.component(ofType: ComponentRef<ComponentType>.self) else { return }
+    public override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
+        guard let componentRef = entityRecord.componentRef(ComponentType.self) else { return }
         self.components[entity] = componentRef
     }
     
@@ -19,8 +19,8 @@ final public class Query<ComponentType: Component>: Chunk, SystemParameter {
         self.components.removeValue(forKey: entity)
     }
     
-    override func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {
-        guard let componentRef = entityRecord.component(ofType: ComponentRef<ComponentType>.self) else {
+    override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
+        guard let componentRef = entityRecord.componentRef(ComponentType.self) else {
             self.components.removeValue(forKey: entity)
             return
         }
@@ -43,7 +43,7 @@ final public class Query<ComponentType: Component>: Chunk, SystemParameter {
         self.components[entity]?.value
     }
     
-    public static func register(to worldBuffer: WorldBuffer) {
+    public static func register(to worldBuffer: BufferRef) {
         guard worldBuffer.chunkBuffer.chunk(ofType: Self.self) == nil else {
             return
         }
@@ -54,7 +54,7 @@ final public class Query<ComponentType: Component>: Chunk, SystemParameter {
         
     }
     
-    public static func getParameter(from worldBuffer: WorldBuffer) -> Self? {
+    public static func getParameter(from worldBuffer: BufferRef) -> Self? {
         worldBuffer.chunkBuffer.chunk(ofType: Self.self)
     }
     

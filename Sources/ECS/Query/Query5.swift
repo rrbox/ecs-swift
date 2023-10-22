@@ -10,12 +10,12 @@ final public class Query5<C0: Component, C1: Component, C2: Component, C3: Compo
     
     public override init() {}
     
-    public override func spawn(entity: Entity, entityRecord: EntityRecord) {
-        guard let c0 = entityRecord.component(ofType: ComponentRef<C0>.self),
-              let c1 = entityRecord.component(ofType: ComponentRef<C1>.self),
-              let c2 = entityRecord.component(ofType: ComponentRef<C2>.self),
-              let c3 = entityRecord.component(ofType: ComponentRef<C3>.self),
-              let c4 = entityRecord.component(ofType: ComponentRef<C4>.self) else { return }
+    public override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
+        guard let c0 = entityRecord.componentRef(C0.self),
+              let c1 = entityRecord.componentRef(C1.self),
+              let c2 = entityRecord.componentRef(C2.self),
+              let c3 = entityRecord.componentRef(C3.self),
+              let c4 = entityRecord.componentRef(C4.self) else { return }
         self.components[entity] = (c0, c1, c2, c3, c4)
     }
     
@@ -23,12 +23,12 @@ final public class Query5<C0: Component, C1: Component, C2: Component, C3: Compo
         self.components.removeValue(forKey: entity)
     }
     
-    override func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {
-        guard let c0 = entityRecord.component(ofType: ComponentRef<C0>.self),
-              let c1 = entityRecord.component(ofType: ComponentRef<C1>.self),
-              let c2 = entityRecord.component(ofType: ComponentRef<C2>.self),
-              let c3 = entityRecord.component(ofType: ComponentRef<C3>.self),
-              let c4 = entityRecord.component(ofType: ComponentRef<C4>.self) else {
+    override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
+        guard let c0 = entityRecord.componentRef(C0.self),
+              let c1 = entityRecord.componentRef(C1.self),
+              let c2 = entityRecord.componentRef(C2.self),
+              let c3 = entityRecord.componentRef(C3.self),
+              let c4 = entityRecord.componentRef(C4.self) else {
             self.components.removeValue(forKey: entity)
             return
         }
@@ -52,7 +52,7 @@ final public class Query5<C0: Component, C1: Component, C2: Component, C3: Compo
         return (references.0.value, references.1.value, references.2.value, references.3.value, references.4.value)
     }
     
-    public static func register(to worldBuffer: WorldBuffer) {
+    public static func register(to worldBuffer: BufferRef) {
         guard worldBuffer.chunkBuffer.chunk(ofType: Self.self) == nil else {
             return
         }
@@ -63,7 +63,7 @@ final public class Query5<C0: Component, C1: Component, C2: Component, C3: Compo
         
     }
     
-    public static func getParameter(from worldBuffer: WorldBuffer) -> Self? {
+    public static func getParameter(from worldBuffer: BufferRef) -> Self? {
         worldBuffer.chunkBuffer.chunk(ofType: Self.self)
     }
     

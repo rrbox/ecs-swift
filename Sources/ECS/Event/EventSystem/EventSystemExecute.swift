@@ -6,7 +6,7 @@
 //
 
 public class EventSystemExecute<T>: SystemExecute {
-    func receive(event: EventReader<T>, worldBuffer: WorldBuffer) {
+    func receive(event: EventReader<T>, worldBuffer: BufferRef) {
         
     }
 }

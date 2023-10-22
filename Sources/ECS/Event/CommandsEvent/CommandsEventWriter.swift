@@ -5,7 +5,7 @@
 //  Created by rrbox on 2023/08/29.
 //
 
-final class CommandsEventWriter<T: CommandsEventProtocol>: SystemParameter, SetUpSystemParameter {
+final class CommandsEventWriter<T: CommandsEventProtocol>: SystemParameter, SetUpSystemParameter, BufferElement {
     unowned let eventQueue: CommandsEventQueue<T>
     
     init(eventQueue: CommandsEventQueue<T>) {
@@ -16,11 +16,11 @@ final class CommandsEventWriter<T: CommandsEventProtocol>: SystemParameter, SetU
         self.eventQueue.eventQueue.append(value)
     }
     
-    public static func register(to worldBuffer: WorldBuffer) {
+    public static func register(to worldBuffer: BufferRef) {
         
     }
     
-    public static func getParameter(from worldBuffer: WorldBuffer) -> CommandsEventWriter<T>? {
+    public static func getParameter(from worldBuffer: BufferRef) -> CommandsEventWriter<T>? {
         worldBuffer.eventBuffer.commandsEventWriter(eventOfType: T.self)
     }
 }
