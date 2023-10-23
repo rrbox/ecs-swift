@@ -14,7 +14,7 @@ class TestCommand_Spawn: Command {
         self.entity = entity
     }
     override func runCommand(in world: World) {
-        world.push(entity: self.entity, entityRecord: EntityRecord())
+        world.push(entity: self.entity, entityRecord: EntityRecordRef())
     }
 }
 

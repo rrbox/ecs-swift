@@ -9,8 +9,8 @@ import XCTest
 @testable import ECS
 
 class TestChunk: Chunk {
-    var entities = [Entity: EntityRecord]()
-    override func spawn(entity: Entity, entityRecord: EntityRecord) {
+    var entities = [Entity: EntityRecordRef]()
+    override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
         self.entities[entity] = entityRecord
     }
     
@@ -20,8 +20,8 @@ class TestChunk: Chunk {
 }
 
 class TestChunk_2: Chunk {
-    var entities = [Entity: EntityRecord]()
-    override func spawn(entity: Entity, entityRecord: EntityRecord) {
+    var entities = [Entity: EntityRecordRef]()
+    override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
         self.entities[entity] = entityRecord
     }
     
@@ -43,7 +43,7 @@ final class ChunkTests: XCTestCase {
         
         // chunk interface を介して chunk に entity を push します（回数: 5回）.
         for entity in mockEntities {
-            world.push(entity: entity, entityRecord: EntityRecord())
+            world.push(entity: entity, entityRecord: EntityRecordRef())
         }
         
         world.worldBuffer.chunkBuffer.applyEntityQueue()
