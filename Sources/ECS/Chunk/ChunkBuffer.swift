@@ -7,7 +7,7 @@
 
 /// Chunk を種類別で格納します
 final public class ChunkBuffer {
-    class ChunkRegistry<ChunkType: Chunk>: BufferElement {
+    class ChunkRegistry<ChunkType: Chunk>: WorldStorageElement {
         let chunk: ChunkType
         
         init(chunk: ChunkType) {

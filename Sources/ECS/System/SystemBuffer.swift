@@ -10,7 +10,7 @@ open class SystemExecute {
 }
 
 final public class SystemBuffer {
-    final class SystemRegisotry<Execute: SystemExecute>: BufferElement {
+    final class SystemRegisotry<Execute: SystemExecute>: WorldStorageElement {
         var systems = [Execute]()
     }
     

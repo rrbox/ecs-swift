@@ -6,7 +6,7 @@
 //
 
 final public class CommandsBuffer {
-    class CommandsRegistry: BufferElement {
+    class CommandsRegistry: WorldStorageElement {
         let commands: Commands
         
         init(commands: Commands) {

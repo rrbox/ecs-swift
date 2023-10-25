@@ -9,7 +9,7 @@ public protocol ResourceProtocol {
     
 }
 
-final public class Resource<T: ResourceProtocol>: BufferElement, SystemParameter {
+final public class Resource<T: ResourceProtocol>: WorldStorageElement, SystemParameter {
     public var resource: T
     
     init(_ resource: T) {

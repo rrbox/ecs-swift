@@ -8,7 +8,7 @@
 /// Chunk を種類関係なく格納するためのコンポーネントです.
 ///
 /// Entity の変更を全ての Chunk に反映させる目的で使用されます.
-class ChunkEntityInterface: BufferElement {
+class ChunkEntityInterface: WorldStorageElement {
     /// entity が spawn されてから component が完全に挿入されるまでの間, entity を queue に保管します.
     ///
     /// Entity が ``Commands/spawn()`` され, ``EntityCommands/addComponent(_:)`` されるまでの間, Entity は実際には Chunk に反映されず,

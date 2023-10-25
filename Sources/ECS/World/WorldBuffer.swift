@@ -6,5 +6,5 @@
 //
 
 final public class BufferRef {
-    var map = AnyMap<Buffer>()
+    var map = AnyMap<WorldStorage>()
 }

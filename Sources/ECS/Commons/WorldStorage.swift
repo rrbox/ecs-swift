@@ -1,15 +1,15 @@
 //
-//  Buffer.swift
+//  WorldStorage.swift
 //  
 //
 //  Created by rrbox on 2023/10/22.
 //
 
-enum Buffer {}
+enum WorldStorage {}
 
-protocol BufferElement {}
+protocol WorldStorageElement {}
 
-class Box<T: BufferElement>: Item {
+class Box<T: WorldStorageElement>: Item {
     var body: T
     
     init(body: T) {
@@ -17,16 +17,16 @@ class Box<T: BufferElement>: Item {
     }
 }
 
-extension AnyMap where Mode == Buffer {
-    mutating func push<T: BufferElement>(_ data: T) {
+extension AnyMap where Mode == WorldStorage {
+    mutating func push<T: WorldStorageElement>(_ data: T) {
         self.body[ObjectIdentifier(T.self)] = Box(body: data)
     }
     
-    mutating func pop<T: BufferElement>(_ type: T.Type) {
+    mutating func pop<T: WorldStorageElement>(_ type: T.Type) {
         self.body.removeValue(forKey: ObjectIdentifier(T.self))
     }
     
-    mutating func valueRef<T: BufferElement>(ofType type: T.Type) -> Box<T>? {
+    mutating func valueRef<T: WorldStorageElement>(ofType type: T.Type) -> Box<T>? {
         guard let result = self.body[ObjectIdentifier(T.self)] else { return nil }
         return (result as! Box<T>)
     }
