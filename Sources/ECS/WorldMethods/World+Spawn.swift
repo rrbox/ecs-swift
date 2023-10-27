@@ -21,7 +21,7 @@ extension World {
     func push(entity: Entity, entityRecord: EntityRecordRef) {
         self.insert(entity: entity, entityRecord: entityRecord)
         self.worldBuffer
-            .chunkBuffer
+            .chunkStorage
             .push(entity: entity, entityRecord: entityRecord)
         
         self.worldBuffer
@@ -36,7 +36,7 @@ extension World {
     func despawn(entity: Entity) {
         self.remove(entity: entity)
         self.worldBuffer
-            .chunkBuffer
+            .chunkStorage
             .despawn(entity: entity)
         
         self.worldBuffer

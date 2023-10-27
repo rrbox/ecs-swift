@@ -11,6 +11,6 @@ public extension World {
             system.setUp(worldBuffer: self.worldBuffer)
         }
         self.applyCommands()
-        self.worldBuffer.chunkBuffer.applyEntityQueue()
+        self.worldBuffer.chunkStorage.applyEntityQueue()
     }
 }

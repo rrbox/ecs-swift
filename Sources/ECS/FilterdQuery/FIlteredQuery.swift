@@ -18,15 +18,15 @@ final public class Filtered<Q: QueryProtocol, F: Filter>: Chunk, SystemParameter
     }
     
     public static func getParameter(from worldBuffer: BufferRef) -> Filtered<Q, F>? {
-        worldBuffer.chunkBuffer.chunk(ofType: Filtered<Q, F>.self)
+        worldBuffer.chunkStorage.chunk(ofType: Filtered<Q, F>.self)
     }
     
     public static func register(to worldBuffer: BufferRef) {
-        guard worldBuffer.chunkBuffer.chunk(ofType: Self.self) == nil else {
+        guard worldBuffer.chunkStorage.chunk(ofType: Self.self) == nil else {
             return
         }
         
-        worldBuffer.chunkBuffer.addChunk(Filtered<Q, F>())
+        worldBuffer.chunkStorage.addChunk(Filtered<Q, F>())
     }
     
 }

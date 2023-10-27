@@ -28,7 +28,7 @@ public extension World {
         self.applyCommandsEventQueue(eventOfType: WillDespawnEvent.self)
         
         // apply commands の際に push された entity を chunk に割り振ります.
-        self.worldBuffer.chunkBuffer.applyEntityQueue()
+        self.worldBuffer.chunkStorage.applyEntityQueue()
         
         // Did Spawn event を event system に発信します.
         self.applyCommandsEventQueue(eventOfType: DidSpawnEvent.self)

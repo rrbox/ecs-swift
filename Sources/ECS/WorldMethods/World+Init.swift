@@ -10,7 +10,7 @@ public extension World {
         self.init(entities: [:], worldBuffer: BufferRef())
         
         // chunk buffer に chunk entity interface を追加します.
-        self.worldBuffer.chunkBuffer.setUpChunkBuffer()
+        self.worldBuffer.chunkStorage.setUpChunkBuffer()
         
         // resource buffer に 時間関係の resource を追加します.
         self.worldBuffer.resourceBuffer.addResource(CurrentTime(value: 0))

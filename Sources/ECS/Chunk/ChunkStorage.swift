@@ -26,7 +26,7 @@ final public class ChunkStorage {
 }
 
 public extension BufferRef {
-    var chunkBuffer: ChunkStorage {
+    var chunkStorage: ChunkStorage {
         ChunkStorage(buffer: self)
     }
 }

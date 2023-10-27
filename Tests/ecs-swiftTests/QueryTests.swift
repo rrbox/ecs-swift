@@ -18,11 +18,11 @@ final class QueryTests: XCTestCase {
         
         let world = World()
         
-        world.worldBuffer.chunkBuffer.addChunk(testQuery)
-        world.worldBuffer.chunkBuffer.addChunk(testQuery2)
-        world.worldBuffer.chunkBuffer.addChunk(testQuery3)
-        world.worldBuffer.chunkBuffer.addChunk(testQuery4)
-        world.worldBuffer.chunkBuffer.addChunk(testQuery5)
+        world.worldBuffer.chunkStorage.addChunk(testQuery)
+        world.worldBuffer.chunkStorage.addChunk(testQuery2)
+        world.worldBuffer.chunkStorage.addChunk(testQuery3)
+        world.worldBuffer.chunkStorage.addChunk(testQuery4)
+        world.worldBuffer.chunkStorage.addChunk(testQuery5)
         
         let commands = world.worldBuffer.commandsStorage.commands()!
         
