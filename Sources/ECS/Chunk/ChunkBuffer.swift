@@ -6,7 +6,7 @@
 //
 
 /// Chunk を種類別で格納します
-final public class ChunkBuffer {
+final public class ChunkStorage {
     class ChunkRegistry<ChunkType: Chunk>: WorldStorageElement {
         let chunk: ChunkType
         
@@ -26,7 +26,7 @@ final public class ChunkBuffer {
 }
 
 public extension BufferRef {
-    var chunkBuffer: ChunkBuffer {
-        ChunkBuffer(buffer: self)
+    var chunkBuffer: ChunkStorage {
+        ChunkStorage(buffer: self)
     }
 }
