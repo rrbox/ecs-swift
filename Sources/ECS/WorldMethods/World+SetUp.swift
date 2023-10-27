@@ -7,7 +7,7 @@
 
 public extension World {
     func setUpWorld() {
-        for system in self.worldBuffer.systemBuffer.systems(ofType: SetUpExecute.self) {
+        for system in self.worldBuffer.systemStorage.systems(ofType: SetUpExecute.self) {
             system.setUp(worldBuffer: self.worldBuffer)
         }
         self.applyCommands()

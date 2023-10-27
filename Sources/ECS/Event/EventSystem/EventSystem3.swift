@@ -19,7 +19,7 @@ final public class EventSystem3<T, P0: SystemParameter, P1: SystemParameter, P2:
 
 public extension World {
     @discardableResult func addEventSystem<T, P0: SystemParameter, P1: SystemParameter, P2: SystemParameter>(_ system: EventSystem3<T, P0, P1, P2>) -> World {
-        self.worldBuffer.systemBuffer.addSystem(system, as: EventSystemExecute<T>.self)
+        self.worldBuffer.systemStorage.addSystem(system, as: EventSystemExecute<T>.self)
         P0.register(to: self.worldBuffer)
         P1.register(to: self.worldBuffer)
         P2.register(to: self.worldBuffer)

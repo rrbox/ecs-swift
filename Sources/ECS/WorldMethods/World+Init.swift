@@ -20,10 +20,10 @@ public extension World {
         self.worldBuffer.resourceBuffer.addResource(EntityCount(count: 0))
         
         // world buffer に setup system を保持する領域を確保します.
-        self.worldBuffer.systemBuffer.registerSystemRegistry(ofType: SetUpExecute.self)
+        self.worldBuffer.systemStorage.registerSystemRegistry(ofType: SetUpExecute.self)
         
         // world buffer に update system を保持する領域を確保します.
-        self.worldBuffer.systemBuffer.registerSystemRegistry(ofType: UpdateExecute.self)
+        self.worldBuffer.systemStorage.registerSystemRegistry(ofType: UpdateExecute.self)
         
         // world buffer に event queue を作成します.
         self.worldBuffer.eventStorage.setUpEventQueue()

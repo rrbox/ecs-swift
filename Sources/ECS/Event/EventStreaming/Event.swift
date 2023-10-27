@@ -22,7 +22,7 @@ final class Event<T: EventProtocol>: AnyEvent {
     }
     
     override func runEventReceiver(worldBuffer: BufferRef) {
-        for system in worldBuffer.systemBuffer.systems(ofType: EventSystemExecute<T>.self) {
+        for system in worldBuffer.systemStorage.systems(ofType: EventSystemExecute<T>.self) {
             system.receive(event: EventReader<T>(value: self.value), worldBuffer: worldBuffer)
         }
     }

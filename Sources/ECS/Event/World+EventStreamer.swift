@@ -10,7 +10,7 @@ public extension World {
     ///
     /// `Event<T>` をイベントシステムで扱う前に, World に EventStreamer を追加する必要があります.
     @discardableResult func addEventStreamer<T: EventProtocol>(eventType: T.Type) -> World {
-        self.worldBuffer.systemBuffer.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
+        self.worldBuffer.systemStorage.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
         self.worldBuffer.eventStorage.registerEventWriter(eventType: T.self)
         return self
     }
@@ -18,7 +18,7 @@ public extension World {
 
 extension World {
     func addCommandsEventStreamer<T: CommandsEventProtocol>(eventType: T.Type) {
-        self.worldBuffer.systemBuffer.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
+        self.worldBuffer.systemStorage.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
         self.worldBuffer.eventStorage.registerCommandsEventWriter(eventType: T.self)
     }
 }
@@ -39,7 +39,7 @@ extension World {
         eventQueue.sendingEvents = eventQueue.eventQueue
         eventQueue.eventQueue = []
         for event in eventQueue.sendingEvents {
-            for system in self.worldBuffer.systemBuffer.systems(ofType: EventSystemExecute<T>.self) {
+            for system in self.worldBuffer.systemStorage.systems(ofType: EventSystemExecute<T>.self) {
                 system.receive(event: EventReader(value: event), worldBuffer: self.worldBuffer)
             }
         }

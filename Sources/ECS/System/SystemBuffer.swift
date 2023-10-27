@@ -1,5 +1,5 @@
 //
-//  SystemBuffer.swift
+//  SystemStorage.swift
 //  
 //
 //  Created by rrbox on 2023/08/12.
@@ -9,7 +9,7 @@ open class SystemExecute {
     public init() {}
 }
 
-final public class SystemBuffer {
+final public class SystemStorage {
     final class SystemRegisotry<Execute: SystemExecute>: WorldStorageElement {
         var systems = [Execute]()
     }
@@ -38,7 +38,7 @@ final public class SystemBuffer {
 }
 
 public extension BufferRef {
-    var systemBuffer: SystemBuffer {
-        SystemBuffer(buffer: self)
+    var systemStorage: SystemStorage {
+        SystemStorage(buffer: self)
     }
 }

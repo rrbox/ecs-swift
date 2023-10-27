@@ -15,7 +15,7 @@ public extension World {
         
         currentTimeResource.resource = CurrentTime(value: currentTime)
         
-        for system in self.worldBuffer.systemBuffer.systems(ofType: UpdateExecute.self) {
+        for system in self.worldBuffer.systemStorage.systems(ofType: UpdateExecute.self) {
             system.update(worldBuffer: self.worldBuffer)
         }
         

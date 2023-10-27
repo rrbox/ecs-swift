@@ -23,7 +23,7 @@ final public class UpdateSystem<Parameter: SystemParameter>: UpdateExecute, Upda
 
 public extension World {
     @discardableResult func addUpdateSystem<System: UpdateSystemProtocol>(_ system: System) -> World {
-        self.worldBuffer.systemBuffer.addSystem(system, as: UpdateExecute.self)
+        self.worldBuffer.systemStorage.addSystem(system, as: UpdateExecute.self)
         System.Parameter.register(to: self.worldBuffer)
         return self
     }
