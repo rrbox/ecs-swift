@@ -24,7 +24,7 @@ final class QueryTests: XCTestCase {
         world.worldBuffer.chunkBuffer.addChunk(testQuery4)
         world.worldBuffer.chunkBuffer.addChunk(testQuery5)
         
-        let commands = world.worldBuffer.commandsBuffer.commands()!
+        let commands = world.worldBuffer.commandsStorage.commands()!
         
         let testEntity = commands.spawn().addComponent(TestComponent(content: "test")).id()
         

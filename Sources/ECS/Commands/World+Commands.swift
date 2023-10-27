@@ -7,7 +7,7 @@
 
 extension World {
     func applyCommands() {
-        let commands = self.worldBuffer.commandsBuffer.commands()!
+        let commands = self.worldBuffer.commandsStorage.commands()!
         for command in commands.commandQueue {
             command.runCommand(in: self)
         }

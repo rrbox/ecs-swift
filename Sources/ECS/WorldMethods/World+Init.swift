@@ -35,6 +35,6 @@ public extension World {
         self.addCommandsEventStreamer(eventType: WillDespawnEvent.self)
         
         // world buffer に commands の初期値を設定します.
-        self.worldBuffer.commandsBuffer.setCommands(Commands())
+        self.worldBuffer.commandsStorage.setCommands(Commands())
     }
 }

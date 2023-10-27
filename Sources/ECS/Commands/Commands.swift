@@ -14,7 +14,7 @@ final public class Commands: SystemParameter {
     }
     
     public static func getParameter(from worldBuffer: BufferRef) -> Commands? {
-        worldBuffer.commandsBuffer.commands()
+        worldBuffer.commandsStorage.commands()
     }
     
     /// CommandQueue にコマンドを追加します.

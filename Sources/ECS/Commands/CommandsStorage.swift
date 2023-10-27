@@ -30,7 +30,7 @@ final public class CommandsStorage {
 
 // WorldBuffer + Commands
 public extension BufferRef {
-    var commandsBuffer: CommandsStorage {
+    var commandsStorage: CommandsStorage {
         CommandsStorage(buffer: self)
     }
 }
