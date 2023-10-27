@@ -16,12 +16,12 @@ final class CommandsEventWriter<T: CommandsEventProtocol>: SystemParameter, SetU
         self.eventQueue.eventQueue.append(value)
     }
     
-    public static func register(to worldBuffer: BufferRef) {
+    public static func register(to worldStorage: WorldStorageRef) {
         
     }
     
-    public static func getParameter(from worldBuffer: BufferRef) -> CommandsEventWriter<T>? {
-        worldBuffer.eventStorage.commandsEventWriter(eventOfType: T.self)
+    public static func getParameter(from worldStorage: WorldStorageRef) -> CommandsEventWriter<T>? {
+        worldStorage.eventStorage.commandsEventWriter(eventOfType: T.self)
     }
 }
 

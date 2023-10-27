@@ -49,19 +49,19 @@ final public class Query2<C0: Component, C1: Component>: Chunk, SystemParameter 
     }
 
     
-    public static func register(to worldBuffer: BufferRef) {
-        guard worldBuffer.chunkStorage.chunk(ofType: Self.self) == nil else {
+    public static func register(to worldStorage: WorldStorageRef) {
+        guard worldStorage.chunkStorage.chunk(ofType: Self.self) == nil else {
             return
         }
         
         let queryRegistory = Self()
         
-        worldBuffer.chunkStorage.addChunk(queryRegistory)
+        worldStorage.chunkStorage.addChunk(queryRegistory)
         
     }
     
-    public static func getParameter(from worldBuffer: BufferRef) -> Self? {
-        worldBuffer.chunkStorage.chunk(ofType: Self.self)
+    public static func getParameter(from worldStorage: WorldStorageRef) -> Self? {
+        worldStorage.chunkStorage.chunk(ofType: Self.self)
     }
     
 }

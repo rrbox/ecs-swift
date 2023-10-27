@@ -12,18 +12,18 @@ final public class EventSystem4<T, P0: SystemParameter, P1: SystemParameter, P2:
         self.execute = execute
     }
     
-    override func receive(event: EventReader<T>, worldBuffer: BufferRef) {
-        self.execute(event, P0.getParameter(from: worldBuffer)!, P1.getParameter(from: worldBuffer)!, P2.getParameter(from: worldBuffer)!, P3.getParameter(from: worldBuffer)!)
+    override func receive(event: EventReader<T>, worldStorage: WorldStorageRef) {
+        self.execute(event, P0.getParameter(from: worldStorage)!, P1.getParameter(from: worldStorage)!, P2.getParameter(from: worldStorage)!, P3.getParameter(from: worldStorage)!)
     }
 }
 
 public extension World {
     @discardableResult func addEventSystem<T, P0: SystemParameter, P1: SystemParameter, P2: SystemParameter, P3: SystemParameter>(_ system: EventSystem4<T, P0, P1, P2, P3>) -> World {
-        self.worldBuffer.systemStorage.addSystem(system, as: EventSystemExecute<T>.self)
-        P0.register(to: self.worldBuffer)
-        P1.register(to: self.worldBuffer)
-        P2.register(to: self.worldBuffer)
-        P3.register(to: self.worldBuffer)
+        self.worldStorage.systemStorage.addSystem(system, as: EventSystemExecute<T>.self)
+        P0.register(to: self.worldStorage)
+        P1.register(to: self.worldStorage)
+        P2.register(to: self.worldStorage)
+        P3.register(to: self.worldStorage)
         return self
     }
     

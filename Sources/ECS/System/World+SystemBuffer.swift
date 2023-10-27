@@ -7,7 +7,7 @@
 
 public extension World {
     @discardableResult func registerSystemRegistry<System: SystemExecute>(ofType type: System.Type) -> World {
-        self.worldBuffer.systemStorage.registerSystemRegistry(ofType: System.self)
+        self.worldStorage.systemStorage.registerSystemRegistry(ofType: System.self)
         return self
     }
     
@@ -15,7 +15,7 @@ public extension World {
     ///
     /// system を追加する前に, ``World/registerSystemRegistry(ofType:)`` で system を保持するためのメモリ領域を確保する必要があります.
     @discardableResult func addSystem<System: SystemExecute>(_ system: System, as type: System.Type) -> World {
-        self.worldBuffer.systemStorage.addSystem(system, as: System.self)
+        self.worldStorage.systemStorage.addSystem(system, as: System.self)
         return self
     }
 }

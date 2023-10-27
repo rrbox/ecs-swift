@@ -13,9 +13,9 @@ final public class CommandsStorage {
             self.commands = commands
         }
     }
-    let buffer: BufferRef
+    let buffer: WorldStorageRef
     
-    init(buffer: BufferRef) {
+    init(buffer: WorldStorageRef) {
         self.buffer = buffer
     }
     
@@ -28,8 +28,8 @@ final public class CommandsStorage {
     }
 }
 
-// WorldBuffer + Commands
-public extension BufferRef {
+// WorldStorage + Commands
+public extension WorldStorageRef {
     var commandsStorage: CommandsStorage {
         CommandsStorage(buffer: self)
     }

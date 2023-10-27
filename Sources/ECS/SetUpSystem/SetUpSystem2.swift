@@ -16,18 +16,18 @@ final public class SetUpSystem2<P0: SetUpSystemParameter, P1: SetUpSystemParamet
         self.execute = execute
     }
     
-    override func setUp(worldBuffer: BufferRef) {
+    override func setUp(worldStorage: WorldStorageRef) {
         self.execute(
-            P0.getParameter(from: worldBuffer)!,
-            P1.getParameter(from: worldBuffer)!)
+            P0.getParameter(from: worldStorage)!,
+            P1.getParameter(from: worldStorage)!)
     }
 }
 
 public extension World {
     @discardableResult func addSetUpSystem<System: SetUpSystemProtocol2>(_ system: System) -> World {
         self.addSystem(system, as: SetUpExecute.self)
-        System.P0.register(to: self.worldBuffer)
-        System.P1.register(to: self.worldBuffer)
+        System.P0.register(to: self.worldStorage)
+        System.P1.register(to: self.worldStorage)
         return self
     }
     

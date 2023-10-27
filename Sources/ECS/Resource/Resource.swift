@@ -16,12 +16,12 @@ final public class Resource<T: ResourceProtocol>: WorldStorageElement, SystemPar
         self.resource = resource
     }
     
-    public static func register(to worldBuffer: BufferRef) {
+    public static func register(to worldStorage: WorldStorageRef) {
         
     }
     
-    public static func getParameter(from worldBuffer: BufferRef) -> Resource<T>? {
-        worldBuffer.resourceBuffer.resource(ofType: T.self)
+    public static func getParameter(from worldStorage: WorldStorageRef) -> Resource<T>? {
+        worldStorage.resourceBuffer.resource(ofType: T.self)
     }
     
 }

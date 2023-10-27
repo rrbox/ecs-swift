@@ -14,8 +14,8 @@ final public class SystemStorage {
         var systems = [Execute]()
     }
     
-    let buffer: BufferRef
-    init(buffer: BufferRef) {
+    let buffer: WorldStorageRef
+    init(buffer: WorldStorageRef) {
         self.buffer = buffer
     }
     
@@ -37,7 +37,7 @@ final public class SystemStorage {
     }
 }
 
-public extension BufferRef {
+public extension WorldStorageRef {
     var systemStorage: SystemStorage {
         SystemStorage(buffer: self)
     }

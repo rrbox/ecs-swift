@@ -9,8 +9,8 @@ import Foundation
 
 // world buffer にプロパティをつけておく
 class EventStorage {
-    let buffer: BufferRef
-    init(buffer: BufferRef) {
+    let buffer: WorldStorageRef
+    init(buffer: WorldStorageRef) {
         self.buffer = buffer
     }
     
@@ -33,7 +33,7 @@ class EventStorage {
     
 }
 
-extension BufferRef {
+extension WorldStorageRef {
     var eventStorage: EventStorage {
         EventStorage(buffer: self)
     }

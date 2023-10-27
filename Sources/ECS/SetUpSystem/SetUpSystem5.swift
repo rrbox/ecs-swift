@@ -16,24 +16,24 @@ final public class SetUpSystem5<P0: SetUpSystemParameter, P1: SetUpSystemParamet
         self.execute = execute
     }
     
-    override func setUp(worldBuffer: BufferRef) {
+    override func setUp(worldStorage: WorldStorageRef) {
         self.execute(
-            P0.getParameter(from: worldBuffer)!,
-            P1.getParameter(from: worldBuffer)!,
-            P2.getParameter(from: worldBuffer)!,
-            P3.getParameter(from: worldBuffer)!,
-            P4.getParameter(from: worldBuffer)!)
+            P0.getParameter(from: worldStorage)!,
+            P1.getParameter(from: worldStorage)!,
+            P2.getParameter(from: worldStorage)!,
+            P3.getParameter(from: worldStorage)!,
+            P4.getParameter(from: worldStorage)!)
     }
 }
 
 public extension World {
     @discardableResult func addSetUpSystem<System: SetUpSystemProtocol5>(_ system: System) -> World {
         self.addSystem(system, as: SetUpExecute.self)
-        System.P0.register(to: self.worldBuffer)
-        System.P1.register(to: self.worldBuffer)
-        System.P2.register(to: self.worldBuffer)
-        System.P3.register(to: self.worldBuffer)
-        System.P4.register(to: self.worldBuffer)
+        System.P0.register(to: self.worldStorage)
+        System.P1.register(to: self.worldStorage)
+        System.P2.register(to: self.worldStorage)
+        System.P3.register(to: self.worldStorage)
+        System.P4.register(to: self.worldStorage)
         return self
     }
     

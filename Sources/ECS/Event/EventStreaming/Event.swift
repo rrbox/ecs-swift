@@ -10,7 +10,7 @@ public protocol EventProtocol {
 }
 
 class AnyEvent {
-    func runEventReceiver(worldBuffer: BufferRef) {
+    func runEventReceiver(worldStorage: WorldStorageRef) {
         
     }
 }
@@ -21,9 +21,9 @@ final class Event<T: EventProtocol>: AnyEvent {
         self.value = value
     }
     
-    override func runEventReceiver(worldBuffer: BufferRef) {
-        for system in worldBuffer.systemStorage.systems(ofType: EventSystemExecute<T>.self) {
-            system.receive(event: EventReader<T>(value: self.value), worldBuffer: worldBuffer)
+    override func runEventReceiver(worldStorage: WorldStorageRef) {
+        for system in worldStorage.systemStorage.systems(ofType: EventSystemExecute<T>.self) {
+            system.receive(event: EventReader<T>(value: self.value), worldStorage: worldStorage)
         }
     }
 }

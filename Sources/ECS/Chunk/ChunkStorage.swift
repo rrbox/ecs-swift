@@ -15,8 +15,8 @@ final public class ChunkStorage {
         }
     }
     
-    let buffer: BufferRef
-    init(buffer: BufferRef) {
+    let buffer: WorldStorageRef
+    init(buffer: WorldStorageRef) {
         self.buffer = buffer
     }
     
@@ -25,7 +25,7 @@ final public class ChunkStorage {
     }
 }
 
-public extension BufferRef {
+public extension WorldStorageRef {
     var chunkStorage: ChunkStorage {
         ChunkStorage(buffer: self)
     }

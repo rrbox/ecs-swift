@@ -10,37 +10,37 @@ public extension World {
     ///
     /// `Event<T>` をイベントシステムで扱う前に, World に EventStreamer を追加する必要があります.
     @discardableResult func addEventStreamer<T: EventProtocol>(eventType: T.Type) -> World {
-        self.worldBuffer.systemStorage.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
-        self.worldBuffer.eventStorage.registerEventWriter(eventType: T.self)
+        self.worldStorage.systemStorage.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
+        self.worldStorage.eventStorage.registerEventWriter(eventType: T.self)
         return self
     }
 }
 
 extension World {
     func addCommandsEventStreamer<T: CommandsEventProtocol>(eventType: T.Type) {
-        self.worldBuffer.systemStorage.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
-        self.worldBuffer.eventStorage.registerCommandsEventWriter(eventType: T.self)
+        self.worldStorage.systemStorage.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
+        self.worldStorage.eventStorage.registerCommandsEventWriter(eventType: T.self)
     }
 }
 
 extension World {
     func applyEventQueue() {
-        let eventQueue = self.worldBuffer.eventStorage.eventQueue()!
+        let eventQueue = self.worldStorage.eventStorage.eventQueue()!
         eventQueue.sendingEvents = eventQueue.eventQueue
         eventQueue.eventQueue = []
         for event in eventQueue.sendingEvents {
-            event.runEventReceiver(worldBuffer: self.worldBuffer)
+            event.runEventReceiver(worldStorage: self.worldStorage)
         }
         eventQueue.sendingEvents = []
     }
     
     func applyCommandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) {
-        let eventQueue = self.worldBuffer.eventStorage.commandsEventQueue(eventOfType: T.self)!
+        let eventQueue = self.worldStorage.eventStorage.commandsEventQueue(eventOfType: T.self)!
         eventQueue.sendingEvents = eventQueue.eventQueue
         eventQueue.eventQueue = []
         for event in eventQueue.sendingEvents {
-            for system in self.worldBuffer.systemStorage.systems(ofType: EventSystemExecute<T>.self) {
-                system.receive(event: EventReader(value: event), worldBuffer: self.worldBuffer)
+            for system in self.worldStorage.systemStorage.systems(ofType: EventSystemExecute<T>.self) {
+                system.receive(event: EventReader(value: event), worldStorage: self.worldStorage)
             }
         }
         eventQueue.sendingEvents = []
@@ -49,6 +49,6 @@ extension World {
 
 public extension World {
     func sendEvent<T: EventProtocol>(_ value: T) {
-        self.worldBuffer.eventStorage.eventWriter(eventOfType: T.self)?.send(value: value)
+        self.worldStorage.eventStorage.eventWriter(eventOfType: T.self)?.send(value: value)
     }
 }

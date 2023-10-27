@@ -17,11 +17,11 @@ final public class EventWriter<T: EventProtocol>: SystemParameter, SetUpSystemPa
         self.eventQueue.eventQueue.append(Event<T>(value: value))
     }
     
-    public static func register(to worldBuffer: BufferRef) {
+    public static func register(to worldStorage: WorldStorageRef) {
         
     }
     
-    public static func getParameter(from worldBuffer: BufferRef) -> EventWriter<T>? {
-        worldBuffer.eventStorage.eventWriter(eventOfType: T.self)
+    public static func getParameter(from worldStorage: WorldStorageRef) -> EventWriter<T>? {
+        worldStorage.eventStorage.eventWriter(eventOfType: T.self)
     }
 }

@@ -50,19 +50,19 @@ final public class Query4<C0: Component, C1: Component, C2: Component, C3: Compo
         return (references.0.value, references.1.value, references.2.value, references.3.value)
     }
     
-    public static func register(to worldBuffer: BufferRef) {
-        guard worldBuffer.chunkStorage.chunk(ofType: Self.self) == nil else {
+    public static func register(to worldStorage: WorldStorageRef) {
+        guard worldStorage.chunkStorage.chunk(ofType: Self.self) == nil else {
             return
         }
         
         let queryRegistory = Self()
         
-        worldBuffer.chunkStorage.addChunk(queryRegistory)
+        worldStorage.chunkStorage.addChunk(queryRegistory)
         
     }
     
-    public static func getParameter(from worldBuffer: BufferRef) -> Self? {
-        worldBuffer.chunkStorage.chunk(ofType: Self.self)
+    public static func getParameter(from worldStorage: WorldStorageRef) -> Self? {
+        worldStorage.chunkStorage.chunk(ofType: Self.self)
     }
     
 }

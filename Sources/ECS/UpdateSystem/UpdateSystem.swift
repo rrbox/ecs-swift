@@ -16,15 +16,15 @@ final public class UpdateSystem<Parameter: SystemParameter>: UpdateExecute, Upda
         self.execute = execute
     }
     
-    override func update(worldBuffer: BufferRef) {
-        self.execute(Parameter.getParameter(from: worldBuffer)!)
+    override func update(worldStorage: WorldStorageRef) {
+        self.execute(Parameter.getParameter(from: worldStorage)!)
     }
 }
 
 public extension World {
     @discardableResult func addUpdateSystem<System: UpdateSystemProtocol>(_ system: System) -> World {
-        self.worldBuffer.systemStorage.addSystem(system, as: UpdateExecute.self)
-        System.Parameter.register(to: self.worldBuffer)
+        self.worldStorage.systemStorage.addSystem(system, as: UpdateExecute.self)
+        System.Parameter.register(to: self.worldStorage)
         return self
     }
     

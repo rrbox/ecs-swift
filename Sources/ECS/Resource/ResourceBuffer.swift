@@ -6,8 +6,8 @@
 //
 
 final public class ResourceBuffer {
-    let buffer: BufferRef
-    init(buffer: BufferRef) {
+    let buffer: WorldStorageRef
+    init(buffer: WorldStorageRef) {
         self.buffer = buffer
     }
     
@@ -20,7 +20,7 @@ final public class ResourceBuffer {
     }
 }
 
-public extension BufferRef {
+public extension WorldStorageRef {
     var resourceBuffer: ResourceBuffer {
         ResourceBuffer(buffer: self)
     }

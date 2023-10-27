@@ -16,18 +16,18 @@ final public class UpdateSystem4<P0: SystemParameter, P1: SystemParameter, P2: S
         self.execute = execute
     }
     
-    override func update(worldBuffer: BufferRef) {
-        self.execute(P0.getParameter(from: worldBuffer)!, P1.getParameter(from: worldBuffer)!, P2.getParameter(from: worldBuffer)!, P3.getParameter(from: worldBuffer)!)
+    override func update(worldStorage: WorldStorageRef) {
+        self.execute(P0.getParameter(from: worldStorage)!, P1.getParameter(from: worldStorage)!, P2.getParameter(from: worldStorage)!, P3.getParameter(from: worldStorage)!)
     }
 }
 
 public extension World {
     @discardableResult func addUpdateSystem<System: UpdateSystemProtocol4>(_ system: System) -> World {
-        self.worldBuffer.systemStorage.addSystem(system, as: UpdateExecute.self)
-        System.P0.register(to: self.worldBuffer)
-        System.P1.register(to: self.worldBuffer)
-        System.P2.register(to: self.worldBuffer)
-        System.P3.register(to: self.worldBuffer)
+        self.worldStorage.systemStorage.addSystem(system, as: UpdateExecute.self)
+        System.P0.register(to: self.worldStorage)
+        System.P1.register(to: self.worldStorage)
+        System.P2.register(to: self.worldStorage)
+        System.P3.register(to: self.worldStorage)
         return self
     }
     

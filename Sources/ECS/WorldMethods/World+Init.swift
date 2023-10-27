@@ -7,34 +7,34 @@
 
 public extension World {
     convenience init() {
-        self.init(entities: [:], worldBuffer: BufferRef())
+        self.init(entities: [:], worldStorage: WorldStorageRef())
         
         // chunk buffer に chunk entity interface を追加します.
-        self.worldBuffer.chunkStorage.setUpChunkBuffer()
+        self.worldStorage.chunkStorage.setUpChunkBuffer()
         
         // resource buffer に 時間関係の resource を追加します.
-        self.worldBuffer.resourceBuffer.addResource(CurrentTime(value: 0))
-        self.worldBuffer.resourceBuffer.addResource(DeltaTime(value: 0))
+        self.worldStorage.resourceBuffer.addResource(CurrentTime(value: 0))
+        self.worldStorage.resourceBuffer.addResource(DeltaTime(value: 0))
         
         // resrouce buffer に world の情報関係の resource を追加します.
-        self.worldBuffer.resourceBuffer.addResource(EntityCount(count: 0))
+        self.worldStorage.resourceBuffer.addResource(EntityCount(count: 0))
         
         // world buffer に setup system を保持する領域を確保します.
-        self.worldBuffer.systemStorage.registerSystemRegistry(ofType: SetUpExecute.self)
+        self.worldStorage.systemStorage.registerSystemRegistry(ofType: SetUpExecute.self)
         
         // world buffer に update system を保持する領域を確保します.
-        self.worldBuffer.systemStorage.registerSystemRegistry(ofType: UpdateExecute.self)
+        self.worldStorage.systemStorage.registerSystemRegistry(ofType: UpdateExecute.self)
         
         // world buffer に event queue を作成します.
-        self.worldBuffer.eventStorage.setUpEventQueue()
-        self.worldBuffer.eventStorage.setUpCommandsEventQueue(eventOfType: DidSpawnEvent.self)
-        self.worldBuffer.eventStorage.setUpCommandsEventQueue(eventOfType: WillDespawnEvent.self)
+        self.worldStorage.eventStorage.setUpEventQueue()
+        self.worldStorage.eventStorage.setUpCommandsEventQueue(eventOfType: DidSpawnEvent.self)
+        self.worldStorage.eventStorage.setUpCommandsEventQueue(eventOfType: WillDespawnEvent.self)
         
         // world buffer に spawn/despawn event の streamer を登録します.
         self.addCommandsEventStreamer(eventType: DidSpawnEvent.self)
         self.addCommandsEventStreamer(eventType: WillDespawnEvent.self)
         
         // world buffer に commands の初期値を設定します.
-        self.worldBuffer.commandsStorage.setCommands(Commands())
+        self.worldStorage.commandsStorage.setCommands(Commands())
     }
 }

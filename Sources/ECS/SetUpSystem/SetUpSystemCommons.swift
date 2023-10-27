@@ -10,5 +10,5 @@ public protocol SetUpSystemParameter: SystemParameter {
 }
 
 public class SetUpExecute: SystemExecute {
-    func setUp(worldBuffer: BufferRef) {}
+    func setUp(worldStorage: WorldStorageRef) {}
 }
