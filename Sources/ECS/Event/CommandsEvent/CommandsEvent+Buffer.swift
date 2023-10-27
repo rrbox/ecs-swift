@@ -5,7 +5,7 @@
 //  Created by rrbox on 2023/08/29.
 //
 
-extension EventBuffer {
+extension EventStorage {
     func setUpCommandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) {
         self.buffer.map.push(CommandsEventQueue<T>())
     }
