@@ -11,7 +11,7 @@ public extension World {
     /// `Event<T>` をイベントシステムで扱う前に, World に EventStreamer を追加する必要があります.
     @discardableResult func addEventStreamer<T: EventProtocol>(eventType: T.Type) -> World {
         self.worldBuffer.systemBuffer.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
-        self.worldBuffer.eventBuffer.registerEventWriter(eventType: T.self)
+        self.worldBuffer.eventStorage.registerEventWriter(eventType: T.self)
         return self
     }
 }
@@ -19,13 +19,13 @@ public extension World {
 extension World {
     func addCommandsEventStreamer<T: CommandsEventProtocol>(eventType: T.Type) {
         self.worldBuffer.systemBuffer.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
-        self.worldBuffer.eventBuffer.registerCommandsEventWriter(eventType: T.self)
+        self.worldBuffer.eventStorage.registerCommandsEventWriter(eventType: T.self)
     }
 }
 
 extension World {
     func applyEventQueue() {
-        let eventQueue = self.worldBuffer.eventBuffer.eventQueue()!
+        let eventQueue = self.worldBuffer.eventStorage.eventQueue()!
         eventQueue.sendingEvents = eventQueue.eventQueue
         eventQueue.eventQueue = []
         for event in eventQueue.sendingEvents {
@@ -35,7 +35,7 @@ extension World {
     }
     
     func applyCommandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) {
-        let eventQueue = self.worldBuffer.eventBuffer.commandsEventQueue(eventOfType: T.self)!
+        let eventQueue = self.worldBuffer.eventStorage.commandsEventQueue(eventOfType: T.self)!
         eventQueue.sendingEvents = eventQueue.eventQueue
         eventQueue.eventQueue = []
         for event in eventQueue.sendingEvents {
@@ -49,6 +49,6 @@ extension World {
 
 public extension World {
     func sendEvent<T: EventProtocol>(_ value: T) {
-        self.worldBuffer.eventBuffer.eventWriter(eventOfType: T.self)?.send(value: value)
+        self.worldBuffer.eventStorage.eventWriter(eventOfType: T.self)?.send(value: value)
     }
 }

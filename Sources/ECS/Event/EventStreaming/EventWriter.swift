@@ -22,6 +22,6 @@ final public class EventWriter<T: EventProtocol>: SystemParameter, SetUpSystemPa
     }
     
     public static func getParameter(from worldBuffer: BufferRef) -> EventWriter<T>? {
-        worldBuffer.eventBuffer.eventWriter(eventOfType: T.self)
+        worldBuffer.eventStorage.eventWriter(eventOfType: T.self)
     }
 }

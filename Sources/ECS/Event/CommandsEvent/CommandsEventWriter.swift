@@ -21,7 +21,7 @@ final class CommandsEventWriter<T: CommandsEventProtocol>: SystemParameter, SetU
     }
     
     public static func getParameter(from worldBuffer: BufferRef) -> CommandsEventWriter<T>? {
-        worldBuffer.eventBuffer.commandsEventWriter(eventOfType: T.self)
+        worldBuffer.eventStorage.commandsEventWriter(eventOfType: T.self)
     }
 }
 

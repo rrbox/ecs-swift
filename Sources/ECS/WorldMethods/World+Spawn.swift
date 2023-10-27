@@ -25,7 +25,7 @@ extension World {
             .push(entity: entity, entityRecord: entityRecord)
         
         self.worldBuffer
-            .eventBuffer
+            .eventStorage
             .commandsEventWriter(eventOfType: DidSpawnEvent.self)!
             .send(value: DidSpawnEvent(spawnedEntity: entity))
     }
@@ -40,7 +40,7 @@ extension World {
             .despawn(entity: entity)
         
         self.worldBuffer
-            .eventBuffer
+            .eventStorage
             .commandsEventWriter(eventOfType: WillDespawnEvent.self)!
             .send(value: WillDespawnEvent(despawnedEntity: entity))
     }

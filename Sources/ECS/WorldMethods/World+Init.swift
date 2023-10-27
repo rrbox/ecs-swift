@@ -26,9 +26,9 @@ public extension World {
         self.worldBuffer.systemBuffer.registerSystemRegistry(ofType: UpdateExecute.self)
         
         // world buffer に event queue を作成します.
-        self.worldBuffer.eventBuffer.setUpEventQueue()
-        self.worldBuffer.eventBuffer.setUpCommandsEventQueue(eventOfType: DidSpawnEvent.self)
-        self.worldBuffer.eventBuffer.setUpCommandsEventQueue(eventOfType: WillDespawnEvent.self)
+        self.worldBuffer.eventStorage.setUpEventQueue()
+        self.worldBuffer.eventStorage.setUpCommandsEventQueue(eventOfType: DidSpawnEvent.self)
+        self.worldBuffer.eventStorage.setUpCommandsEventQueue(eventOfType: WillDespawnEvent.self)
         
         // world buffer に spawn/despawn event の streamer を登録します.
         self.addCommandsEventStreamer(eventType: DidSpawnEvent.self)
