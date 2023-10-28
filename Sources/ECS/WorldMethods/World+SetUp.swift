@@ -7,8 +7,8 @@
 
 public extension World {
     func setUpWorld() {
-        for system in self.worldStorage.systemStorage.systems(ofType: SetUpExecute.self) {
-            system.setUp(worldStorage: self.worldStorage)
+        for system in self.worldStorage.systemStorage.systems(.startUp) {
+            system.execute(self.worldStorage)
         }
         self.applyCommands()
         self.worldStorage.chunkStorage.applyEntityQueue()

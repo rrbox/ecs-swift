@@ -7,6 +7,14 @@
 
 import Foundation
 
+public struct CurrentTime: ResourceProtocol {
+    public let value: TimeInterval
+}
+
+public struct DeltaTime: ResourceProtocol {
+    public let value: TimeInterval
+}
+
 public extension World {
     func update(currentTime: TimeInterval) {
         let currentTimeResource = self.worldStorage.resourceBuffer.resource(ofType: CurrentTime.self)!
@@ -15,8 +23,8 @@ public extension World {
         
         currentTimeResource.resource = CurrentTime(value: currentTime)
         
-        for system in self.worldStorage.systemStorage.systems(ofType: UpdateExecute.self) {
-            system.update(worldStorage: self.worldStorage)
+        for system in self.worldStorage.systemStorage.systems(.update) {
+            system.execute(self.worldStorage)
         }
         
         // world が受信した event を event system に発信します.

@@ -13,6 +13,11 @@ public struct WillDespawnEvent: CommandsEventProtocol {
     public let despawnedEntity: Entity
 }
 
+public extension Schedule {
+    static let didSpawn: Schedule = .onCommandsEvent(ofType: DidSpawnEvent.self)
+    static let willDespawn: Schedule = .onCommandsEvent(ofType: WillDespawnEvent.self)
+}
+
 extension World {
     /// Entity を登録します.
     ///

@@ -19,11 +19,14 @@ public extension World {
         // resrouce buffer に world の情報関係の resource を追加します.
         self.worldStorage.resourceBuffer.addResource(EntityCount(count: 0))
         
+        // world storage に system を保持する領域を確保します.
+        self.worldStorage.systemStorage.registerSystemRegistry()
+        
         // world buffer に setup system を保持する領域を確保します.
-        self.worldStorage.systemStorage.registerSystemRegistry(ofType: SetUpExecute.self)
+        self.worldStorage.systemStorage.insertSchedule(.startUp)
         
         // world buffer に update system を保持する領域を確保します.
-        self.worldStorage.systemStorage.registerSystemRegistry(ofType: UpdateExecute.self)
+        self.worldStorage.systemStorage.insertSchedule(.update)
         
         // world buffer に event queue を作成します.
         self.worldStorage.eventStorage.setUpEventQueue()
