@@ -6,7 +6,13 @@
 //
 
 public struct Schedule: Hashable {
+    let typeId: ObjectIdentifier
     let id: AnyHashable
+    
+    init<T: Hashable>(id: T) {
+        self.typeId = ObjectIdentifier(T.self)
+        self.id = id
+    }
 }
 
 enum DefaultSchedule {
