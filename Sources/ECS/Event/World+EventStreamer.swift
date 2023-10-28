@@ -10,7 +10,7 @@ public extension World {
     ///
     /// `Event<T>` をイベントシステムで扱う前に, World に EventStreamer を追加する必要があります.
     @discardableResult func addEventStreamer<T: EventProtocol>(eventType: T.Type) -> World {
-        self.worldStorage.systemStorage.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
+        self.worldStorage.systemStorage.insertSchedule(.onEvent(ofType: T.self))
         self.worldStorage.eventStorage.registerEventWriter(eventType: T.self)
         return self
     }
@@ -18,7 +18,7 @@ public extension World {
 
 extension World {
     func addCommandsEventStreamer<T: CommandsEventProtocol>(eventType: T.Type) {
-        self.worldStorage.systemStorage.registerSystemRegistry(ofType: EventSystemExecute<T>.self)
+        self.worldStorage.systemStorage.insertSchedule(.onCommandsEvent(ofType: T.self))
         self.worldStorage.eventStorage.registerCommandsEventWriter(eventType: T.self)
     }
 }
@@ -39,9 +39,11 @@ extension World {
         eventQueue.sendingEvents = eventQueue.eventQueue
         eventQueue.eventQueue = []
         for event in eventQueue.sendingEvents {
-            for system in self.worldStorage.systemStorage.systems(ofType: EventSystemExecute<T>.self) {
-                system.receive(event: EventReader(value: event), worldStorage: self.worldStorage)
+            self.worldStorage.map.push(EventReader(value: event))
+            for system in self.worldStorage.systemStorage.systems(.onCommandsEvent(ofType: T.self)) {
+                system.execute(self.worldStorage)
             }
+            self.worldStorage.map.pop(EventReader<T>.self)
         }
         eventQueue.sendingEvents = []
     }

@@ -15,6 +15,16 @@ class AnyEvent {
     }
 }
 
+struct OnEvent<T: EventProtocol>: Hashable {
+    
+}
+
+public extension Schedule {
+    static func onEvent<T: EventProtocol>(ofType: T.Type) -> Schedule {
+        Schedule(id: OnEvent<T>())
+    }
+}
+
 final class Event<T: EventProtocol>: AnyEvent {
     let value: T
     init(value: T) {
@@ -22,8 +32,10 @@ final class Event<T: EventProtocol>: AnyEvent {
     }
     
     override func runEventReceiver(worldStorage: WorldStorageRef) {
-        for system in worldStorage.systemStorage.systems(ofType: EventSystemExecute<T>.self) {
-            system.receive(event: EventReader<T>(value: self.value), worldStorage: worldStorage)
+        worldStorage.map.push(EventReader(value: self.value))
+        for system in worldStorage.systemStorage.systems(.onEvent(ofType: T.self)) {
+            system.execute(worldStorage)
         }
+        worldStorage.map.pop(EventReader<T>.self)
     }
 }

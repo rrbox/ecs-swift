@@ -5,7 +5,7 @@
 //  Created by rrbox on 2023/08/29.
 //
 
-final class CommandsEventWriter<T: CommandsEventProtocol>: SystemParameter, SetUpSystemParameter, WorldStorageElement {
+final class CommandsEventWriter<T: CommandsEventProtocol>: SystemParameter, WorldStorageElement {
     unowned let eventQueue: CommandsEventQueue<T>
     
     init(eventQueue: CommandsEventQueue<T>) {
