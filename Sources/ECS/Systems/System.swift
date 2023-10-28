@@ -5,4 +5,22 @@
 //  Created by rrbox on 2023/10/24.
 //
 
-import Foundation
+class System<P: SystemParameter>: SystemExecute {
+    let execute: (P) -> ()
+    
+   init(_ execute: @escaping (P) -> ()) {
+        self.execute = execute
+    }
+    
+    override func execute(_ worldStorageRef: WorldStorageRef) {
+        self.execute(P.getParameter(from: worldStorageRef)!)
+    }
+}
+
+public extension World {
+    @discardableResult func addSystem<P: SystemParameter>(_ schedule: Schedule, _ system: @escaping (P) -> ()) -> World {
+        self.worldStorage.systemStorage.addSystem(schedule, System<P>(system))
+        P.register(to: self.worldStorage)
+        return self
+    }
+}
