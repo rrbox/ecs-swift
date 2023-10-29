@@ -47,3 +47,10 @@ public extension WorldStorageRef {
         SystemStorage(buffer: self)
     }
 }
+
+public extension World {
+    @discardableResult func insertSchedule(_ schedule: Schedule) -> World {
+        self.worldStorage.systemStorage.insertSchedule(schedule)
+        return self
+    }
+}
