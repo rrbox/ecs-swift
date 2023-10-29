@@ -28,6 +28,9 @@ public extension World {
         // world buffer に update system を保持する領域を確保します.
         self.worldStorage.systemStorage.insertSchedule(.update)
         
+        // state storage に schedule 管理をするための準備をします.
+        self.worldStorage.stateStorage.setUp()
+        
         // world buffer に event queue を作成します.
         self.worldStorage.eventStorage.setUpEventQueue()
         self.worldStorage.eventStorage.setUpCommandsEventQueue(eventOfType: DidSpawnEvent.self)
