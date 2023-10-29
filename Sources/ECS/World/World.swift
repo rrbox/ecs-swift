@@ -19,5 +19,3 @@ final public class World {
     }
     
 }
-
-
