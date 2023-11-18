@@ -17,16 +17,16 @@ final public class Filtered<Q: QueryProtocol, F: Filter>: Chunk, SystemParameter
         self.query.despawn(entity: entity)
     }
     
-    public static func getParameter(from worldBuffer: BufferRef) -> Filtered<Q, F>? {
-        worldBuffer.chunkBuffer.chunk(ofType: Filtered<Q, F>.self)
+    public static func getParameter(from worldStorage: WorldStorageRef) -> Filtered<Q, F>? {
+        worldStorage.chunkStorage.chunk(ofType: Filtered<Q, F>.self)
     }
     
-    public static func register(to worldBuffer: BufferRef) {
-        guard worldBuffer.chunkBuffer.chunk(ofType: Self.self) == nil else {
+    public static func register(to worldStorage: WorldStorageRef) {
+        guard worldStorage.chunkStorage.chunk(ofType: Self.self) == nil else {
             return
         }
         
-        worldBuffer.chunkBuffer.addChunk(Filtered<Q, F>())
+        worldStorage.chunkStorage.addChunk(Filtered<Q, F>())
     }
     
 }

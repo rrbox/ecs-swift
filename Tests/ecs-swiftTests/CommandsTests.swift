@@ -14,7 +14,7 @@ class TestCommand_Spawn: Command {
         self.entity = entity
     }
     override func runCommand(in world: World) {
-        world.push(entity: self.entity, entityRecord: EntityRecord())
+        world.push(entity: self.entity, entityRecord: EntityRecordRef())
     }
 }
 
@@ -31,8 +31,8 @@ class TestCommand_Despawn: Command {
 final class CommandsTests: XCTestCase {
     func testCommands() {
         let world = World()
-        world.worldBuffer.commandsBuffer.setCommands(Commands())
-        let commands = world.worldBuffer.commandsBuffer.commands()!
+        world.worldStorage.commandsStorage.setCommands(Commands())
+        let commands = world.worldStorage.commandsStorage.commands()!
         
         let testEntities = [Entity(), Entity(), Entity()]
         

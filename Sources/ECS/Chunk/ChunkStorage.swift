@@ -1,13 +1,13 @@
 //
-//  ChunkBuffer.swift
-//  
+//  ChunkStorage.swift
+//
 //
 //  Created by rrbox on 2023/08/11.
 //
 
 /// Chunk を種類別で格納します
-final public class ChunkBuffer {
-    class ChunkRegistry<ChunkType: Chunk>: BufferElement {
+final public class ChunkStorage {
+    class ChunkRegistry<ChunkType: Chunk>: WorldStorageElement {
         let chunk: ChunkType
         
         init(chunk: ChunkType) {
@@ -15,8 +15,8 @@ final public class ChunkBuffer {
         }
     }
     
-    let buffer: BufferRef
-    init(buffer: BufferRef) {
+    let buffer: WorldStorageRef
+    init(buffer: WorldStorageRef) {
         self.buffer = buffer
     }
     
@@ -25,8 +25,8 @@ final public class ChunkBuffer {
     }
 }
 
-public extension BufferRef {
-    var chunkBuffer: ChunkBuffer {
-        ChunkBuffer(buffer: self)
+public extension WorldStorageRef {
+    var chunkStorage: ChunkStorage {
+        ChunkStorage(buffer: self)
     }
 }

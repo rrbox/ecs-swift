@@ -1,5 +1,5 @@
 //
-//  EventBuffer.swift
+//  EventStorage.swift
 //  
 //
 //  Created by rrbox on 2023/08/14.
@@ -8,9 +8,9 @@
 import Foundation
 
 // world buffer にプロパティをつけておく
-class EventBuffer {
-    let buffer: BufferRef
-    init(buffer: BufferRef) {
+class EventStorage {
+    let buffer: WorldStorageRef
+    init(buffer: WorldStorageRef) {
         self.buffer = buffer
     }
     
@@ -33,9 +33,9 @@ class EventBuffer {
     
 }
 
-extension BufferRef {
-    var eventBuffer: EventBuffer {
-        EventBuffer(buffer: self)
+extension WorldStorageRef {
+    var eventStorage: EventStorage {
+        EventStorage(buffer: self)
     }
 }
 

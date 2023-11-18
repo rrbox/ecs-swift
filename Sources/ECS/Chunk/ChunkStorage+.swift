@@ -1,11 +1,11 @@
 //
-//  AddChunk.swift
+//  ChunkStorage+.swift
 //  
 //
 //  Created by rrbox on 2023/08/11.
 //
 
-extension ChunkBuffer {
+extension ChunkStorage {
     func setUpChunkBuffer() {
         self.buffer.map.push(ChunkEntityInterface())
     }

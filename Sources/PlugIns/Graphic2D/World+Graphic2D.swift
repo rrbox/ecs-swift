@@ -12,7 +12,7 @@ extension World {
     func setGraphic<Node: SKNode>(_ node: Node, forEntity entity: Entity) {
         node.userData = [:]
         node.userData!["ECS/Entity"] = entity
-        let scene = self.worldBuffer.resourceBuffer.resource(ofType: SceneResource.self)?.resource.scene
+        let scene = self.worldStorage.resourceBuffer.resource(ofType: SceneResource.self)?.resource.scene
         scene?.addChild(node)
         let entityRecord = self.entityRecord(forEntity: entity)!
         entityRecord.addComponent(GraphicStrongRef(node: node))

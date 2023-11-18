@@ -1,21 +1,21 @@
 //
-//  CommandsBuffer.swift
+//  CommandsStorage.swift
 //  
 //
 //  Created by rrbox on 2023/08/10.
 //
 
-final public class CommandsBuffer {
-    class CommandsRegistry: BufferElement {
+final public class CommandsStorage {
+    class CommandsRegistry: WorldStorageElement {
         let commands: Commands
         
         init(commands: Commands) {
             self.commands = commands
         }
     }
-    let buffer: BufferRef
+    let buffer: WorldStorageRef
     
-    init(buffer: BufferRef) {
+    init(buffer: WorldStorageRef) {
         self.buffer = buffer
     }
     
@@ -28,9 +28,9 @@ final public class CommandsBuffer {
     }
 }
 
-// WorldBuffer + Commands
-public extension BufferRef {
-    var commandsBuffer: CommandsBuffer {
-        CommandsBuffer(buffer: self)
+// WorldStorage + Commands
+public extension WorldStorageRef {
+    var commandsStorage: CommandsStorage {
+        CommandsStorage(buffer: self)
     }
 }

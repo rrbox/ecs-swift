@@ -11,11 +11,11 @@ public struct Entities {
 
 final public class World {
     var entities: Entities
-    public let worldBuffer: BufferRef
+    public let worldStorage: WorldStorageRef
     
-    init(entities: [Entity: EntityRecordRef], worldBuffer: BufferRef) {
+    init(entities: [Entity: EntityRecordRef], worldStorage: WorldStorageRef) {
         self.entities = Entities(sequence: entities)
-        self.worldBuffer = worldBuffer
+        self.worldStorage = worldStorage
     }
     
 }

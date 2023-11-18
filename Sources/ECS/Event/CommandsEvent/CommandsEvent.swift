@@ -9,3 +9,13 @@
 protocol CommandsEventProtocol {
     
 }
+
+struct OnCommandsEvent<T: CommandsEventProtocol>: Hashable {
+    
+}
+
+extension Schedule {
+    static func onCommandsEvent<T: CommandsEventProtocol>(ofType type: T.Type) -> Schedule {
+        Schedule(id: OnCommandsEvent<T>())
+    }
+}

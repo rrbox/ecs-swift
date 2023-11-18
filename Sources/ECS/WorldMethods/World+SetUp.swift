@@ -7,10 +7,10 @@
 
 public extension World {
     func setUpWorld() {
-        for system in self.worldBuffer.systemBuffer.systems(ofType: SetUpExecute.self) {
-            system.setUp(worldBuffer: self.worldBuffer)
+        for system in self.worldStorage.systemStorage.systems(.startUp) {
+            system.execute(self.worldStorage)
         }
         self.applyCommands()
-        self.worldBuffer.chunkBuffer.applyEntityQueue()
+        self.worldStorage.chunkStorage.applyEntityQueue()
     }
 }

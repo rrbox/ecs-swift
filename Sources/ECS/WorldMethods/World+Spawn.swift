@@ -13,6 +13,11 @@ public struct WillDespawnEvent: CommandsEventProtocol {
     public let despawnedEntity: Entity
 }
 
+public extension Schedule {
+    static let didSpawn: Schedule = .onCommandsEvent(ofType: DidSpawnEvent.self)
+    static let willDespawn: Schedule = .onCommandsEvent(ofType: WillDespawnEvent.self)
+}
+
 extension World {
     /// Entity を登録します.
     ///
@@ -20,12 +25,12 @@ extension World {
     /// entity へのコンポーネントの登録などは, push の後に行われます.
     func push(entity: Entity, entityRecord: EntityRecordRef) {
         self.insert(entity: entity, entityRecord: entityRecord)
-        self.worldBuffer
-            .chunkBuffer
+        self.worldStorage
+            .chunkStorage
             .push(entity: entity, entityRecord: entityRecord)
         
-        self.worldBuffer
-            .eventBuffer
+        self.worldStorage
+            .eventStorage
             .commandsEventWriter(eventOfType: DidSpawnEvent.self)!
             .send(value: DidSpawnEvent(spawnedEntity: entity))
     }
@@ -35,12 +40,12 @@ extension World {
     /// ``Commands/despawn()`` が実行された後, フレームが終了するタイミングでこの関数が実行されます.
     func despawn(entity: Entity) {
         self.remove(entity: entity)
-        self.worldBuffer
-            .chunkBuffer
+        self.worldStorage
+            .chunkStorage
             .despawn(entity: entity)
         
-        self.worldBuffer
-            .eventBuffer
+        self.worldStorage
+            .eventStorage
             .commandsEventWriter(eventOfType: WillDespawnEvent.self)!
             .send(value: WillDespawnEvent(despawnedEntity: entity))
     }

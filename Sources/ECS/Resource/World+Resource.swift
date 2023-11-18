@@ -10,7 +10,7 @@ public extension World {
     ///
     /// ``Commands/addResource(_:)`` とは異なり, resource はこのメソッドが実行されてすぐに追加されます.
     @discardableResult func addResource<T: ResourceProtocol>(_ resource: T) -> World {
-        self.worldBuffer.resourceBuffer.addResource(resource)
+        self.worldStorage.resourceBuffer.addResource(resource)
         return self
     }
 }
