@@ -53,7 +53,7 @@ func printPositionSystem(query: Query<Position>) {
 let world = World()
     .addSystem(.startUp, moveableEntitySpawnSystem(commands:))
     .addSystem(.update, movementSystem(query:deltaTime:))
-    .addSystem(.update, presentPositionSystem(query:))
+    .addSystem(.update, printPositionSystem(query:))
 ```
 
 ### Run World (SpriteKit)
