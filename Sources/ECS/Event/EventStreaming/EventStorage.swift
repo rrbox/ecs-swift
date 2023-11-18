@@ -31,6 +31,14 @@ class EventStorage {
         self.buffer.map.push(EventWriter<T>(eventQueue: eventQueue))
     }
     
+    func eventResponder<T: EventProtocol>(eventOfType type: T.Type) -> EventResponder<T>? {
+        self.buffer.map.valueRef(ofType: EventResponder<T>.self)?.body
+    }
+    
+    func registerEventResponder<T: EventProtocol>(eventType: T.Type) {
+        self.buffer.map.push(EventResponder<T>())
+    }
+    
 }
 
 extension WorldStorageRef {

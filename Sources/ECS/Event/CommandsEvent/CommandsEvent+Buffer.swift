@@ -22,4 +22,12 @@ extension EventStorage {
         let eventQueue = self.buffer.map.valueRef(ofType: CommandsEventQueue<T>.self)!.body
         self.buffer.map.push(CommandsEventWriter<T>(eventQueue: eventQueue))
     }
+    
+    func commandsEventResponder<T: CommandsEventProtocol>(eventOfType type: T.Type) -> EventResponder<T>? {
+        self.buffer.map.valueRef(ofType: EventResponder<T>.self)?.body
+    }
+    
+    func resisterCommandsEventResponder<T: CommandsEventProtocol>(eventType: T.Type) {
+        self.buffer.map.push(EventResponder<T>())
+    }
 }
