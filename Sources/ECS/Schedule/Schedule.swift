@@ -23,4 +23,7 @@ enum DefaultSchedule {
 public extension Schedule {
     static let startUp: Schedule = Schedule(id: DefaultSchedule.startUp)
     static let update: Schedule = Schedule(id: DefaultSchedule.update)
+    static func customSchedule<T: Hashable>(_ value: T) -> Schedule {
+        Schedule(id: value)
+    }
 }
