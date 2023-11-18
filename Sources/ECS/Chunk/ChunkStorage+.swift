@@ -11,7 +11,7 @@ extension ChunkStorage {
     }
     
     func addChunk<ChunkType: Chunk>(_ chunk: ChunkType) {
-        self.buffer.map.push(ChunkRegistry(chunk: chunk))
+        self.buffer.map.push(chunk)
         self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.add(chunk: chunk)
     }
     

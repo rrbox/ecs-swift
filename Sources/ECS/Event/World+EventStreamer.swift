@@ -10,8 +10,10 @@ public extension World {
     ///
     /// `Event<T>` をイベントシステムで扱う前に, World に EventStreamer を追加する必要があります.
     @discardableResult func addEventStreamer<T: EventProtocol>(eventType: T.Type) -> World {
-        self.worldStorage.systemStorage.insertSchedule(.onEvent(ofType: T.self))
-        self.worldStorage.eventStorage.registerEventWriter(eventType: T.self)
+        let eventStorage = self.worldStorage.eventStorage
+        eventStorage.registerEventWriter(eventType: T.self)
+        eventStorage.registerEventResponder(eventType: T.self)
+        
         return self
     }
 }
@@ -19,7 +21,10 @@ public extension World {
 extension World {
     func addCommandsEventStreamer<T: CommandsEventProtocol>(eventType: T.Type) {
         self.worldStorage.systemStorage.insertSchedule(.onCommandsEvent(ofType: T.self))
-        self.worldStorage.eventStorage.registerCommandsEventWriter(eventType: T.self)
+        
+        let eventStorage = self.worldStorage.eventStorage
+        eventStorage.registerCommandsEventWriter(eventType: T.self)
+        eventStorage.resisterCommandsEventResponder(eventType: T.self)
     }
 }
 
@@ -35,14 +40,26 @@ extension World {
     }
     
     func applyCommandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) {
-        let eventQueue = self.worldStorage.eventStorage.commandsEventQueue(eventOfType: T.self)!
+        let eventStorage = self.worldStorage.eventStorage
+        let eventQueue = eventStorage.commandsEventQueue(eventOfType: T.self)!
         eventQueue.sendingEvents = eventQueue.eventQueue
         eventQueue.eventQueue = []
         for event in eventQueue.sendingEvents {
             self.worldStorage.map.push(EventReader(value: event))
-            for system in self.worldStorage.systemStorage.systems(.onCommandsEvent(ofType: T.self)) {
-                system.execute(self.worldStorage)
+            
+            if let systems = eventStorage.commandsEventResponder(eventOfType: T.self)!.systems[.update] {
+                for system in systems {
+                    system.execute(self.worldStorage)
+                }
             }
+            
+            for schedule in self.worldStorage.stateStorage.currentSchedulesWhichAssociatedStates() {
+                guard let systems = eventStorage.commandsEventResponder(eventOfType: T.self)!.systems[schedule] else { continue }
+                for system in systems {
+                    system.execute(self.worldStorage)
+                }
+            }
+            
             self.worldStorage.map.pop(EventReader<T>.self)
         }
         eventQueue.sendingEvents = []

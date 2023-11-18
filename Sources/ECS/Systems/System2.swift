@@ -25,3 +25,17 @@ public extension World {
         return self
     }
 }
+
+public extension EventResponderBuilder {
+    @discardableResult func addSystem<P0: SystemParameter, P1: SystemParameter>(_ schedule: Schedule, _ system: @escaping (P0, P1) -> ()) -> EventResponderBuilder {
+        if !self.systems.keys.contains(schedule) {
+            self.systems[schedule] = []
+        }
+        
+        self.systems[schedule]?.append(System2<P0, P1>(system))
+        P0.register(to: self.worldStorage)
+        P1.register(to: self.worldStorage)
+        return self
+    }
+}
+

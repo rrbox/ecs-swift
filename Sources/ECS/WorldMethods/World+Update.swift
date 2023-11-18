@@ -27,6 +27,14 @@ public extension World {
             system.execute(self.worldStorage)
         }
         
+        // activate な state を shcedule によって紐づけられた system を実行します.
+        for schedule in self.worldStorage.stateStorage.currentSchedulesWhichAssociatedStates() {
+            for system in self.worldStorage.systemStorage.systems(schedule) {
+                system.execute(self.worldStorage)
+            }
+            
+        }
+        
         // world が受信した event を event system に発信します.
         self.applyEventQueue()
         

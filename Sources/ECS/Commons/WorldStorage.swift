@@ -26,7 +26,7 @@ extension AnyMap where Mode == WorldStorage {
         self.body.removeValue(forKey: ObjectIdentifier(T.self))
     }
     
-    mutating func valueRef<T: WorldStorageElement>(ofType type: T.Type) -> Box<T>? {
+    func valueRef<T: WorldStorageElement>(ofType type: T.Type) -> Box<T>? {
         guard let result = self.body[ObjectIdentifier(T.self)] else { return nil }
         return (result as! Box<T>)
     }
