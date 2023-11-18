@@ -28,7 +28,7 @@ public extension World {
         }
         
         // activate な state を shcedule によって紐づけられた system を実行します.
-        for schedule in self.worldStorage.stateStorage.schedulesWhichAssociatedStates() {
+        for schedule in self.worldStorage.stateStorage.currentSchedulesWhichAssociatedStates() {
             for system in self.worldStorage.systemStorage.systems(schedule) {
                 system.execute(self.worldStorage)
             }

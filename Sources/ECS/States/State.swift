@@ -24,6 +24,13 @@ public class StateStorage {
         var schedules = Set<Schedule>()
     }
     
+    class StatesDidEnterInStartUp: WorldStorageElement {
+        // world 構築時に初期値として設定された state を一時的に保持します.
+        // world の start up 時に didEnter system が実行されます.
+        // start up 実行後も保持され続けられるため, world 初期化のために start up を実行した場合も同じ効果が得られます.
+        var schedules = Set<Schedule>()
+    }
+    
     let storageRef: WorldStorageRef
     
     init(storageRef: WorldStorageRef) {
@@ -32,18 +39,20 @@ public class StateStorage {
     
     func setUp() {
         self.storageRef.map.push(StateAssociatedSchedules())
+        self.storageRef.map.push(StatesDidEnterInStartUp())
     }
     
     func registerState<T: StateProtocol>(initialState: T, states: [T]) {
         self.storageRef.map.push(StateRegistry(currentState: initialState))
         self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body.schedules.insert(.onUpdate(initialState))
+        self.storageRef.map.valueRef(ofType: StatesDidEnterInStartUp.self)!.body.schedules.insert(.didEnter(initialState))
     }
     
     func currentState<T: StateProtocol>(ofType type: T.Type) -> T? {
         self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)?.body.currentState
     }
     
-    func schedulesWhichAssociatedStates() -> Set<Schedule> {
+    func currentSchedulesWhichAssociatedStates() -> Set<Schedule> {
         self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body.schedules
     }
     
