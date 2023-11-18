@@ -8,7 +8,7 @@ A description of this package.
 
 しかし、全く更新しないというわけではなく、必要に応じてメンテナンスし、機能も追加し、リファクタリングし、デバッグしていく予定です（ゆっくりかもしれません）。意見・要望などがあればぜひ、 [Discussions](https://github.com/rrbox/ecs-swift/discussions) へ！
 
-このツールの開発者 @rrbox より
+このツールの開発者 [rrbox](https://github.com/rrbox) より
 
 ## Examples
 
