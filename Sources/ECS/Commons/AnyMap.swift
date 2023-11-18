@@ -9,6 +9,6 @@ public class Item {
     
 }
 
-struct AnyMap<Mode> {
+public struct AnyMap<Mode> {
     var body = [ObjectIdentifier: Item]()
 }
