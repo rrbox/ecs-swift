@@ -6,7 +6,7 @@
 //
 
 public protocol SystemParameter: AnyObject {
-    static func register(to worldBuffer: WorldBuffer)
-    static func getParameter(from worldBuffer: WorldBuffer) -> Self?
+    static func register(to worldBuffer: BufferRef)
+    static func getParameter(from worldBuffer: BufferRef) -> Self?
 }
 

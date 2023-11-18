@@ -7,7 +7,7 @@
 
 public extension World {
     convenience init() {
-        self.init(entities: [:], worldBuffer: WorldBuffer())
+        self.init(entities: [:], worldBuffer: BufferRef())
         
         // chunk buffer に chunk entity interface を追加します.
         self.worldBuffer.chunkBuffer.setUpChunkBuffer()

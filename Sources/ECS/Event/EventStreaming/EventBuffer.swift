@@ -9,43 +9,31 @@ import Foundation
 
 // world buffer にプロパティをつけておく
 class EventBuffer {
-    class EventWriterRegistry<T: EventProtocol>: BufferElement {
-        let writer: EventWriter<T>
-        init(writer: EventWriter<T>) {
-            self.writer = writer
-            super.init()
-        }
-        
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-    }
-    
-    let buffer: Buffer
-    init(buffer: Buffer) {
+    let buffer: BufferRef
+    init(buffer: BufferRef) {
         self.buffer = buffer
     }
     
     func setUpEventQueue() {
-        self.buffer.addComponent(EventQueue())
+        self.buffer.map.push(EventQueue())
     }
     
     func eventQueue() -> EventQueue? {
-        self.buffer.component(ofType: EventQueue.self)
+        self.buffer.map.valueRef(ofType: EventQueue.self)?.body
     }
     
     func eventWriter<T>(eventOfType type: T.Type) -> EventWriter<T>? {
-        self.buffer.component(ofType: EventWriterRegistry<T>.self)?.writer
+        self.buffer.map.valueRef(ofType: EventWriter<T>.self)?.body
     }
     
     func registerEventWriter<T: EventProtocol>(eventType: T.Type) {
-        let eventQueue = self.buffer.component(ofType: EventQueue.self)!
-        self.buffer.addComponent(EventWriterRegistry<T>(writer: EventWriter<T>(eventQueue: eventQueue)))
+        let eventQueue = self.buffer.map.valueRef(ofType: EventQueue.self)!.body
+        self.buffer.map.push(EventWriter<T>(eventQueue: eventQueue))
     }
     
 }
 
-extension WorldBuffer {
+extension BufferRef {
     var eventBuffer: EventBuffer {
         EventBuffer(buffer: self)
     }

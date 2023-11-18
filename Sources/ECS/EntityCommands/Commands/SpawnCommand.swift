@@ -6,9 +6,9 @@
 //
 
 class SpawnCommand: EntityCommand {
-    let entityRecord: EntityRecord
+    let entityRecord: EntityRecordRef
     
-    init(id: Entity, entityRecord: EntityRecord) {
+    init(id: Entity, entityRecord: EntityRecordRef) {
         self.entityRecord = entityRecord
         super.init(entity: id)
     }

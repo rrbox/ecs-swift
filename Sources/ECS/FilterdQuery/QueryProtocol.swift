@@ -6,7 +6,7 @@
 //
 
 public protocol QueryProtocol {
-    func spawn(entity: Entity, entityRecord: EntityRecord)
+    func spawn(entity: Entity, entityRecord: EntityRecordRef)
     func despawn(entity: Entity)
     init()
 }

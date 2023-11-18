@@ -6,14 +6,14 @@
 //
 
 public struct Entities {
-    var sequence: [Entity: EntityRecord]
+    var sequence: [Entity: EntityRecordRef]
 }
 
 final public class World {
     var entities: Entities
-    public let worldBuffer: WorldBuffer
+    public let worldBuffer: BufferRef
     
-    init(entities: [Entity: EntityRecord], worldBuffer: WorldBuffer) {
+    init(entities: [Entity: EntityRecordRef], worldBuffer: BufferRef) {
         self.entities = Entities(sequence: entities)
         self.worldBuffer = worldBuffer
     }

@@ -16,7 +16,7 @@ final public class SetUpSystem5<P0: SetUpSystemParameter, P1: SetUpSystemParamet
         self.execute = execute
     }
     
-    override func setUp(worldBuffer: WorldBuffer) {
+    override func setUp(worldBuffer: BufferRef) {
         self.execute(
             P0.getParameter(from: worldBuffer)!,
             P1.getParameter(from: worldBuffer)!,

@@ -5,8 +5,6 @@
 //  Created by rrbox on 2023/08/12.
 //
 
-import Foundation
-
 public protocol ResourceProtocol {
     
 }
@@ -16,18 +14,13 @@ final public class Resource<T: ResourceProtocol>: BufferElement, SystemParameter
     
     init(_ resource: T) {
         self.resource = resource
-        super.init()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    public static func register(to worldBuffer: WorldBuffer) {
+    public static func register(to worldBuffer: BufferRef) {
         
     }
     
-    public static func getParameter(from worldBuffer: WorldBuffer) -> Resource<T>? {
+    public static func getParameter(from worldBuffer: BufferRef) -> Resource<T>? {
         worldBuffer.resourceBuffer.resource(ofType: T.self)
     }
     

@@ -9,11 +9,11 @@ final public class Commands: SystemParameter {
     var commandQueue = [Command]()
     
     /// Commands では, World への登録時には何もしません.
-    public static func register(to worldBuffer: WorldBuffer) {
+    public static func register(to worldBuffer: BufferRef) {
         
     }
     
-    public static func getParameter(from worldBuffer: WorldBuffer) -> Commands? {
+    public static func getParameter(from worldBuffer: BufferRef) -> Commands? {
         worldBuffer.commandsBuffer.commands()
     }
     

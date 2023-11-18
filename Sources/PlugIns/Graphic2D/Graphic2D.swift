@@ -15,6 +15,18 @@ public struct SceneResource: ResourceProtocol {
     }
 }
 
+class GraphicStrongRef: Component {
+    let node: SKNode
+    
+    init(node: SKNode) {
+        self.node = node
+    }
+    
+    deinit {
+        self.node.removeFromParent()
+    }
+}
+
 public struct Graphic<Node: SKNode>: Component {
     public unowned let nodeRef: Node
     init(node: Node) {
@@ -22,21 +34,16 @@ public struct Graphic<Node: SKNode>: Component {
     }
 }
 
-class GraphicDespawmDetector: GKComponent {
-    unowned let nodeRef: SKNode
-    init(nodeRef: SKNode) {
-        self.nodeRef = nodeRef
-        super.init()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    deinit {
-        self.nodeRef.removeFromParent()
-    }
-}
+//class GraphicDespawmDetector: Component {
+//    unowned let nodeRef: SKNode
+//    init(nodeRef: SKNode) {
+//        self.nodeRef = nodeRef
+//    }
+//    
+//    deinit {
+//        self.nodeRef.removeFromParent()
+//    }
+//}
 
 public extension SKNode {
     func ecsEntity() -> Entity {

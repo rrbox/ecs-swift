@@ -5,37 +5,31 @@
 //  Created by rrbox on 2023/08/10.
 //
 
-import Foundation
-
 final public class CommandsBuffer {
     class CommandsRegistry: BufferElement {
         let commands: Commands
+        
         init(commands: Commands) {
             self.commands = commands
-            super.init()
-        }
-        
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
         }
     }
-    let buffer: Buffer
+    let buffer: BufferRef
     
-    init(buffer: Buffer) {
+    init(buffer: BufferRef) {
         self.buffer = buffer
     }
     
     public func commands() -> Commands? {
-        self.buffer.component(ofType: CommandsRegistry.self)?.commands
+        self.buffer.map.valueRef(ofType: CommandsRegistry.self)?.body.commands
     }
     
     func setCommands(_ commands: Commands) {
-        self.buffer.addComponent(CommandsRegistry(commands: commands))
+        self.buffer.map.push(CommandsRegistry(commands: commands))
     }
 }
 
 // WorldBuffer + Commands
-public extension WorldBuffer {
+public extension BufferRef {
     var commandsBuffer: CommandsBuffer {
         CommandsBuffer(buffer: self)
     }

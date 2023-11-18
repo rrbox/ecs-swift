@@ -6,7 +6,7 @@
 //
 
 public class Chunk {
-    func spawn(entity: Entity, entityRecord: EntityRecord) {}
+    func spawn(entity: Entity, entityRecord: EntityRecordRef) {}
     func despawn(entity: Entity) {}
-    func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {}
+    func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {}
 }

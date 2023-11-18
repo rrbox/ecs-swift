@@ -6,7 +6,7 @@
 //
 
 public class UpdateExecute: SystemExecute {
-    func update(worldBuffer: WorldBuffer) {
+    func update(worldBuffer: BufferRef) {
         
     }
 }

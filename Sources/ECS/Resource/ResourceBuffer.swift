@@ -6,21 +6,21 @@
 //
 
 final public class ResourceBuffer {
-    let buffer: Buffer
-    init(buffer: Buffer) {
+    let buffer: BufferRef
+    init(buffer: BufferRef) {
         self.buffer = buffer
     }
     
     func addResource<T: ResourceProtocol>(_ resource: T) {
-        self.buffer.addComponent(Resource<T>(resource))
+        self.buffer.map.push(Resource<T>(resource))
     }
     
     public func resource<T: ResourceProtocol>(ofType type: T.Type) -> Resource<T>? {
-        self.buffer.component(ofType: Resource<T>.self)
+        self.buffer.map.valueRef(ofType: Resource<T>.self)?.body
     }
 }
 
-public extension WorldBuffer {
+public extension BufferRef {
     var resourceBuffer: ResourceBuffer {
         ResourceBuffer(buffer: self)
     }

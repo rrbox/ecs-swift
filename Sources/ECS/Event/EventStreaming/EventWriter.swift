@@ -6,7 +6,7 @@
 //
 
 // Commands と基本的な仕組みは同じ.
-final public class EventWriter<T: EventProtocol>: SystemParameter, SetUpSystemParameter {
+final public class EventWriter<T: EventProtocol>: SystemParameter, SetUpSystemParameter, BufferElement {
     unowned let eventQueue: EventQueue
     
     init(eventQueue: EventQueue) {
@@ -17,11 +17,11 @@ final public class EventWriter<T: EventProtocol>: SystemParameter, SetUpSystemPa
         self.eventQueue.eventQueue.append(Event<T>(value: value))
     }
     
-    public static func register(to worldBuffer: WorldBuffer) {
+    public static func register(to worldBuffer: BufferRef) {
         
     }
     
-    public static func getParameter(from worldBuffer: WorldBuffer) -> EventWriter<T>? {
+    public static func getParameter(from worldBuffer: BufferRef) -> EventWriter<T>? {
         worldBuffer.eventBuffer.eventWriter(eventOfType: T.self)
     }
 }
