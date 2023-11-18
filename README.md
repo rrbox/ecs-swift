@@ -39,7 +39,7 @@ func movementSystem(query: Query<Position>, deltaTime: Resource<DeltaTime>) {
     }
 }
 
-func presentPositionSystem(query: Query<Position>) {
+func printPositionSystem(query: Query<Position>) {
     query.update { position in
         print(position.value)
     }
