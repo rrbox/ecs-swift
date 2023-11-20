@@ -26,6 +26,7 @@ public extension World {
         self.worldStorage.systemStorage.insertSchedule(.startUp)
         
         // world buffer に update system を保持する領域を確保します.
+        self.worldStorage.systemStorage.insertSchedule(.firstFrame)
         self.worldStorage.systemStorage.insertSchedule(.update)
         
         // state storage に schedule 管理をするための準備をします.
@@ -42,5 +43,8 @@ public extension World {
         
         // world buffer に commands の初期値を設定します.
         self.worldStorage.commandsStorage.setCommands(Commands())
+        
+        // world に一番最初のフレームで実行されるシステムを追加します.
+        self.worldStorage.systemStorage.addSystem(.firstFrame, System(firstFrameSystem(commands:)))
     }
 }
