@@ -23,7 +23,7 @@ public extension World {
         
         currentTimeResource.resource = CurrentTime(value: currentTime)
         
-        for system in self.worldStorage.systemStorage.systems(.update) {
+        for system in self.worldStorage.systemStorage.systems(self.updateSchedule) {
             system.execute(self.worldStorage)
         }
         

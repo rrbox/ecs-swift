@@ -17,6 +17,7 @@ public struct Schedule: Hashable {
 
 enum DefaultSchedule {
     case startUp
+    case firstFrame
     case update
 }
 
@@ -26,4 +27,8 @@ public extension Schedule {
     static func customSchedule<T: Hashable>(_ value: T) -> Schedule {
         Schedule(id: value)
     }
+}
+
+extension Schedule {
+    static let firstFrame: Schedule = Schedule(id: DefaultSchedule.firstFrame)
 }
