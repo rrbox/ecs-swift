@@ -8,7 +8,7 @@
 
 これは Rust の ECS ライブラリである bevy engine から多大なる影響を受けています！とくにecs-swiftは protocol 指向を意識して設計されており、**コンポーネントを構造体で定義**することができます！
 
-ただし制作者本人は、bevy engine の完全コピーではなく、Swift で作った**劣化版**だと認識しています。詳しくは、Wiki の bevy engine の劣化版としての ecs-swift を参照してください。
+ただし制作者本人は、bevy engine の完全コピーではなく、Swift で作った**劣化版**だと認識しています。詳しくは、Wiki の bevy engine の劣化版としての ecs-swift （準備中）を参照してください。
 
 ## 注意書き Warning
 
@@ -106,7 +106,7 @@ class Scene: SKScene {
 }
 ```
 
-詳しい解説は Wiki にて！
+詳しい解説は Wiki （準備中）にて！
 
 ## ライセンス契約
 
