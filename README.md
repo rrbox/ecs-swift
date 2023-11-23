@@ -1,5 +1,9 @@
 # ecs-swift
 
+[![GitHub issues](https://img.shields.io/github/issues/rrbox/ecs-swift)](https://github.com/rrbox/ecs-swift/issues)
+[![GitHub License](https://img.shields.io/github/license/rrbox/ecs-swift)](https://github.com/rrbox/ecs-swift/blob/main/LICENSE)
+[![Swift](https://github.com/rrbox/ecs-swift/actions/workflows/swift.yml/badge.svg?branch=release%2Flatest)](https://github.com/rrbox/ecs-swift/actions/workflows/swift.yml)
+
 `ecs-swift` は、Swift で Entity Component System (ECS) を実装したライブラリです。SpriteKit や SceneKit などのフレームワークで ECS 設計のゲームを開発するために使用します。
 
 これは Rust の ECS ライブラリである bevy engine から多大なる影響を受けています！とくにecs-swiftは protocol 指向を意識して設計されており、**コンポーネントを構造体で定義**することができます！
