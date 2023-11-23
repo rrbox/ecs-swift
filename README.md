@@ -10,6 +10,31 @@ A description of this package.
 
 このツールの開発者 [rrbox](https://github.com/rrbox) より
 
+## Getting Started
+
+### Requirements
+
+- Xcode 14.3 
+- Swift 5.8
+
+### Swift Package Manager
+
+```swift
+// swift-tools-version:5.8
+
+import PackageDescription
+
+let package = Package(
+  name: "Your project",
+  dependencies: [
+    .package(url: "https://github.com/rrbox/ecs-swift.git", from: "0.1.0")
+  ],
+  targets: [
+    .target(name: "Your project", dependencies: ["ECS", "PlugIns"])
+  ]
+)
+```
+
 ## Examples
 
 ```swift
