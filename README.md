@@ -4,13 +4,13 @@
 [![GitHub License](https://img.shields.io/github/license/rrbox/ecs-swift)](https://github.com/rrbox/ecs-swift/blob/main/LICENSE)
 [![Swift](https://github.com/rrbox/ecs-swift/actions/workflows/swift.yml/badge.svg?branch=release%2Flatest)](https://github.com/rrbox/ecs-swift/actions/workflows/swift.yml)
 
-:paperclip:[Japanese](README_ja.md)
-
 `ecs-swift` is a library that implements the Entity Component System (ECS) in Swift. It is used for developing games with ECS design in frameworks such as SpriteKit and SceneKit.
 
 This library has been greatly influenced by the ECS library of Rust, the Bevy engine! Particularly, `ecs-swift` is designed with a focus on protocol-oriented programming, allowing you to define components using **structures**!
 
 However, the creator acknowledges that `ecs-swift` is not a complete copy of the Bevy engine but rather a **lite version** created in Swift. For more details, please refer to the Wiki for `ecs-swift` as a lite version of the Bevy engine.
+
+:paperclip: [Japanese](README_ja.md)
 
 ## Warning
 
