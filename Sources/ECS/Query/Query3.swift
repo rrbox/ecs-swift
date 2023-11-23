@@ -10,10 +10,10 @@ final public class Query3<C0: Component, C1: Component, C2: Component>: Chunk, S
     
     public override init() {}
     
-    public override func spawn(entity: Entity, entityRecord: EntityRecord) {
-        guard let c0 = entityRecord.component(ofType: ComponentRef<C0>.self),
-              let c1 = entityRecord.component(ofType: ComponentRef<C1>.self),
-              let c2 = entityRecord.component(ofType: ComponentRef<C2>.self) else { return }
+    public override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
+        guard let c0 = entityRecord.componentRef(C0.self),
+              let c1 = entityRecord.componentRef(C1.self),
+              let c2 = entityRecord.componentRef(C2.self) else { return }
         self.components[entity] = (c0, c1, c2)
     }
     
@@ -21,10 +21,10 @@ final public class Query3<C0: Component, C1: Component, C2: Component>: Chunk, S
         self.components.removeValue(forKey: entity)
     }
     
-    override func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {
-        guard let c0 = entityRecord.component(ofType: ComponentRef<C0>.self),
-              let c1 = entityRecord.component(ofType: ComponentRef<C1>.self),
-              let c2 = entityRecord.component(ofType: ComponentRef<C2>.self) else {
+    override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
+        guard let c0 = entityRecord.componentRef(C0.self),
+              let c1 = entityRecord.componentRef(C1.self),
+              let c2 = entityRecord.componentRef(C2.self) else {
             self.components.removeValue(forKey: entity)
             return
         }
@@ -48,19 +48,19 @@ final public class Query3<C0: Component, C1: Component, C2: Component>: Chunk, S
         return (references.0.value, references.1.value, references.2.value)
     }
     
-    public static func register(to worldBuffer: WorldBuffer) {
-        guard worldBuffer.chunkBuffer.chunk(ofType: Self.self) == nil else {
+    public static func register(to worldStorage: WorldStorageRef) {
+        guard worldStorage.chunkStorage.chunk(ofType: Self.self) == nil else {
             return
         }
         
         let queryRegistory = Self()
         
-        worldBuffer.chunkBuffer.addChunk(queryRegistory)
+        worldStorage.chunkStorage.addChunk(queryRegistory)
         
     }
     
-    public static func getParameter(from worldBuffer: WorldBuffer) -> Self? {
-        worldBuffer.chunkBuffer.chunk(ofType: Self.self)
+    public static func getParameter(from worldStorage: WorldStorageRef) -> Self? {
+        worldStorage.chunkStorage.chunk(ofType: Self.self)
     }
     
 }

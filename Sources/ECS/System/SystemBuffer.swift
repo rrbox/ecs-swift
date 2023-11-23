@@ -1,42 +1,56 @@
 //
-//  SystemBuffer.swift
+//  SystemStorage.swift
 //  
 //
 //  Created by rrbox on 2023/08/12.
 //
 
-open class SystemExecute {
-    public init() {}
+public class SystemExecute {
+    init() {}
+    public func execute(_ worldStorage: WorldStorageRef) {}
 }
 
-final public class SystemBuffer {
-    final class SystemRegisotry<Execute: SystemExecute>: BufferElement {
-        var systems = [Execute]()
+final public class SystemStorage {
+    final class SystemRegisotry: WorldStorageElement {
+        var systems = [Schedule: [SystemExecute]]()
     }
     
-    let buffer: Buffer
-    init(buffer: Buffer) {
+    let buffer: WorldStorageRef
+    init(buffer: WorldStorageRef) {
         self.buffer = buffer
     }
     
-    public func systems<System: SystemExecute>(ofType: System.Type) -> [System] {
-        self.buffer.component(ofType: SystemRegisotry<System>.self)!.systems
+    public func systems(_ schedule: Schedule) -> [SystemExecute] {
+        self.buffer.map.valueRef(ofType: SystemRegisotry.self)!.body.systems[schedule]!
     }
     
-    func registerSystemRegistry<System: SystemExecute>(ofType type: System.Type) {
-        self.buffer.addComponent(SystemRegisotry<System>.init())
+    func registerSystemRegistry() {
+        self.buffer.map.push(SystemRegisotry.init())
     }
     
-    func addSystem<System: SystemExecute>(_ system: System, as type: System.Type) {
+    func insertSchedule(_ schedule: Schedule) {
+        self.buffer.map.valueRef(ofType: SystemRegisotry.self)!.body.systems[schedule] = []
+    }
+    
+    func addSystem(_ schedule: Schedule, _ system: SystemExecute) {
         self.buffer
-            .component(ofType: SystemRegisotry<System>.self)!
-            .systems
+            .map
+            .valueRef(ofType: SystemRegisotry.self)!
+            .body
+            .systems[schedule]!
             .append(system)
     }
 }
 
-public extension WorldBuffer {
-    var systemBuffer: SystemBuffer {
-        SystemBuffer(buffer: self)
+public extension WorldStorageRef {
+    var systemStorage: SystemStorage {
+        SystemStorage(buffer: self)
+    }
+}
+
+public extension World {
+    @discardableResult func insertSchedule(_ schedule: Schedule) -> World {
+        self.worldStorage.systemStorage.insertSchedule(schedule)
+        return self
     }
 }

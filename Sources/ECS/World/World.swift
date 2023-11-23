@@ -6,18 +6,18 @@
 //
 
 public struct Entities {
-    var sequence: [Entity: EntityRecord]
+    var sequence: [Entity: EntityRecordRef]
 }
 
 final public class World {
     var entities: Entities
-    public let worldBuffer: WorldBuffer
+    var updateSchedule: Schedule
+    public let worldStorage: WorldStorageRef
     
-    init(entities: [Entity: EntityRecord], worldBuffer: WorldBuffer) {
+    init(entities: [Entity: EntityRecordRef], worldStorage: WorldStorageRef) {
         self.entities = Entities(sequence: entities)
-        self.worldBuffer = worldBuffer
+        self.updateSchedule = .firstFrame
+        self.worldStorage = worldStorage
     }
     
 }
-
-

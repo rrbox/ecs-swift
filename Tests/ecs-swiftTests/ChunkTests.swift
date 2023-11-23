@@ -9,8 +9,8 @@ import XCTest
 @testable import ECS
 
 class TestChunk: Chunk {
-    var entities = [Entity: EntityRecord]()
-    override func spawn(entity: Entity, entityRecord: EntityRecord) {
+    var entities = [Entity: EntityRecordRef]()
+    override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
         self.entities[entity] = entityRecord
     }
     
@@ -20,8 +20,8 @@ class TestChunk: Chunk {
 }
 
 class TestChunk_2: Chunk {
-    var entities = [Entity: EntityRecord]()
-    override func spawn(entity: Entity, entityRecord: EntityRecord) {
+    var entities = [Entity: EntityRecordRef]()
+    override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
         self.entities[entity] = entityRecord
     }
     
@@ -38,15 +38,15 @@ final class ChunkTests: XCTestCase {
         // Spawn された entity を単に蓄積するだけの test 用の chunk です.
         let testChunk = TestChunk()
         let testChunk_2 = TestChunk_2()
-        world.worldBuffer.chunkBuffer.addChunk(testChunk)
-        world.worldBuffer.chunkBuffer.addChunk(testChunk_2)
+        world.worldStorage.chunkStorage.addChunk(testChunk)
+        world.worldStorage.chunkStorage.addChunk(testChunk_2)
         
         // chunk interface を介して chunk に entity を push します（回数: 5回）.
         for entity in mockEntities {
-            world.push(entity: entity, entityRecord: EntityRecord())
+            world.push(entity: entity, entityRecord: EntityRecordRef())
         }
         
-        world.worldBuffer.chunkBuffer.applyEntityQueue()
+        world.worldStorage.chunkStorage.applyEntityQueue()
         
         XCTAssertEqual(testChunk.entities.count, 5)
         XCTAssertEqual(testChunk_2.entities.count, 5)

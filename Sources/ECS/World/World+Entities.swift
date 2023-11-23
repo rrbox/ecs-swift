@@ -6,7 +6,7 @@
 //
 
 public extension World {
-    func insert(entity: Entity, entityRecord: EntityRecord) {
+    func insert(entity: Entity, entityRecord: EntityRecordRef) {
         self.entities.sequence[entity] = entityRecord
     }
     
@@ -14,7 +14,7 @@ public extension World {
         self.entities.sequence.removeValue(forKey: entity)
     }
     
-    func entityRecord(forEntity entity: Entity) -> EntityRecord? {
+    func entityRecord(forEntity entity: Entity) -> EntityRecordRef? {
         self.entities.sequence[entity]
     }
 

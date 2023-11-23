@@ -7,10 +7,16 @@
 
 public extension World {
     func setUpWorld() {
-        for system in self.worldBuffer.systemBuffer.systems(ofType: SetUpExecute.self) {
-            system.setUp(worldBuffer: self.worldBuffer)
+        for system in self.worldStorage.systemStorage.systems(.startUp) {
+            system.execute(self.worldStorage)
+        }
+        // 初期値として設定された state に対して did move schedule で関連づけられた system を実行します.
+        for schedule in self.worldStorage.map.valueRef(ofType: StateStorage.StatesDidEnterInStartUp.self)!.body.schedules {
+            for system in self.worldStorage.systemStorage.systems(schedule) {
+                system.execute(self.worldStorage)
+            }
         }
         self.applyCommands()
-        self.worldBuffer.chunkBuffer.applyEntityQueue()
+        self.worldStorage.chunkStorage.applyEntityQueue()
     }
 }

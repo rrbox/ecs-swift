@@ -8,11 +8,11 @@
 /// Chunk を種類関係なく格納するためのコンポーネントです.
 ///
 /// Entity の変更を全ての Chunk に反映させる目的で使用されます.
-class ChunkEntityInterface: BufferElement {
+class ChunkEntityInterface: WorldStorageElement {
     /// entity が spawn されてから component が完全に挿入されるまでの間, entity を queue に保管します.
     ///
     /// Entity が ``Commands/spawn()`` され, ``EntityCommands/addComponent(_:)`` されるまでの間, Entity は実際には Chunk に反映されず,
-    var prespawnedEntityQueue = [(Entity, EntityRecord)]()
+    var prespawnedEntityQueue = [(Entity, EntityRecordRef)]()
     var chunks = [Chunk]()
     
     /// chunk を追加します
@@ -23,7 +23,7 @@ class ChunkEntityInterface: BufferElement {
     /// World に entity が追加された時に実行します.
     ///
     /// entity が queue に追加され、フレームの終わりに全ての chunk に entity を反映します.
-    func push(entity: Entity, entityRecord: EntityRecord) {
+    func push(entity: Entity, entityRecord: EntityRecordRef) {
         self.prespawnedEntityQueue.append((entity, entityRecord))
     }
     
@@ -48,7 +48,7 @@ class ChunkEntityInterface: BufferElement {
         }
     }
     
-    func applyCurrentState(_ entityRecord: EntityRecord, forEntity entity: Entity) {
+    func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
         for chunk in self.chunks {
             chunk.applyCurrentState(entityRecord, forEntity: entity)
         }

@@ -7,16 +7,32 @@
 
 import Foundation
 
+public struct CurrentTime: ResourceProtocol {
+    public let value: TimeInterval
+}
+
+public struct DeltaTime: ResourceProtocol {
+    public let value: TimeInterval
+}
+
 public extension World {
     func update(currentTime: TimeInterval) {
-        let currentTimeResource = self.worldBuffer.resourceBuffer.resource(ofType: CurrentTime.self)!
+        let currentTimeResource = self.worldStorage.resourceBuffer.resource(ofType: CurrentTime.self)!
         
-        self.worldBuffer.resourceBuffer.resource(ofType: DeltaTime.self)?.resource = DeltaTime(value: currentTime - currentTimeResource.resource.value)
+        self.worldStorage.resourceBuffer.resource(ofType: DeltaTime.self)?.resource = DeltaTime(value: currentTime - currentTimeResource.resource.value)
         
         currentTimeResource.resource = CurrentTime(value: currentTime)
         
-        for system in self.worldBuffer.systemBuffer.systems(ofType: UpdateExecute.self) {
-            system.update(worldBuffer: self.worldBuffer)
+        for system in self.worldStorage.systemStorage.systems(self.updateSchedule) {
+            system.execute(self.worldStorage)
+        }
+        
+        // activate な state を shcedule によって紐づけられた system を実行します.
+        for schedule in self.worldStorage.stateStorage.currentSchedulesWhichAssociatedStates() {
+            for system in self.worldStorage.systemStorage.systems(schedule) {
+                system.execute(self.worldStorage)
+            }
+            
         }
         
         // world が受信した event を event system に発信します.
@@ -28,7 +44,7 @@ public extension World {
         self.applyCommandsEventQueue(eventOfType: WillDespawnEvent.self)
         
         // apply commands の際に push された entity を chunk に割り振ります.
-        self.worldBuffer.chunkBuffer.applyEntityQueue()
+        self.worldStorage.chunkStorage.applyEntityQueue()
         
         // Did Spawn event を event system に発信します.
         self.applyCommandsEventQueue(eventOfType: DidSpawnEvent.self)
