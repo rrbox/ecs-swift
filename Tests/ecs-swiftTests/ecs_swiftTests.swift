@@ -51,8 +51,8 @@ final class ecs_swiftTests: XCTestCase {
     // 0.00478 s
     func testPerformance() {
         let world = World()
-            .addSetUpSystem(entitycreate(commands:))
-            .addUpdateSystem(update(query:))
+            .addSystem(.startUp, entitycreate(commands:))
+            .addSystem(.update, update(query:))
         world.setUpWorld()
         
         print(world.entities.sequence.count)
@@ -68,11 +68,11 @@ final class ecs_swiftTests: XCTestCase {
     // 0.0158 s -> およそ 4 倍
     func testUpdate4Performance() {
         let world = World()
-            .addSetUpSystem(entitycreate(commands:))
-            .addUpdateSystem(update(query:))
-            .addUpdateSystem(update2(query:))
-            .addUpdateSystem(update3(query:))
-            .addUpdateSystem(update4(query:))
+            .addSystem(.startUp, entitycreate(commands:))
+            .addSystem(.update, update(query:))
+            .addSystem(.update, update2(query:))
+            .addSystem(.update, update3(query:))
+            .addSystem(.update, update4(query:))
         world.setUpWorld()
         
         print(world.entities.sequence.count)

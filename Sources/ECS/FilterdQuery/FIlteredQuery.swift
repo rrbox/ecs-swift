@@ -8,7 +8,7 @@
 final public class Filtered<Q: QueryProtocol, F: Filter>: Chunk, SystemParameter {
     public let query: Q = Q()
     
-    override func spawn(entity: Entity, entityRecord: EntityRecord) {
+    override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
         guard F.condition(forEntityRecord: entityRecord) else { return }
         self.query.spawn(entity: entity, entityRecord: entityRecord)
     }
@@ -17,16 +17,16 @@ final public class Filtered<Q: QueryProtocol, F: Filter>: Chunk, SystemParameter
         self.query.despawn(entity: entity)
     }
     
-    public static func getParameter(from worldBuffer: WorldBuffer) -> Filtered<Q, F>? {
-        worldBuffer.chunkBuffer.chunk(ofType: Filtered<Q, F>.self)
+    public static func getParameter(from worldStorage: WorldStorageRef) -> Filtered<Q, F>? {
+        worldStorage.chunkStorage.chunk(ofType: Filtered<Q, F>.self)
     }
     
-    public static func register(to worldBuffer: WorldBuffer) {
-        guard worldBuffer.chunkBuffer.chunk(ofType: Self.self) == nil else {
+    public static func register(to worldStorage: WorldStorageRef) {
+        guard worldStorage.chunkStorage.chunk(ofType: Self.self) == nil else {
             return
         }
         
-        worldBuffer.chunkBuffer.addChunk(Filtered<Q, F>())
+        worldStorage.chunkStorage.addChunk(Filtered<Q, F>())
     }
     
 }

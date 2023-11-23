@@ -56,10 +56,12 @@ final class EventTests: XCTestCase {
         
         let world = World()
             .addEventStreamer(eventType: TestEvent.self)
-            .addEventSystem(testEvent(event:eventWriter:commands:currentTime:))
-            .addSetUpSystem(setUp(eventWriter:))
-            .addEventSystem(spawnedEntitySystem)
-            .addEventSystem(despanedEntitySystem)
+            .buildEventResponder(TestEvent.self, { responder in
+                responder.addSystem(.update, testEvent(event:eventWriter:commands:currentTime:))
+            })
+            .addSystem(.startUp, setUp(eventWriter:))
+            .addSystem(.didSpawn, spawnedEntitySystem(eventReader:commands:currentTime:))
+            .addSystem(.willDespawn, despanedEntitySystem(eventReader:commands:currentTime:))
         
         world.setUpWorld()
         

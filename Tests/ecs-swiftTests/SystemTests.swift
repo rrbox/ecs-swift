@@ -72,14 +72,14 @@ func apiTestSystem(
 final class SystemTests: XCTestCase {
     func testUpdateSystem() {
         let world = World()
-            .addSetUpSystem(testSetUp(commands:))
-            .addUpdateSystem(currentTimeTestSystem(time:))
-            .addUpdateSystem(deltaTimeTestSystem(deltaTime:))
-            .addUpdateSystem(apiTestSystem(q0:))
-            .addUpdateSystem(apiTestSystem(q0:q1:))
-            .addUpdateSystem(apiTestSystem(q0:q1:q2:))
-            .addUpdateSystem(apiTestSystem(q0:q1:q2:q3:))
-            .addUpdateSystem(apiTestSystem(q0:q1:q2:q3:q4:))
+            .addSystem(.startUp, testSetUp(commands:))
+            .addSystem(.update, currentTimeTestSystem(time:))
+            .addSystem(.update, deltaTimeTestSystem(deltaTime:))
+            .addSystem(.update, apiTestSystem(q0:))
+            .addSystem(.update, apiTestSystem(q0:q1:))
+            .addSystem(.update, apiTestSystem(q0:q1:q2:))
+            .addSystem(.update, apiTestSystem(q0:q1:q2:q3:))
+            .addSystem(.update, apiTestSystem(q0:q1:q2:q3:q4:))
         
         world.setUpWorld()
         

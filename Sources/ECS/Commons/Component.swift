@@ -10,16 +10,3 @@ import Foundation
 public protocol Component {
     
 }
-
-final public class ComponentRef<ComponentType: Component>: ArchetypeComponent {
-    var value: ComponentType
-    
-    public init(component: ComponentType) {
-        self.value = component
-        super.init()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}

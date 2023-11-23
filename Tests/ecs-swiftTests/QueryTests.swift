@@ -18,13 +18,13 @@ final class QueryTests: XCTestCase {
         
         let world = World()
         
-        world.worldBuffer.chunkBuffer.addChunk(testQuery)
-        world.worldBuffer.chunkBuffer.addChunk(testQuery2)
-        world.worldBuffer.chunkBuffer.addChunk(testQuery3)
-        world.worldBuffer.chunkBuffer.addChunk(testQuery4)
-        world.worldBuffer.chunkBuffer.addChunk(testQuery5)
+        world.worldStorage.chunkStorage.addChunk(testQuery)
+        world.worldStorage.chunkStorage.addChunk(testQuery2)
+        world.worldStorage.chunkStorage.addChunk(testQuery3)
+        world.worldStorage.chunkStorage.addChunk(testQuery4)
+        world.worldStorage.chunkStorage.addChunk(testQuery5)
         
-        let commands = world.worldBuffer.commandsBuffer.commands()!
+        let commands = world.worldStorage.commandsStorage.commands()!
         
         let testEntity = commands.spawn().addComponent(TestComponent(content: "test")).id()
         

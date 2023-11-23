@@ -22,8 +22,8 @@ func mySystem2(query: Query<TestComponent>) {
 final class UpdateSystemTests: XCTestCase {
     func testUpdate() {
         let world = World()
-            .addUpdateSystem(mySystem(commands:))
-            .addUpdateSystem(mySystem2(query:))
+            .addSystem(.update, mySystem(commands:))
+            .addSystem(.update, mySystem2(query:))
         
         world.update(currentTime: 0)
         world.update(currentTime: 0)
