@@ -9,6 +9,43 @@ public struct Entities {
     var sequence: [Entity: EntityRecordRef]
 }
 
+/**
+ ECS 全体をコントロールします.
+ 
+ ## Topics
+ 
+ ### 初期化
+ 
+ - ``World/init()``
+ 
+ ### System の追加
+ 
+ - ``World/addSystem(_:_:)-9frsg``
+ - ``World/addSystem(_:_:)-86ff2``
+ - ``World/addSystem(_:_:)-7kznt``
+ - ``World/addSystem(_:_:)-1s1oy``
+ - ``World/addSystem(_:_:)-4jv38``
+ 
+ ### Event 関連の設定の追加
+ 
+ - ``World/addEventStreamer(eventType:)``
+ - ``World/buildEventResponder(_:_:)``
+ - ``World/buildDidSpawnResponder(_:)``
+ - ``World/buildWillSpawnResponder(_:)``
+ 
+ ### 起動
+ 
+ - ``World/setUpWorld()``
+ 
+ ### 更新処理
+ 
+ - ``World/update(currentTime:)``
+ 
+ ### Event の発信
+ 
+ - ``World/sendEvent(_:)``
+ 
+ */
 final public class World {
     var entities: Entities
     var updateSchedule: Schedule
