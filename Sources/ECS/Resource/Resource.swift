@@ -5,10 +5,20 @@
 //  Created by rrbox on 2023/08/12.
 //
 
+/**
+ リソースとして機能する値の型を定義します.
+ 
+- note: 詳細は <doc:Resources> を参照してください.
+ */
 public protocol ResourceProtocol {
     
 }
 
+/**
+ システム内からリソースを制御します.
+ 
+- note: 詳細は <doc:Resources> を参照してください.
+ */
 final public class Resource<T: ResourceProtocol>: WorldStorageElement, SystemParameter {
     public var resource: T
     
