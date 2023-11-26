@@ -13,4 +13,5 @@ ECS is a library that implements the Entity Component System (ECS) in Swift. It 
     - <doc:Queries>
     - <doc:Events>
     - <doc:States>
+    - <doc:Resources>
 }
