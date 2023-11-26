@@ -67,6 +67,11 @@ extension World {
 }
 
 public extension World {
+    /**
+     ``World`` インスタンスを介して Event を配信します.
+     
+     System 内で Event を発信する場合は ``EventWriter`` を参照してください.
+     */
     func sendEvent<T: EventProtocol>(_ value: T) {
         self.worldStorage.eventStorage.eventWriter(eventOfType: T.self)?.send(value: value)
     }
