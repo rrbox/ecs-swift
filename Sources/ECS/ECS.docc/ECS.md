@@ -6,12 +6,11 @@ ECS is a library that implements the Entity Component System (ECS) in Swift. It 
 
 関数で system を定義し, ``World`` インスタンスに system を導入するだけでゲームを設計することができます.
 
-## Topics
-
-### Essentials
-
 @Links(visualStyle: detailedGrid) {
     - <doc:SimpleUsage>
-    - ``World``
+    - <doc:CreateWorld>
     - <doc:SystemParameters>
+    - <doc:Queries>
+    - <doc:Events>
+    - <doc:States>
 }

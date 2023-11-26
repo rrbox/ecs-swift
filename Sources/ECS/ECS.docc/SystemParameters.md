@@ -24,10 +24,10 @@ func system(param_0: <#ParameterType0#>,
 
 ### Topics
 
-@Links(visualStyle: detailedGrid) {
+@Links(visualStyle: list) {
     - <doc:Queries>
     - ``Commands``
     - ``Resource``
     - ``State``
-    - <doc:ParametersForEvent>
+    - <doc:Events>
 }

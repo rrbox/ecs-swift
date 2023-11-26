@@ -16,6 +16,11 @@ public struct DeltaTime: ResourceProtocol {
 }
 
 public extension World {
+    /**
+     ゲームの更新処理を実行します.
+     
+     - note: 最初のフレーム (current time = 0) は準備用フレームとして実行されるため, システムが実行されません.
+     */
     func update(currentTime: TimeInterval) {
         let currentTimeResource = self.worldStorage.resourceBuffer.resource(ofType: CurrentTime.self)!
         

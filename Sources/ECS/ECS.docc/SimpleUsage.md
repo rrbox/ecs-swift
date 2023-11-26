@@ -49,7 +49,7 @@ import ECS
 
 class Scene: SKScene {
     override func didMove(to view: SKView) {
-        world.setUp()
+        world.setUpWorld()
     }
     
     override func update(_ currentTime: TimeInterval) {

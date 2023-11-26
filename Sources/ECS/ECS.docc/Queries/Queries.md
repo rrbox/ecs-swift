@@ -20,5 +20,5 @@ func system(query: Query<ComponentType>) {
     - ``Query3``
     - ``Query4``
     - ``Query5``
+    - <doc:FilteredQuery>
 }
-
