@@ -108,7 +108,7 @@ class Scene: SKScene {
 }
 ```
 
-Detailed explanations can be found in the Wiki (under construction)!
+Detailed explanations can be found in the [Wiki](https://github.com/rrbox/ecs-swift/wiki) (under construction)!
 
 
 ## License
