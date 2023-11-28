@@ -18,7 +18,7 @@ I believe I may not be able to actively update this package very often. I sincer
 
 However, it doesn't mean that I won't update it at all. I plan to maintain, add features, refactor, and debug as needed (though it might be at a slower pace). If you have any opinions or requests, please feel free to share them in the [Discussions](https://github.com/rrbox/ecs-swift/discussions) (under construction)!
 
-From the developer of this tool, @rrbox.
+From the developer of this tool, [@rrbox](https://github.com/rrbox).
 
 ## Getting started
 
