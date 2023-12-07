@@ -6,9 +6,9 @@
 
 `ecs-swift` は、Swift で Entity Component System (ECS) を実装したライブラリです。SpriteKit や SceneKit などのフレームワークで ECS 設計のゲームを開発するために使用します。
 
-これは Rust の ECS ライブラリである bevy engine から多大なる影響を受けています！とくにecs-swiftは protocol 指向を意識して設計されており、**コンポーネントを構造体で定義**することができます！
+これは Rust の ECS ライブラリである Bevy ECS から多大なる影響を受けています！とくにecs-swiftは protocol 指向を意識して設計されており、**コンポーネントを構造体で定義**することができます！
 
-ただし制作者本人は、bevy engine の完全コピーではなく、Swift で作った**劣化版**だと認識しています。詳しくは、Wiki の bevy engine の劣化版としての ecs-swift （準備中）を参照してください。
+ただし制作者本人は、Bevy ECS の完全コピーではなく、Swift で作った**劣化版**だと認識しています。詳しくは、Wiki の Bevy ECS の劣化版としての ecs-swift （準備中）を参照してください。
 
 ## 注意書き Warning
 
