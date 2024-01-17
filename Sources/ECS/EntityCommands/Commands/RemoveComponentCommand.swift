@@ -10,7 +10,7 @@ class RemoveComponent<ComponentType: Component>: EntityCommand {
         super.init(entity: entity)
     }
     
-    override func runCommand(in world: World) {
-        world.removeComponent(ofType: ComponentType.self, fromEntity: self.entity)
+    override func runCommand(in world: World) async {
+        await world.removeComponent(ofType: ComponentType.self, fromEntity: self.entity)
     }
 }

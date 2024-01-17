@@ -6,26 +6,27 @@
 //
 
 import XCTest
-@testable import ECS
+import ECS
 
-func mySystem(commands: Commands) {
-    commands.spawn()
+func mySystem(commands: Commands) async {
+    await commands.spawn()
         .addComponent(TestComponent(content: "sample"))
 }
 
-func mySystem2(query: Query<TestComponent>) {
-    query.update { _, component in
+func mySystem2(query: Query<TestComponent>) async {
+    await query.update { _, component in
         XCTAssertEqual(component.content, "sample")
     }
 }
 
 final class UpdateSystemTests: XCTestCase {
-    func testUpdate() {
-        let world = World()
+    func testUpdate() async {
+        let world = await World()
             .addSystem(.update, mySystem(commands:))
             .addSystem(.update, mySystem2(query:))
         
-        world.update(currentTime: 0)
-        world.update(currentTime: 0)
+        
+        await world.update(currentTime: 0)
+        await world.update(currentTime: 0)
     }
 }

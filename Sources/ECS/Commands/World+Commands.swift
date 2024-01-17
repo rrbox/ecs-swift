@@ -6,11 +6,11 @@
 //
 
 extension World {
-    func applyCommands() {
+    func applyCommands() async {
         let commands = self.worldStorage.commandsStorage.commands()!
-        for command in commands.commandQueue {
-            command.runCommand(in: self)
+        for command in await commands.commandQueue {
+            await command.runCommand(in: self)
         }
-        commands.commandQueue = []
+        await commands.clearAllCommand()
     }
 }

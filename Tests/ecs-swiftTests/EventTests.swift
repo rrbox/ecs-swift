@@ -6,17 +6,17 @@
 //
 
 import XCTest
-@testable import ECS
+import ECS
 
 struct TestEvent: EventProtocol {
     let name: String
 }
 
-func testEvent(event: EventReader<TestEvent>, eventWriter: EventWriter<TestEvent>, commands: Commands, currentTime: Resource<CurrentTime>) {
+func testEvent(event: EventReader<TestEvent>, eventWriter: EventWriter<TestEvent>, commands: Commands, currentTime: Resource<CurrentTime>) async {
     print("---test event read---")
     print("frame:", currentTime.resource.value)
     print("<- read event:", event.value.name)
-    let spawned = commands.spawn().addComponent(TestComponent(content: event.value.name)).id()
+    let spawned = await commands.spawn().addComponent(TestComponent(content: event.value.name)).id()
     print("-> spawn:", spawned)
     print("-> event send:", "\"link\"")
     eventWriter.send(value: TestEvent(name: "[\(currentTime.resource.value)]: link"))
@@ -32,12 +32,12 @@ func setUp(eventWriter: EventWriter<TestEvent>) {
     print()
 }
 
-func spawnedEntitySystem(eventReader: EventReader<DidSpawnEvent>, commands: Commands, currentTime: Resource<CurrentTime>) {
+func spawnedEntitySystem(eventReader: EventReader<DidSpawnEvent>, commands: Commands, currentTime: Resource<CurrentTime>) async {
     print("---spawned entity event read---")
     print("frame:", currentTime.resource.value)
     print("<- spawned(receive):", eventReader.value.spawnedEntity)
     print("-> despawn:", eventReader.value.spawnedEntity)
-    commands.despawn(entity: eventReader.value.spawnedEntity)
+    await commands.despawn(entity: eventReader.value.spawnedEntity)
     print("---")
     print()
 }
@@ -51,23 +51,25 @@ func despanedEntitySystem(eventReader: EventReader<WillDespawnEvent>, commands: 
 }
 
 final class EventTests: XCTestCase {
-    func testEvent() {
+    func testEvent() async {
         print()
         
-        let world = World()
+        let world = await World()
             .addEventStreamer(eventType: TestEvent.self)
             .buildEventResponder(TestEvent.self, { responder in
-                responder.addSystem(.update, testEvent(event:eventWriter:commands:currentTime:))
+                await responder.addSystem(.update, testEvent(event:eventWriter:commands:currentTime:))
             })
             .addSystem(.startUp, setUp(eventWriter:))
             .addSystem(.didSpawn, spawnedEntitySystem(eventReader:commands:currentTime:))
             .addSystem(.willDespawn, despanedEntitySystem(eventReader:commands:currentTime:))
         
-        world.setUpWorld()
+        await world.setUpWorld()
         
-        world.update(currentTime: 0)
-        world.update(currentTime: 1)
-        world.update(currentTime: 2)
-        world.update(currentTime: 3)
+        await world.update(currentTime: 0)
+        await world.update(currentTime: 1)
+        await world.update(currentTime: 2)
+        await world.update(currentTime: 3)
+        
     }
 }
+

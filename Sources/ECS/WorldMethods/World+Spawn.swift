@@ -23,9 +23,9 @@ extension World {
     ///
     /// ``Commands/spawn()`` が実行された後, フレームが終了するタイミングでこの関数が実行されます.
     /// entity へのコンポーネントの登録などは, push の後に行われます.
-    func push(entity: Entity, entityRecord: EntityRecordRef) {
+    func push(entity: Entity, entityRecord: EntityRecordRef) async {
         self.insert(entity: entity, entityRecord: entityRecord)
-        self.worldStorage
+        await self.worldStorage
             .chunkStorage
             .push(entity: entity, entityRecord: entityRecord)
         
@@ -38,9 +38,9 @@ extension World {
     /// Entity を削除します.
     ///
     /// ``Commands/despawn()`` が実行された後, フレームが終了するタイミングでこの関数が実行されます.
-    func despawn(entity: Entity) {
+    func despawn(entity: Entity) async {
         self.remove(entity: entity)
-        self.worldStorage
+        await self.worldStorage
             .chunkStorage
             .despawn(entity: entity)
         

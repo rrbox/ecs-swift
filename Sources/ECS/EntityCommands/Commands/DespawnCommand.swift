@@ -6,7 +6,7 @@
 //
 
 class DespawnCommand: EntityCommand {
-    override func runCommand(in world: World) {
-        world.despawn(entity: self.entity)
+    override func runCommand(in world: World) async {
+        await world.despawn(entity: self.entity)
     }
 }

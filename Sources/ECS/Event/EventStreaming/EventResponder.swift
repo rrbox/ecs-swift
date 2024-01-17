@@ -21,9 +21,9 @@ final public class EventResponder<T>: WorldStorageElement {
 }
 
 public extension World {
-    @discardableResult func buildEventResponder<T: EventProtocol>(_ eventType: T.Type, _ build: (EventResponderBuilder) -> ()) -> World {
+    @discardableResult func buildEventResponder<T: EventProtocol>(_ eventType: T.Type, _ build: (EventResponderBuilder) async -> ()) async -> World {
         let builder = EventResponderBuilder(worldStorage: self.worldStorage)
-        build(builder)
+        await build(builder)
         
         self.worldStorage.eventStorage.eventResponder(eventOfType: T.self)!
             .systems

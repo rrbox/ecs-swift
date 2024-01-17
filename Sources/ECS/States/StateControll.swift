@@ -11,7 +11,7 @@
  - note: 詳細は <doc:States> を参照してください.
  */
 
-final public class State<T: StateProtocol>: SystemParameter {
+final public actor State<T: StateProtocol>: SystemParameter {
     let stateStrageRef: StateStorage
     let currentState: T
     
@@ -25,17 +25,17 @@ final public class State<T: StateProtocol>: SystemParameter {
         
     }
     
-    public static func getParameter(from worldStorage: WorldStorageRef) -> State<T>? {
-        State<T>(stateStrageRef: worldStorage.stateStorage,
-                 currentStaete: worldStorage.stateStorage.currentState(ofType: T.self))
+    public static func getParameter(from worldStorage: WorldStorageRef) async -> State<T>? {
+        await State<T>(stateStrageRef: worldStorage.stateStorage,
+                       currentStaete: worldStorage.stateStorage.currentState(ofType: T.self))
     }
     
     /**
      別の状態へ遷移します.
      - Parameter state: 遷移先の `State` を指定します.
      */
-    public func enter(_ state: T) {
-        self.stateStrageRef.enter(state)
+    public func enter(_ state: T) async {
+        await self.stateStrageRef.enter(state)
     }
     
     /**
@@ -48,8 +48,8 @@ final public class State<T: StateProtocol>: SystemParameter {
      - 以前の状態の ``Schedule/onInactiveUpdate(_:)`` と関連づけられたシステムが常時実行されます.
      - 以前の状態および `state` の ``Schedule/onStackUpdate(_:)`` と関連づけられたシステムが常時実行されます.
      */
-    public func push(_ state: T) {
-        self.stateStrageRef.push(state)
+    public func push(_ state: T) async {
+        await self.stateStrageRef.push(state)
     }
     
     /**
@@ -61,8 +61,8 @@ final public class State<T: StateProtocol>: SystemParameter {
      - 直前の状態の ``Schedule/onUpdate(_:)`` と関連したシステムが実行しなくなり, 戻り先の状態の ``Schedule/onUpdate(_:)`` のシステムが常時実行されます.
      - 直前の状態の ``Schedule/onStackUpdate(_:)`` のシステムが実行しなくなります. 戻り先の状態の ``Schedule/onStackUpdate(_:)`` のシステムは引き続き常時実行されます.
      */
-    public func pop() {
-        self.stateStrageRef.pop(T.self)
+    public func pop() async {
+        await self.stateStrageRef.pop(T.self)
     }
     
 }

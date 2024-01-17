@@ -29,17 +29,22 @@ extension World {
 }
 
 extension World {
-    func applyEventQueue() {
+    func applyEventQueue() async {
         let eventQueue = self.worldStorage.eventStorage.eventQueue()!
         eventQueue.sendingEvents = eventQueue.eventQueue
         eventQueue.eventQueue = []
-        for event in eventQueue.sendingEvents {
-            event.runEventReceiver(worldStorage: self.worldStorage)
+        await withTaskGroup(of: Void.self) { group in
+            for event in eventQueue.sendingEvents {
+                group.addTask {
+                    await event.runEventReceiver(worldStorage: self.worldStorage)
+                }
+            }
         }
+        
         eventQueue.sendingEvents = []
     }
     
-    func applyCommandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) {
+    func applyCommandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) async {
         let eventStorage = self.worldStorage.eventStorage
         let eventQueue = eventStorage.commandsEventQueue(eventOfType: T.self)!
         eventQueue.sendingEvents = eventQueue.eventQueue
@@ -48,15 +53,23 @@ extension World {
             self.worldStorage.map.push(EventReader(value: event))
             
             if let systems = eventStorage.commandsEventResponder(eventOfType: T.self)!.systems[.update] {
-                for system in systems {
-                    system.execute(self.worldStorage)
+                await withTaskGroup(of: Void.self) { group in
+                    for system in systems {
+                        group.addTask {
+                            await system.execute(self.worldStorage)
+                        }
+                    }
                 }
             }
             
             for schedule in self.worldStorage.stateStorage.currentSchedulesWhichAssociatedStates() {
                 guard let systems = eventStorage.commandsEventResponder(eventOfType: T.self)!.systems[schedule] else { continue }
-                for system in systems {
-                    system.execute(self.worldStorage)
+                await withTaskGroup(of: Void.self) { group in
+                    for system in systems {
+                        group.addTask {
+                            await system.execute(self.worldStorage)
+                        }
+                    }
                 }
             }
             

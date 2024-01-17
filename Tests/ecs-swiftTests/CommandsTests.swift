@@ -5,6 +5,8 @@
 //  Created by rrbox on 2023/08/11.
 //
 
+#if DEBUG
+
 import XCTest
 @testable import ECS
 
@@ -13,8 +15,8 @@ class TestCommand_Spawn: Command {
     init(entity: Entity) {
         self.entity = entity
     }
-    override func runCommand(in world: World) {
-        world.push(entity: self.entity, entityRecord: EntityRecordRef())
+    override func runCommand(in world: World) async {
+        await world.push(entity: self.entity, entityRecord: EntityRecordRef())
     }
 }
 
@@ -23,13 +25,13 @@ class TestCommand_Despawn: Command {
     init(entity: Entity) {
         self.entity = entity
     }
-    override func runCommand(in world: World) {
-        world.despawn(entity: self.entity)
+    override func runCommand(in world: World) async {
+        await world.despawn(entity: self.entity)
     }
 }
 
 final class CommandsTests: XCTestCase {
-    func testCommands() {
+    func testCommands() async {
         let world = World()
         world.worldStorage.commandsStorage.setCommands(Commands())
         let commands = world.worldStorage.commandsStorage.commands()!
@@ -37,23 +39,29 @@ final class CommandsTests: XCTestCase {
         let testEntities = [Entity(), Entity(), Entity()]
         
         for testEntity in testEntities {
-            commands.push(command: TestCommand_Spawn(entity: testEntity))
+            await commands.push(command: TestCommand_Spawn(entity: testEntity))
         }
         
-        XCTAssertEqual(commands.commandQueue.count, 3)
-        world.applyCommands()
+        var commandsCount = await commands.commandQueue.count
+        XCTAssertEqual(commandsCount, 3)
+        await world.applyCommands()
         
-        XCTAssertEqual(commands.commandQueue.count, 0)
+        commandsCount = await commands.commandQueue.count
+        XCTAssertEqual(commandsCount, 0)
         XCTAssertEqual(world.entities.sequence.count, 3)
         
         for testEntity in testEntities {
-            commands.push(command: TestCommand_Despawn(entity: testEntity))
+            await commands.push(command: TestCommand_Despawn(entity: testEntity))
         }
         
-        XCTAssertEqual(commands.commandQueue.count, 3)
-        world.applyCommands()
+        commandsCount = await commands.commandQueue.count
+        XCTAssertEqual(commandsCount, 3)
+        await world.applyCommands()
         
-        XCTAssertEqual(commands.commandQueue.count, 0)
+        commandsCount = await commands.commandQueue.count
+        XCTAssertEqual(commandsCount, 0)
         XCTAssertEqual(world.entities.sequence.count, 0)
     }
 }
+
+#endif

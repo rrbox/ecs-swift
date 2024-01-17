@@ -5,21 +5,21 @@
 //  Created by rrbox on 2023/08/12.
 //
 
-final public class Query<ComponentType: Component>: Chunk, SystemParameter {
+public actor Query<ComponentType: Component>: Chunk, SystemParameter {
     var components = [Entity: ComponentRef<ComponentType>]()
     
-    public override init() {}
+    public init() {}
     
-    public override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
+    public func spawn(entity: Entity, entityRecord: EntityRecordRef) async {
         guard let componentRef = entityRecord.componentRef(ComponentType.self) else { return }
         self.components[entity] = componentRef
     }
     
-    public override func despawn(entity: Entity) {
+    public func despawn(entity: Entity) async {
         self.components.removeValue(forKey: entity)
     }
     
-    override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
+    public func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
         guard let componentRef = entityRecord.componentRef(ComponentType.self) else {
             self.components.removeValue(forKey: entity)
             return
@@ -43,14 +43,14 @@ final public class Query<ComponentType: Component>: Chunk, SystemParameter {
         self.components[entity]?.value
     }
     
-    public static func register(to worldStorage: WorldStorageRef) {
+    public static func register(to worldStorage: WorldStorageRef) async {
         guard worldStorage.chunkStorage.chunk(ofType: Self.self) == nil else {
             return
         }
         
         let queryRegistory = Self()
         
-        worldStorage.chunkStorage.addChunk(queryRegistory)
+        await worldStorage.chunkStorage.addChunk(queryRegistory)
         
     }
     

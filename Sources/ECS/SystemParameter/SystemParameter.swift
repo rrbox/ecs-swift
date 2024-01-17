@@ -9,7 +9,7 @@
 ///
 /// - note: カスタムのパラメータを定義する場合にこのプロトコルを使用してください.
 public protocol SystemParameter: AnyObject {
-    static func register(to worldStorage: WorldStorageRef)
-    static func getParameter(from worldStorage: WorldStorageRef) -> Self?
+    static func register(to worldStorage: WorldStorageRef) async
+    static func getParameter(from worldStorage: WorldStorageRef) async -> Self?
 }
 

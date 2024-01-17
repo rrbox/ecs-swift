@@ -21,37 +21,44 @@ public extension World {
      
      - note: 最初のフレーム (current time = 0) は準備用フレームとして実行されるため, システムが実行されません.
      */
-    func update(currentTime: TimeInterval) {
+    func update(currentTime: TimeInterval) async {
         let currentTimeResource = self.worldStorage.resourceBuffer.resource(ofType: CurrentTime.self)!
         
         self.worldStorage.resourceBuffer.resource(ofType: DeltaTime.self)?.resource = DeltaTime(value: currentTime - currentTimeResource.resource.value)
         
         currentTimeResource.resource = CurrentTime(value: currentTime)
         
-        for system in self.worldStorage.systemStorage.systems(self.updateSchedule) {
-            system.execute(self.worldStorage)
-        }
-        
-        // activate な state を shcedule によって紐づけられた system を実行します.
-        for schedule in self.worldStorage.stateStorage.currentSchedulesWhichAssociatedStates() {
-            for system in self.worldStorage.systemStorage.systems(schedule) {
-                system.execute(self.worldStorage)
+        await withTaskGroup(of: Void.self) { group in
+            for system in self.worldStorage.systemStorage.systems(self.updateSchedule) {
+                group.addTask {
+                    await system.execute(self.worldStorage)
+                }
+            }
+            
+            // activate な state を shcedule によって紐づけられた system を実行します.
+            for schedule in self.worldStorage.stateStorage.currentSchedulesWhichAssociatedStates() {
+                for system in self.worldStorage.systemStorage.systems(schedule) {
+                    group.addTask {
+                        await system.execute(self.worldStorage)
+                    }
+                }
+                
             }
             
         }
         
         // world が受信した event を event system に発信します.
-        self.applyEventQueue()
+        await self.applyEventQueue()
         
-        self.applyCommands()
+        await self.applyCommands()
         
         // will despawn event を配信します.
-        self.applyCommandsEventQueue(eventOfType: WillDespawnEvent.self)
+        await self.applyCommandsEventQueue(eventOfType: WillDespawnEvent.self)
         
         // apply commands の際に push された entity を chunk に割り振ります.
-        self.worldStorage.chunkStorage.applyEntityQueue()
+        await self.worldStorage.chunkStorage.applyEntityQueue()
         
         // Did Spawn event を event system に発信します.
-        self.applyCommandsEventQueue(eventOfType: DidSpawnEvent.self)
+        await self.applyCommandsEventQueue(eventOfType: DidSpawnEvent.self)
     }
 }

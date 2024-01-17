@@ -10,7 +10,7 @@ public protocol EventProtocol {
 }
 
 class AnyEvent {
-    func runEventReceiver(worldStorage: WorldStorageRef) {
+    func runEventReceiver(worldStorage: WorldStorageRef) async {
         
     }
 }
@@ -21,19 +21,27 @@ final class Event<T: EventProtocol>: AnyEvent {
         self.value = value
     }
     
-    override func runEventReceiver(worldStorage: WorldStorageRef) {
+    override func runEventReceiver(worldStorage: WorldStorageRef) async {
         worldStorage.map.push(EventReader(value: self.value))
         
         if let systems = worldStorage.eventStorage.eventResponder(eventOfType: T.self)!.systems[.update] {
-            for system in systems {
-                system.execute(worldStorage)
+            await withTaskGroup(of: Void.self) { group in
+                for system in systems {
+                    group.addTask {
+                        await system.execute(worldStorage)
+                    }
+                }
             }
         }
         
         for schedule in worldStorage.stateStorage.currentSchedulesWhichAssociatedStates() {
             guard let systems = worldStorage.eventStorage.eventResponder(eventOfType: T.self)!.systems[schedule] else { continue }
-            for system in systems {
-                system.execute(worldStorage)
+            await withTaskGroup(of: Void.self) { group in
+                for system in systems {
+                    group.addTask {
+                        await system.execute(worldStorage)
+                    }
+                }
             }
         }
         

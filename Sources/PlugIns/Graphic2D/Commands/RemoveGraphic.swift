@@ -8,7 +8,7 @@
 import ECS
 
 class RemoveGraphic: EntityCommand {
-    override func runCommand(in world: World) {
+    func runCommand(in world: World) {
         world.removeGraphic(fromEntity: self.entity)
     }
 }

@@ -5,23 +5,23 @@
 //  Created by rrbox on 2023/08/12.
 //
 
-final public class Query2<C0: Component, C1: Component>: Chunk, SystemParameter {
+public actor Query2<C0: Component, C1: Component>: Chunk, SystemParameter {
     var components = [Entity: (ComponentRef<C0>, ComponentRef<C1>)]()
     var executes: [(Entity, inout C0, inout C1) -> ()] = []
     
-    public override init() {}
+    public init() {}
     
-    public override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
+    public func spawn(entity: Entity, entityRecord: EntityRecordRef) {
         guard let c0 = entityRecord.componentRef(C0.self),
               let c1 = entityRecord.componentRef(C1.self) else { return }
         self.components[entity] = (c0, c1)
     }
     
-    public override func despawn(entity: Entity) {
+    public func despawn(entity: Entity) {
         self.components.removeValue(forKey: entity)
     }
     
-    override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
+    public func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
         guard let c0 = entityRecord.componentRef(C0.self),
               let c1 = entityRecord.componentRef(C1.self) else {
             self.components.removeValue(forKey: entity)
@@ -49,14 +49,14 @@ final public class Query2<C0: Component, C1: Component>: Chunk, SystemParameter 
     }
 
     
-    public static func register(to worldStorage: WorldStorageRef) {
+    public static func register(to worldStorage: WorldStorageRef) async {
         guard worldStorage.chunkStorage.chunk(ofType: Self.self) == nil else {
             return
         }
         
         let queryRegistory = Self()
         
-        worldStorage.chunkStorage.addChunk(queryRegistory)
+        await worldStorage.chunkStorage.addChunk(queryRegistory)
         
     }
     
