@@ -7,7 +7,7 @@
 
 enum WorldStorage {}
 
-protocol WorldStorageElement {}
+public protocol WorldStorageElement {}
 
 class Box<T: WorldStorageElement>: Item {
     var body: T

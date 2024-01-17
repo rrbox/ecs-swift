@@ -21,16 +21,20 @@ open class Scene: SKScene {
     
     final public override func didMove(to view: SKView) {
         self._world = self.buildWorld()
-        self._world?.setUpWorld()
+        Task {
+            await self._world?.setUpWorld()
+        }
     }
     
     final public override func update(_ currentTime: TimeInterval) {
-        self._world?.update(currentTime: currentTime)
+        Task {
+            await self._world?.update(currentTime: currentTime)
+        }
     }
     
-    public func restartWorld() {
+    public func restartWorld() async {
         self._world = self.buildWorld()
-        self._world.setUpWorld()
+        await self._world.setUpWorld()
     }
     
 }

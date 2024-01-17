@@ -16,7 +16,7 @@ class SetGraphic: EntityCommand {
         super.init(entity: entity)
     }
     
-    override func runCommand(in world: World) {
+    func runCommand(in world: World) {
         world.setGraphic(self.node, forEntity: self.entity)
     }
 }

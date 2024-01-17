@@ -20,7 +20,7 @@
  }
  ```
  */
-final public class Commands: SystemParameter {
+public actor Commands: SystemParameter {
     var commandQueue = [Command]()
     
     /// Commands では, World への登録時には何もしません.
@@ -35,5 +35,9 @@ final public class Commands: SystemParameter {
     /// CommandQueue にコマンドを追加します.
     public func push(command: Command) {
         self.commandQueue.append(command)
+    }
+    
+    func clearAllCommand() {
+        self.commandQueue = []
     }
 }

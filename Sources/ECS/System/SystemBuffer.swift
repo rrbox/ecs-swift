@@ -7,7 +7,7 @@
 
 public class SystemExecute {
     init() {}
-    public func execute(_ worldStorage: WorldStorageRef) {}
+    public func execute(_ worldStorage: WorldStorageRef) async {}
 }
 
 final public class SystemStorage {

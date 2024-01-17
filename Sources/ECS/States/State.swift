@@ -9,8 +9,8 @@ public protocol StateProtocol: Hashable {
     
 }
 
-public class StateStorage {
-    class StateRegistry<T: StateProtocol>: WorldStorageElement {
+public final class StateStorage {
+    actor StateRegistry<T: StateProtocol>: WorldStorageElement {
         var currentState: T
         var inactiveStates = [T]()
         
@@ -18,6 +18,17 @@ public class StateStorage {
             self.currentState = currentState
         }
         
+        func setState(_ state: T) {
+            self.currentState = state
+        }
+        
+        func push(_ state: T) {
+            self.inactiveStates.append(state)
+        }
+        
+        func pop() -> T {
+            self.inactiveStates.removeLast()
+        }
     }
     
     class StateAssociatedSchedules: WorldStorageElement {
@@ -48,82 +59,83 @@ public class StateStorage {
         self.storageRef.map.valueRef(ofType: StatesDidEnterInStartUp.self)!.body.schedules.insert(.didEnter(initialState))
     }
     
-    func currentState<T: StateProtocol>(ofType type: T.Type) -> T? {
-        self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)?.body.currentState
+    func currentState<T: StateProtocol>(ofType type: T.Type) async -> T? {
+        await self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)?.body.currentState
     }
     
     func currentSchedulesWhichAssociatedStates() -> Set<Schedule> {
         self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body.schedules
     }
     
-    func enter<T: StateProtocol>(_ state: T) {
+    func enter<T: StateProtocol>(_ state: T) async {
         let stateRegistry = self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body
         let schedulesManager = self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body
         
-        schedulesManager.schedules.remove(.onUpdate(stateRegistry.currentState))
-        schedulesManager.schedules.remove(.onStackUpdate(stateRegistry.currentState))
+        await schedulesManager.schedules.remove(.onUpdate(stateRegistry.currentState))
+        await schedulesManager.schedules.remove(.onStackUpdate(stateRegistry.currentState))
         
         // will exit
-        for system in self.storageRef.systemStorage.systems(.willExit(stateRegistry.currentState)) {
-            system.execute(self.storageRef)
+        for system in await self.storageRef.systemStorage.systems(.willExit(stateRegistry.currentState)) {
+            await system.execute(self.storageRef)
         }
         
-        self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body.currentState = state
+        await self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body.setState(state)
         
         // did enter
         for system in self.storageRef.systemStorage.systems(.didEnter(state)) {
-            system.execute(self.storageRef)
+            await system.execute(self.storageRef)
         }
         
         schedulesManager.schedules.insert(.onUpdate(state))
         schedulesManager.schedules.insert(.onStackUpdate(state))
     }
     
-    func push<T: StateProtocol>(_ state: T) {
+    func push<T: StateProtocol>(_ state: T) async {
         let registry = self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body
         let schedulesManager = self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body
         
         // on pause
-        for system in self.storageRef.systemStorage.systems(.onPause(registry.currentState)) {
-            system.execute(self.storageRef)
+        for system in await self.storageRef.systemStorage.systems(.onPause(registry.currentState)) {
+            await system.execute(self.storageRef)
         }
         
-        schedulesManager.schedules.remove(.onUpdate(registry.currentState))
-        schedulesManager.schedules.insert(.onInactiveUpdate(registry.currentState))
+        await schedulesManager.schedules.remove(.onUpdate(registry.currentState))
+        await schedulesManager.schedules.insert(.onInactiveUpdate(registry.currentState))
         
-        registry.inactiveStates.append(registry.currentState)
-        registry.currentState = state
+        await registry.push(registry.currentState)
+        await registry.setState(state)
         
         schedulesManager.schedules.insert(.onUpdate(state))
         schedulesManager.schedules.insert(.onStackUpdate(state))
         
         // did enter
         for system in self.storageRef.systemStorage.systems(.didEnter(state)) {
-            system.execute(self.storageRef)
+            await system.execute(self.storageRef)
         }
     }
     
-    func pop<T: StateProtocol>(_ stateType: T.Type) {
+    func pop<T: StateProtocol>(_ stateType: T.Type) async {
         let registry = self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body
         let schedulesManager = self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body
         
         // will exit
-        for system in self.storageRef.systemStorage.systems(.willExit(registry.currentState)) {
-            system.execute(self.storageRef)
+        for system in await self.storageRef.systemStorage.systems(.willExit(registry.currentState)) {
+            await system.execute(self.storageRef)
         }
         
-        schedulesManager.schedules.remove(.onUpdate(registry.currentState))
-        schedulesManager.schedules.remove(.onStackUpdate(registry.currentState))
+        await schedulesManager.schedules.remove(.onUpdate(registry.currentState))
+        await schedulesManager.schedules.remove(.onStackUpdate(registry.currentState))
         
-        registry.currentState = registry.inactiveStates.removeLast()
+//        registry.currentState = registry.inactiveStates.removeLast()
+        await registry.setState(registry.pop())
         
         // on resume
-        for system in self.storageRef.systemStorage.systems(.onResume(registry.currentState)) {
-            system.execute(self.storageRef)
+        for system in await self.storageRef.systemStorage.systems(.onResume(registry.currentState)) {
+            await system.execute(self.storageRef)
         }
         
-        schedulesManager.schedules.remove(.onInactiveUpdate(registry.currentState))
-        schedulesManager.schedules.insert(.onUpdate(registry.currentState))
+        await schedulesManager.schedules.remove(.onInactiveUpdate(registry.currentState))
+        await schedulesManager.schedules.insert(.onUpdate(registry.currentState))
     }
     
 }

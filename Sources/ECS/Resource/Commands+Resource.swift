@@ -12,7 +12,7 @@ class AddResource<T: ResourceProtocol>: Command {
         self.resrouce = resrouce
     }
     
-    override func runCommand(in world: World) {
+    override func runCommand(in world: World) async {
         world.addResource(self.resrouce)
     }
 }

@@ -5,10 +5,6 @@
 //  Created by rrbox on 2023/08/11.
 //
 
-extension Chunk: WorldStorageElement {
-    
-}
-
 /// Chunk を種類別で格納します
 final public class ChunkStorage {
     let buffer: WorldStorageRef

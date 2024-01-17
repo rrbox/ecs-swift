@@ -13,7 +13,7 @@ class AddComponent<ComponentType: Component>: EntityCommand {
         super.init(entity: entity)
     }
     
-    override func runCommand(in world: World) {
-        world.addComponent(self.componnet, forEntity: self.entity)
+    override func runCommand(in world: World) async {
+        await world.addComponent(self.componnet, forEntity: self.entity)
     }
 }

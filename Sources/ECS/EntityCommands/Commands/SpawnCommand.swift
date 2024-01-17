@@ -13,8 +13,8 @@ class SpawnCommand: EntityCommand {
         super.init(entity: id)
     }
     
-    override func runCommand(in world: World) {
-        world.push(entity: self.entity, entityRecord: self.entityRecord)
+    override func runCommand(in world: World) async {
+        await world.push(entity: self.entity, entityRecord: self.entityRecord)
     }
 }
 
