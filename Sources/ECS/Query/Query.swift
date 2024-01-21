@@ -5,13 +5,13 @@
 //  Created by rrbox on 2023/08/12.
 //
 
-final public class Query<ComponentType: Component>: Chunk, SystemParameter {
-    var components = [Entity: ComponentRef<ComponentType>]()
+final public class Query<ComponentType: QueryTarget>: Chunk, SystemParameter {
+    var components = [Entity: Ref<ComponentType>]()
     
     public override init() {}
     
     public override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
-        guard let componentRef = entityRecord.componentRef(ComponentType.self) else { return }
+        guard let componentRef = entityRecord.ref(ComponentType.self) else { return }
         self.components[entity] = componentRef
     }
     
@@ -20,7 +20,7 @@ final public class Query<ComponentType: Component>: Chunk, SystemParameter {
     }
     
     override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
-        guard let componentRef = entityRecord.componentRef(ComponentType.self) else {
+        guard let componentRef = entityRecord.ref(ComponentType.self) else {
             self.components.removeValue(forKey: entity)
             return
         }

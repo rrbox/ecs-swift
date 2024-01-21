@@ -11,13 +11,13 @@ public protocol Filter {
 
 public struct With<T: Component>: Filter {
     public static func condition(forEntityRecord entityRecord: EntityRecordRef) -> Bool {
-        entityRecord.componentRef(T.self) != nil
+        entityRecord.ref(T.self) != nil
     }
 }
 
 public struct WithOut<T: Component>: Filter {
     public static func condition(forEntityRecord entityRecord: EntityRecordRef) -> Bool {
-        entityRecord.componentRef(T.self) == nil
+        entityRecord.ref(T.self) == nil
     }
 }
 

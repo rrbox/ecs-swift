@@ -9,7 +9,7 @@ extension World {
     /// Entity に Component を追加します.
     func addComponent<ComponentType: Component>(_ component: ComponentType, forEntity entity: Entity) {
         let archetype = self.entityRecord(forEntity: entity)!
-        if let componentRef = archetype.componentRef(ComponentType.self) {
+        if let componentRef = archetype.ref(ComponentType.self) {
             componentRef.value = component
         }
         archetype.addComponent(component)

@@ -5,16 +5,16 @@
 //  Created by rrbox on 2023/08/12.
 //
 
-final public class Query4<C0: Component, C1: Component, C2: Component, C3: Component>: Chunk, SystemParameter {
-    var components = [Entity: (ComponentRef<C0>, ComponentRef<C1>, ComponentRef<C2>, ComponentRef<C3>)]()
+final public class Query4<C0: QueryTarget, C1: QueryTarget, C2: QueryTarget, C3: QueryTarget>: Chunk, SystemParameter {
+    var components = [Entity: (Ref<C0>, Ref<C1>, Ref<C2>, Ref<C3>)]()
     
     public override init() {}
     
     public override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
-        guard let c0 = entityRecord.componentRef(C0.self),
-              let c1 = entityRecord.componentRef(C1.self),
-              let c2 = entityRecord.componentRef(C2.self),
-              let c3 = entityRecord.componentRef(C3.self) else { return }
+        guard let c0 = entityRecord.ref(C0.self),
+              let c1 = entityRecord.ref(C1.self),
+              let c2 = entityRecord.ref(C2.self),
+              let c3 = entityRecord.ref(C3.self) else { return }
         self.components[entity] = (c0, c1, c2, c3)
     }
     
@@ -23,10 +23,10 @@ final public class Query4<C0: Component, C1: Component, C2: Component, C3: Compo
     }
     
     override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
-        guard let c0 = entityRecord.componentRef(C0.self),
-              let c1 = entityRecord.componentRef(C1.self),
-              let c2 = entityRecord.componentRef(C2.self),
-              let c3 = entityRecord.componentRef(C3.self) else {
+        guard let c0 = entityRecord.ref(C0.self),
+              let c1 = entityRecord.ref(C1.self),
+              let c2 = entityRecord.ref(C2.self),
+              let c3 = entityRecord.ref(C3.self) else {
             self.components.removeValue(forKey: entity)
             return
         }
