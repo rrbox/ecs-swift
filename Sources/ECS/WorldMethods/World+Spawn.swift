@@ -24,6 +24,8 @@ extension World {
     /// ``Commands/spawn()`` が実行された後, フレームが終了するタイミングでこの関数が実行されます.
     /// entity へのコンポーネントの登録などは, push の後に行われます.
     func push(entity: Entity, entityRecord: EntityRecordRef) {
+        entityRecord.map.body[ObjectIdentifier(Entity.self)] = ImmutableRef(value: entity)
+        
         self.insert(entity: entity, entityRecord: entityRecord)
         self.worldStorage
             .chunkStorage
