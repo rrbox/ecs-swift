@@ -5,7 +5,7 @@
 //  Created by rrbox on 2023/09/17.
 //
 
-public protocol QueryProtocol {
+public protocol QueryProtocol: Chunk {
     func spawn(entity: Entity, entityRecord: EntityRecordRef)
     func despawn(entity: Entity)
     init()

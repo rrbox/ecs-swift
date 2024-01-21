@@ -29,4 +29,12 @@ final public class Filtered<Q: QueryProtocol, F: Filter>: Chunk, SystemParameter
         worldStorage.chunkStorage.addChunk(Filtered<Q, F>())
     }
     
+    override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
+        guard F.condition(forEntityRecord: entityRecord) else {
+            self.query.despawn(entity: entity)
+            return
+        }
+        self.query.applyCurrentState(entityRecord, forEntity: entity)
+    }
+    
 }
