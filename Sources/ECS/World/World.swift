@@ -47,12 +47,13 @@ public struct Entities {
  
  */
 final public class World {
-    var entities: Entities
+    var entities: SparseSet<EntityRecordRef>
     var updateSchedule: Schedule
     public let worldStorage: WorldStorageRef
     
     init(entities: [Entity: EntityRecordRef], worldStorage: WorldStorageRef) {
-        self.entities = Entities(sequence: entities)
+//        self.entities = Entities(sequence: entities)
+        self.entities = SparseSet(sparse: [], dense: [], data: [])
         self.updateSchedule = .firstFrame
         self.worldStorage = worldStorage
     }
