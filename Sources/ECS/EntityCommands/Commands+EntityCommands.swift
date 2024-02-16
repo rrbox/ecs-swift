@@ -12,13 +12,6 @@ public extension Commands {
     }
     
     /// Entity を追加して変更を加えます.
-//    func spawn() -> EntityCommands {
-//        let entity = Entity()
-//        self.commandQueue.append(SpawnCommand(id: entity, entityRecord: EntityRecordRef()))
-//        return EntityCommands(entity: entity, commands: self)
-//    }
-    
-    /// Entity を追加して変更を加えます.
     func spawn() -> EntityCommands {
         let entity = self.generator.generate()
         let record = EntityRecordRef()
