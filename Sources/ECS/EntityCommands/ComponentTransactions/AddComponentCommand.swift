@@ -5,15 +5,16 @@
 //  Created by rrbox on 2023/08/10.
 //
 
-class AddComponent<ComponentType: Component>: EntityCommand {
-    let componnet: ComponentType
+class AddComponent<C: Component>: ComponentTransaction {
+    let entity: Entity
+    let component: C
     
-    init(entity: Entity, componnet: ComponentType) {
-        self.componnet = componnet
-        super.init(entity: entity)
+    init(entity: Entity, component: C) {
+        self.entity = entity
+        self.component = component
     }
     
     override func runCommand(in world: World) {
-        world.addComponent(self.componnet, forEntity: self.entity)
+        world.addComponent(self.component, forEntity: self.entity)
     }
 }
