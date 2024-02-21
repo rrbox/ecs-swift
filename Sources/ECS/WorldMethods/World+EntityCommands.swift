@@ -18,7 +18,7 @@ extension World {
     
     /// Entity から Component を削除します.
     func removeComponent<ComponentType: Component>(ofType type: ComponentType.Type, fromEntity entity: Entity) {
-        let archetype = self.entityRecord(forEntity: entity)!
+        guard let archetype = self.entityRecord(forEntity: entity) else { return }
         archetype.removeComponent(ofType: ComponentType.self)
         self.worldStorage.chunkStorage.applyCurrentState(archetype, forEntity: entity)
     }
