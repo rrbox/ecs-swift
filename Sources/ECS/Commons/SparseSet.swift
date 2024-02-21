@@ -47,9 +47,16 @@ public struct SparseSet<T> {
         let removeIndex = self.sparse[entity.slot]!
         
         self.sparse[self.dense[denseIndexLast].slot] = removeIndex
+        self.sparse[self.dense[removeIndex].slot] = nil
         self.dense.swapAt(removeIndex, denseIndexLast)
         self.data.swapAt(removeIndex, denseIndexLast)
         self.data.removeLast()
         self.dense.removeLast()
+    }
+    
+    public func contains(_ entity: Entity) -> Bool {
+        guard self.sparse.indices.contains(entity.slot) else { return false }
+        guard let i = self.sparse[entity.slot] else { return false }
+        return self.dense.indices.contains(i)
     }
 }
