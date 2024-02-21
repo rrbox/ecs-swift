@@ -11,6 +11,9 @@ extension World {
         for transaction in commands.entityTransactions {
             transaction.runCommand(in: self)
         }
+        for transaction in commands.componentTramsactions {
+            transaction.runCommand(in: self)
+        }
         for command in commands.commandQueue {
             command.runCommand(in: self)
         }
