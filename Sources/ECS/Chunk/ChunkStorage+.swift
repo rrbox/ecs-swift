@@ -27,9 +27,11 @@ extension ChunkStorage {
         self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.despawn(entity: entity)
     }
     
-    // entity を最新の状態に更新します.
-    func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
+}
+
+public extension ChunkStorage {
+    /// entity を最新の状態に更新します.
+    func apply(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
         self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.applyCurrentState(entityRecord, forEntity: entity)
     }
-    
 }

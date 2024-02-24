@@ -13,14 +13,14 @@ extension World {
             componentRef.value = component
         }
         archetype.addComponent(component)
-        self.worldStorage.chunkStorage.applyCurrentState(archetype, forEntity: entity)
+        self.worldStorage.chunkStorage.apply(archetype, forEntity: entity)
     }
     
     /// Entity から Component を削除します.
     func removeComponent<ComponentType: Component>(ofType type: ComponentType.Type, fromEntity entity: Entity) {
         guard let archetype = self.entityRecord(forEntity: entity) else { return }
         archetype.removeComponent(ofType: ComponentType.self)
-        self.worldStorage.chunkStorage.applyCurrentState(archetype, forEntity: entity)
+        self.worldStorage.chunkStorage.apply(archetype, forEntity: entity)
     }
 }
 
