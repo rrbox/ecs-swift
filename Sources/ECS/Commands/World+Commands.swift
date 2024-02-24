@@ -18,6 +18,7 @@ extension World {
             command.runCommand(in: self)
         }
         commands.entityTransactions = []
+        commands.componentTramsactions = []
         commands.commandQueue = []
     }
 }
