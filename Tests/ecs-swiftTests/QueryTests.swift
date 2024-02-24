@@ -41,92 +41,103 @@ final class QueryTests: XCTestCase {
         let testEntity = commands.spawn().addComponent(TestComponent(content: "test")).id()
         
         world.applyCommands()
+        world.worldStorage.chunkStorage.applyEntityQueue()
         
-        XCTAssertEqual(testQuery.components.count, 1)
-        XCTAssertEqual(testQuery2.components.count, 0)
-        XCTAssertEqual(testQuery3.components.count, 0)
-        XCTAssertEqual(testQuery4.components.count, 0)
-        XCTAssertEqual(testQuery5.components.count, 0)
+        XCTAssertEqual(testQuery.components.data.count, 1)
+        XCTAssertEqual(testQuery2.components.data.count, 0)
+        XCTAssertEqual(testQuery3.components.data.count, 0)
+        XCTAssertEqual(testQuery4.components.data.count, 0)
+        XCTAssertEqual(testQuery5.components.data.count, 0)
         
-        XCTAssertEqual(testEntityQuery.components.count, 1)
-        XCTAssertEqual(testEntityQuery2.components.count, 1)
-        XCTAssertEqual(testEntityQuery3.components.count, 0)
-        XCTAssertEqual(testEntityQuery4.components.count, 0)
-        XCTAssertEqual(testEntityQuery5.components.count, 0)
+        XCTAssertEqual(testEntityQuery.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery2.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery3.components.data.count, 0)
+        XCTAssertEqual(testEntityQuery4.components.data.count, 0)
+        XCTAssertEqual(testEntityQuery5.components.data.count, 0)
         
         commands.entity(testEntity)?.addComponent(TestComponent2(content: "test2"))
         
         world.applyCommands()
+        world.worldStorage.chunkStorage.applyEntityQueue()
         
-        XCTAssertEqual(testQuery.components.count, 1)
-        XCTAssertEqual(testQuery2.components.count, 1)
-        XCTAssertEqual(testQuery3.components.count, 0)
-        XCTAssertEqual(testQuery4.components.count, 0)
-        XCTAssertEqual(testQuery5.components.count, 0)
+        XCTAssertEqual(testQuery.components.data.count, 1)
+        XCTAssertEqual(testQuery2.components.data.count, 1)
+        XCTAssertEqual(testQuery3.components.data.count, 0)
+        XCTAssertEqual(testQuery4.components.data.count, 0)
+        XCTAssertEqual(testQuery5.components.data.count, 0)
         
-        XCTAssertEqual(testEntityQuery.components.count, 1)
-        XCTAssertEqual(testEntityQuery2.components.count, 1)
-        XCTAssertEqual(testEntityQuery3.components.count, 1)
-        XCTAssertEqual(testEntityQuery4.components.count, 0)
-        XCTAssertEqual(testEntityQuery5.components.count, 0)
+        XCTAssertEqual(testEntityQuery.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery2.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery3.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery4.components.data.count, 0)
+        XCTAssertEqual(testEntityQuery5.components.data.count, 0)
         
         commands.entity(testEntity)?.addComponent(TestComponent3(content: "test2"))
         
         world.applyCommands()
+        world.worldStorage.chunkStorage.applyEntityQueue()
         
-        XCTAssertEqual(testQuery.components.count, 1)
-        XCTAssertEqual(testQuery2.components.count, 1)
-        XCTAssertEqual(testQuery3.components.count, 1)
-        XCTAssertEqual(testQuery4.components.count, 0)
-        XCTAssertEqual(testQuery5.components.count, 0)
+        XCTAssertEqual(testQuery.components.data.count, 1)
+        XCTAssertEqual(testQuery2.components.data.count, 1)
+        XCTAssertEqual(testQuery3.components.data.count, 1)
+        XCTAssertEqual(testQuery4.components.data.count, 0)
+        XCTAssertEqual(testQuery5.components.data.count, 0)
         
-        XCTAssertEqual(testEntityQuery.components.count, 1)
-        XCTAssertEqual(testEntityQuery2.components.count, 1)
-        XCTAssertEqual(testEntityQuery3.components.count, 1)
-        XCTAssertEqual(testEntityQuery4.components.count, 1)
-        XCTAssertEqual(testEntityQuery5.components.count, 0)
+        XCTAssertEqual(testEntityQuery.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery2.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery3.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery4.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery5.components.data.count, 0)
         
         commands.entity(testEntity)?.addComponent(TestComponent4(content: "test2"))
         
         world.applyCommands()
+        world.worldStorage.chunkStorage.applyEntityQueue()
         
-        XCTAssertEqual(testQuery.components.count, 1)
-        XCTAssertEqual(testQuery2.components.count, 1)
-        XCTAssertEqual(testQuery3.components.count, 1)
-        XCTAssertEqual(testQuery4.components.count, 1)
-        XCTAssertEqual(testQuery5.components.count, 0)
+        XCTAssertEqual(testQuery.components.data.count, 1)
+        XCTAssertEqual(testQuery2.components.data.count, 1)
+        XCTAssertEqual(testQuery3.components.data.count, 1)
+        XCTAssertEqual(testQuery4.components.data.count, 1)
+        XCTAssertEqual(testQuery5.components.data.count, 0)
         
-        XCTAssertEqual(testEntityQuery.components.count, 1)
-        XCTAssertEqual(testEntityQuery2.components.count, 1)
-        XCTAssertEqual(testEntityQuery3.components.count, 1)
-        XCTAssertEqual(testEntityQuery4.components.count, 1)
-        XCTAssertEqual(testEntityQuery5.components.count, 1)
+        XCTAssertEqual(testEntityQuery.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery2.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery3.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery4.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery5.components.data.count, 1)
         
         commands.entity(testEntity)?.addComponent(TestComponent5(content: "test2"))
         
         world.applyCommands()
+        world.worldStorage.chunkStorage.applyEntityQueue()
         
-        XCTAssertEqual(testQuery.components.count, 1)
-        XCTAssertEqual(testQuery2.components.count, 1)
-        XCTAssertEqual(testQuery3.components.count, 1)
-        XCTAssertEqual(testQuery4.components.count, 1)
-        XCTAssertEqual(testQuery5.components.count, 1)
+        XCTAssertEqual(testQuery.components.data.count, 1)
+        XCTAssertEqual(testQuery2.components.data.count, 1)
+        XCTAssertEqual(testQuery3.components.data.count, 1)
+        XCTAssertEqual(testQuery4.components.data.count, 1)
+        XCTAssertEqual(testQuery5.components.data.count, 1)
         
         commands.entity(testEntity)?.removeComponent(ofType: TestComponent.self)
         
         world.applyCommands()
+        world.worldStorage.chunkStorage.applyEntityQueue()
         
-        XCTAssertEqual(testQuery.components.count, 0)
-        XCTAssertEqual(testQuery2.components.count, 0)
-        XCTAssertEqual(testQuery3.components.count, 0)
-        XCTAssertEqual(testQuery4.components.count, 0)
-        XCTAssertEqual(testQuery5.components.count, 0)
+        XCTAssertEqual(testQuery.components.data.count, 0)
+        XCTAssertEqual(testQuery2.components.data.count, 0)
+        XCTAssertEqual(testQuery3.components.data.count, 0)
+        XCTAssertEqual(testQuery4.components.data.count, 0)
+        XCTAssertEqual(testQuery5.components.data.count, 0)
         
-        XCTAssertEqual(testEntityQuery.components.count, 1)
-        XCTAssertEqual(testEntityQuery2.components.count, 0)
-        XCTAssertEqual(testEntityQuery3.components.count, 0)
-        XCTAssertEqual(testEntityQuery4.components.count, 0)
-        XCTAssertEqual(testEntityQuery5.components.count, 0)
+        XCTAssertEqual(testEntityQuery.components.data.count, 1)
+        XCTAssertEqual(testEntityQuery2.components.data.count, 0)
+        XCTAssertEqual(testEntityQuery3.components.data.count, 0)
+        XCTAssertEqual(testEntityQuery4.components.data.count, 0)
+        XCTAssertEqual(testEntityQuery5.components.data.count, 0)
+    }
+    
+    // v0.2 以降は entity 追加直後の component 追加処理は扱いが変わるため, それ専用のテストも作成します.
+    func testSpawnedEntityCommands() {
+        
     }
     
 }

@@ -5,7 +5,7 @@
 //  Created by rrbox on 2023/08/09.
 //
 
-final public class EntityCommands {
+public class EntityCommands {
     let entity: Entity
     let commands: Commands
     
@@ -28,16 +28,14 @@ final public class EntityCommands {
     /// - Parameter component: 追加するコンポーネントを指定します.
     /// - Returns: Entity component のビルダーです.
     @discardableResult public func addComponent<ComponentType: Component>(_ component: ComponentType) -> EntityCommands {
-        self.commands.commandQueue.append(AddComponent(entity: self.entity, componnet: component))
-        return self
+        fatalError("not implemented error")
     }
     
     /// Entity から Component を削除します.
     /// - Parameter type: 削除する Component の型を指定します.
     /// - Returns: Entity component のビルダーです.
     @discardableResult public func removeComponent<ComponentType: Component>(ofType type: ComponentType.Type) -> EntityCommands {
-        self.commands.commandQueue.append(RemoveComponent(entity: self.entity, componentType: ComponentType.self))
-        return self
+        fatalError("not implemented error")
     }
     
 }

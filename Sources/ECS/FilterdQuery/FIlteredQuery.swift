@@ -6,15 +6,26 @@
 //
 
 final public class Filtered<Q: QueryProtocol, F: Filter>: Chunk, SystemParameter {
-    public let query: Q = Q()
+    let query: Q = Q()
     
     override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
+        if entity.generation == 0 {
+            self.query.allocate()
+        }
         guard F.condition(forEntityRecord: entityRecord) else { return }
-        self.query.spawn(entity: entity, entityRecord: entityRecord)
+        self.query.insert(entity: entity, entityRecord: entityRecord)
     }
     
     override func despawn(entity: Entity) {
         self.query.despawn(entity: entity)
+    }
+    
+    public func update( _ f: Q.Update) {
+        self.query.update(f)
+    }
+    
+    public func update(_ entity: Entity, _ f: Q.Update) {
+        self.query.update(entity, f)
     }
     
     public static func getParameter(from worldStorage: WorldStorageRef) -> Filtered<Q, F>? {

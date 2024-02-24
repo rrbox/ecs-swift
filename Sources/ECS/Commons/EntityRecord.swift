@@ -8,7 +8,7 @@
 public enum EntityRecord {}
 
 public class Ref<T>: Item {
-    var value: T {
+    public var value: T {
         get { fatalError("not implemented") }
         set { fatalError("not implemented") }
     }
@@ -17,7 +17,7 @@ public class Ref<T>: Item {
 final public class ComponentRef<T: Component>: Ref<T> {
     var _value: T
     
-    override var value: T {
+    public override var value: T {
         get { self._value }
         set { self._value = newValue }
     }
@@ -30,7 +30,7 @@ final public class ComponentRef<T: Component>: Ref<T> {
 final public class ImmutableRef<T>: Ref<T> {
     let _value: T
     
-    override var value: T {
+    public override var value: T {
         get { self._value }
         set {}
     }
@@ -56,5 +56,13 @@ public extension EntityRecordRef {
     func ref<T>(_ type: T.Type) -> Ref<T>? {
         guard let result: Item = self.map.body[ObjectIdentifier(T.self)] else { return nil }
         return (result as! Ref<T>)
+    }
+    
+    func componentRef<T: Component>(ofType type: T.Type) -> ComponentRef<T>? {
+        return self.map.body[ObjectIdentifier(T.self)] as? ComponentRef<T>
+    }
+    
+    func component<T: Component>(ofType type: T.Type) -> T? {
+        return self.componentRef(ofType: T.self)?.value
     }
 }

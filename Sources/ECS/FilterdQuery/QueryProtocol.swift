@@ -6,8 +6,12 @@
 //
 
 public protocol QueryProtocol: Chunk {
-    func spawn(entity: Entity, entityRecord: EntityRecordRef)
+    associatedtype Update
+    func insert(entity: Entity, entityRecord: EntityRecordRef)
     func despawn(entity: Entity)
+    func allocate()
+    func update( _ f: Update)
+    func update(_ entity: Entity, _ f: Update)
     init()
 }
 

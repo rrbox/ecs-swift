@@ -34,7 +34,7 @@ final class CommandsTests: XCTestCase {
         world.worldStorage.commandsStorage.setCommands(Commands())
         let commands = world.worldStorage.commandsStorage.commands()!
         
-        let testEntities = [Entity(), Entity(), Entity()]
+        let testEntities = [Entity(slot: 0, generation: 0), Entity(slot: 1, generation: 0), Entity(slot: 2, generation: 0)]
         
         for testEntity in testEntities {
             commands.push(command: TestCommand_Spawn(entity: testEntity))
@@ -44,7 +44,7 @@ final class CommandsTests: XCTestCase {
         world.applyCommands()
         
         XCTAssertEqual(commands.commandQueue.count, 0)
-        XCTAssertEqual(world.entities.sequence.count, 3)
+        XCTAssertEqual(world.entities.data.count, 3)
         
         for testEntity in testEntities {
             commands.push(command: TestCommand_Despawn(entity: testEntity))
@@ -54,6 +54,6 @@ final class CommandsTests: XCTestCase {
         world.applyCommands()
         
         XCTAssertEqual(commands.commandQueue.count, 0)
-        XCTAssertEqual(world.entities.sequence.count, 0)
+        XCTAssertEqual(world.entities.data.count, 0)
     }
 }
