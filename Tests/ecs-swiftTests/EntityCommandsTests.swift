@@ -18,6 +18,8 @@ final class EntityCommandsTests: XCTestCase {
         let entity = commands.spawn()
             .addComponent(TestComponent(content: "test"))
             .id()
+        commands.spawn()
+            .addComponent(TestComponent(content: "test_2"))
         world.applyCommands()
         
         XCTAssertEqual(world.entityRecord(forEntity: entity)!.ref(TestComponent.self)!.value.content, "test")
