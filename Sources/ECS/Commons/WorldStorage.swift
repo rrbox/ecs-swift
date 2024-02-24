@@ -31,5 +31,3 @@ extension AnyMap where Mode == WorldStorage {
         return (result as! Box<T>)
     }
 }
-
-
