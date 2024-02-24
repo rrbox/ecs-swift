@@ -1,4 +1,4 @@
-public struct Entity: QueryTarget, Equatable, Hashable {
+public struct Entity: QueryTarget, Hashable {
     let slot: Int
-    let generation: Int
+    let generation: UInt
 }
