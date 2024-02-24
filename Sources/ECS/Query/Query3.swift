@@ -37,9 +37,10 @@ final public class Query3<C0: QueryTarget, C1: QueryTarget, C2: QueryTarget>: Ch
         guard let c0 = entityRecord.ref(C0.self),
               let c1 = entityRecord.ref(C1.self),
               let c2 = entityRecord.ref(C2.self) else {
-            self.components.pop(entity: entity)
+            self.despawn(entity: entity)
             return
         }
+        guard !components.contains(entity) else { return }
         self.components.insert((c0, c1, c2), withEntity: entity)
     }
     

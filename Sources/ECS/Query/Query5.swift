@@ -41,9 +41,10 @@ final public class Query5<C0: QueryTarget, C1: QueryTarget, C2: QueryTarget, C3:
               let c2 = entityRecord.ref(C2.self),
               let c3 = entityRecord.ref(C3.self),
               let c4 = entityRecord.ref(C4.self) else {
-            self.components.pop(entity: entity)
+            self.despawn(entity: entity)
             return
         }
+        guard !components.contains(entity) else { return }
         self.components.insert((c0, c1, c2, c3, c4), withEntity: entity)
     }
     

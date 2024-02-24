@@ -38,6 +38,7 @@ final public class Query2<C0: QueryTarget, C1: QueryTarget>: Chunk, SystemParame
             self.despawn(entity: entity)
             return
         }
+        guard !components.contains(entity) else { return }
         self.components.insert((c0, c1), withEntity: entity)
         
     }

@@ -36,6 +36,7 @@ final public class Query<C: QueryTarget>: Chunk, SystemParameter {
             self.despawn(entity: entity)
             return
         }
+        guard !components.contains(entity) else { return }
         self.components.insert(componentRef, withEntity: entity)
     }
     
