@@ -5,10 +5,6 @@
 //  Created by rrbox on 2023/08/06.
 //
 
-public struct Entities {
-    var sequence: [Entity: EntityRecordRef]
-}
-
 /**
  ECS 全体をコントロールします.
  
@@ -51,8 +47,7 @@ final public class World {
     var updateSchedule: Schedule
     public let worldStorage: WorldStorageRef
     
-    init(entities: [Entity: EntityRecordRef], worldStorage: WorldStorageRef) {
-//        self.entities = Entities(sequence: entities)
+    init(worldStorage: WorldStorageRef) {
         self.entities = SparseSet(sparse: [], dense: [], data: [])
         self.updateSchedule = .firstFrame
         self.worldStorage = worldStorage
