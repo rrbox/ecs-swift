@@ -50,7 +50,7 @@ public extension World {
         return self
     }
     
-    @discardableResult func buildWillSpawnResponder(_ build: (EventResponderBuilder) -> ()) -> World {
+    @discardableResult func buildWillDespawnResponder(_ build: (EventResponderBuilder) -> ()) -> World {
         self.buildCommandsEventResponder(WillDespawnEvent.self, build)
         return self
     }
