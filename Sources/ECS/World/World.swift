@@ -31,7 +31,7 @@ public struct Entities {
  - ``World/addEventStreamer(eventType:)``
  - ``World/buildEventResponder(_:_:)``
  - ``World/buildDidSpawnResponder(_:)``
- - ``World/buildWillSpawnResponder(_:)``
+ - ``World/buildWillDespawnResponder(_:)``
  
  ### 起動
  
