@@ -7,15 +7,15 @@
 
 public extension World {
     func insert(entity: Entity, entityRecord: EntityRecordRef) {
-        self.entities.sequence[entity] = entityRecord
+        self.entities.insert(entityRecord, withEntity: entity)
     }
     
     func remove(entity: Entity) {
-        self.entities.sequence.removeValue(forKey: entity)
+        self.entities.pop(entity: entity)
     }
     
     func entityRecord(forEntity entity: Entity) -> EntityRecordRef? {
-        self.entities.sequence[entity]
+        self.entities.value(forEntity: entity)
     }
 
 }

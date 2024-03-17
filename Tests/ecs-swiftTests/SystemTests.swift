@@ -28,7 +28,7 @@ func deltaTimeTestSystem(deltaTime: Resource<DeltaTime>) {
 func apiTestSystem(
     q0: Query<TestComponent>
 ) {
-    q0.update { _, component in
+    q0.update { component in
         print(component)
     }
 }
@@ -64,7 +64,7 @@ func apiTestSystem(
     q3: Query4<TestComponent, TestComponent, TestComponent, TestComponent>,
     q4: Query5<TestComponent, TestComponent, TestComponent, TestComponent, TestComponent>
 ) {
-    q0.update { _, component in
+    q0.update { component in
         print(component)
     }
 }

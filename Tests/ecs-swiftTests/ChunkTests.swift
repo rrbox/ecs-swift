@@ -32,7 +32,7 @@ class TestChunk_2: Chunk {
 
 final class ChunkTests: XCTestCase {
     func testInterface() {
-        let mockEntities = [Entity(), Entity(), Entity(), Entity(), Entity()]
+        let mockEntities = [Entity(slot: 0, generation: 0), Entity(slot: 1, generation: 0), Entity(slot: 2, generation: 0), Entity(slot: 3, generation: 0), Entity(slot: 4, generation: 0)]
         let world = World()
         
         // Spawn された entity を単に蓄積するだけの test 用の chunk です.

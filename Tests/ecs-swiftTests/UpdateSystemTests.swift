@@ -14,7 +14,7 @@ func mySystem(commands: Commands) {
 }
 
 func mySystem2(query: Query<TestComponent>) {
-    query.update { _, component in
+    query.update { component in
         XCTAssertEqual(component.content, "sample")
     }
 }
