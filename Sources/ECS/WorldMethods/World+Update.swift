@@ -37,21 +37,27 @@ public extension World {
             for system in self.worldStorage.systemStorage.systems(schedule) {
                 system.execute(self.worldStorage)
             }
-            
         }
         
         // world が受信した event を event system に発信します.
         self.applyEventQueue()
         
-        self.applyCommands()
+        let commands = self.worldStorage.commandsStorage.commands()!
+        
+        // world 内の entity のコンポーネントの追加/削除
+        self.worldStorage.chunkStorage.applyUpdatedEntityQueue()
         
         // will despawn event を配信します.
         self.applyCommandsEventQueue(eventOfType: WillDespawnEvent.self)
         
+        self.applyEnityTransactions(commands: commands)
+        
         // apply commands の際に push された entity を chunk に割り振ります.
-        self.worldStorage.chunkStorage.applyEntityQueue()
+        self.worldStorage.chunkStorage.applySpawnedEntityQueue()
         
         // Did Spawn event を event system に発信します.
         self.applyCommandsEventQueue(eventOfType: DidSpawnEvent.self)
+        
+        self.applyCommands(commands: commands)
     }
 }

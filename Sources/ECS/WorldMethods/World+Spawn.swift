@@ -31,7 +31,7 @@ extension World {
         self.insert(entity: entity, entityRecord: entityRecord)
         self.worldStorage
             .chunkStorage
-            .push(entity: entity, entityRecord: entityRecord)
+            .pushSpawned(entity: entity, entityRecord: entityRecord)
         
         self.worldStorage
             .eventStorage

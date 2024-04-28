@@ -16,7 +16,11 @@ public extension World {
                 system.execute(self.worldStorage)
             }
         }
-        self.applyCommands()
-        self.worldStorage.chunkStorage.applyEntityQueue()
+        let commands = self.worldStorage.commandsStorage.commands()!
+        
+        self.applyEnityTransactions(commands: commands)
+        self.worldStorage.chunkStorage.applySpawnedEntityQueue()
+        
+        self.applyCommands(commands: commands)
     }
 }
