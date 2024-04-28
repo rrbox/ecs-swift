@@ -40,8 +40,8 @@ final class QueryTests: XCTestCase {
         
         let testEntity = commands.spawn().addComponent(TestComponent(content: "test")).id()
         
-        world.applyCommands()
-        world.worldStorage.chunkStorage.applyEntityQueue()
+        world.update(currentTime: 0)
+        world.update(currentTime: 0)
         
         XCTAssertEqual(testQuery.components.data.count, 1)
         XCTAssertEqual(testQuery2.components.data.count, 0)
@@ -57,8 +57,8 @@ final class QueryTests: XCTestCase {
         
         commands.entity(testEntity)?.addComponent(TestComponent2(content: "test2"))
         
-        world.applyCommands()
-        world.worldStorage.chunkStorage.applyEntityQueue()
+        world.update(currentTime: 0)
+        world.update(currentTime: 0)
         
         XCTAssertEqual(testQuery.components.data.count, 1)
         XCTAssertEqual(testQuery2.components.data.count, 1)
@@ -74,8 +74,8 @@ final class QueryTests: XCTestCase {
         
         commands.entity(testEntity)?.addComponent(TestComponent3(content: "test2"))
         
-        world.applyCommands()
-        world.worldStorage.chunkStorage.applyEntityQueue()
+        world.update(currentTime: 0)
+        world.update(currentTime: 0)
         
         XCTAssertEqual(testQuery.components.data.count, 1)
         XCTAssertEqual(testQuery2.components.data.count, 1)
@@ -91,8 +91,8 @@ final class QueryTests: XCTestCase {
         
         commands.entity(testEntity)?.addComponent(TestComponent4(content: "test2"))
         
-        world.applyCommands()
-        world.worldStorage.chunkStorage.applyEntityQueue()
+        world.update(currentTime: 0)
+        world.update(currentTime: 0)
         
         XCTAssertEqual(testQuery.components.data.count, 1)
         XCTAssertEqual(testQuery2.components.data.count, 1)
@@ -108,8 +108,8 @@ final class QueryTests: XCTestCase {
         
         commands.entity(testEntity)?.addComponent(TestComponent5(content: "test2"))
         
-        world.applyCommands()
-        world.worldStorage.chunkStorage.applyEntityQueue()
+        world.update(currentTime: 0)
+        world.update(currentTime: 0)
         
         XCTAssertEqual(testQuery.components.data.count, 1)
         XCTAssertEqual(testQuery2.components.data.count, 1)
@@ -119,8 +119,8 @@ final class QueryTests: XCTestCase {
         
         commands.entity(testEntity)?.removeComponent(ofType: TestComponent.self)
         
-        world.applyCommands()
-        world.worldStorage.chunkStorage.applyEntityQueue()
+        world.update(currentTime: 0)
+        world.update(currentTime: 0)
         
         XCTAssertEqual(testQuery.components.data.count, 0)
         XCTAssertEqual(testQuery2.components.data.count, 0)

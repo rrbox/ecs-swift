@@ -46,7 +46,7 @@ final class ChunkTests: XCTestCase {
             world.push(entity: entity, entityRecord: EntityRecordRef())
         }
         
-        world.worldStorage.chunkStorage.applyEntityQueue()
+        world.worldStorage.chunkStorage.applySpawnedEntityQueue()
         
         XCTAssertEqual(testChunk.entities.count, 5)
         XCTAssertEqual(testChunk_2.entities.count, 5)
