@@ -90,11 +90,6 @@ public extension EntityCommands {
         return self.addComponent(Graphic(node: node)).addComponent(Graphic<SKNode>(node: node))
     }
     
-    @discardableResult func removeGraphic() -> EntityCommands {
-        self.pushCommand(RemoveGraphic(entity: self.id()))
-        return self.removeComponent(ofType: Graphic.self).removeComponent(ofType: Graphic<SKNode>.self)
-    }
-    
     @discardableResult func addChild(_ entity: Entity) -> Self {
         self.pushCommand(AddChild(parent: self.id(), child: entity))
         return self
