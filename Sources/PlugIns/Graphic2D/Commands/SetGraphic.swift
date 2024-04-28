@@ -16,8 +16,10 @@ class SetGraphic: EntityCommand {
         super.init(entity: entity)
     }
     
-    override func runCommand(in world: World) {
+    override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
         world.setGraphic(self.node, forEntity: self.entity)
+        record.addComponent(GraphicStrongRef(node: self.node))
     }
+    
 }
 
