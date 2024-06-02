@@ -5,13 +5,13 @@
 //  Created by rrbox on 2023/08/10.
 //
 
-class RemoveComponent<C: Component>: ComponentTransaction {
-    let entity: Entity
+class RemoveComponent<C: Component>: EntityCommand {
     init(entity: Entity, componentType type: C.Type) {
-        self.entity = entity
+        super.init(entity: entity)
     }
     
-    override func runCommand(in world: World) {
-        world.removeComponent(ofType: C.self, fromEntity: self.entity)
+    override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
+        record.removeComponent(ofType: C.self)
     }
+    
 }

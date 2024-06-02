@@ -6,19 +6,17 @@
 //
 
 extension World {
-    func applyCommands() {
-        let commands = self.worldStorage.commandsStorage.commands()!
+    func applyEnityTransactions(commands: Commands) {
         for transaction in commands.entityTransactions {
             transaction.runCommand(in: self)
         }
-        for transaction in commands.componentTramsactions {
-            transaction.runCommand(in: self)
-        }
+        commands.entityTransactions = []
+    }
+    
+    func applyCommands(commands: Commands) {
         for command in commands.commandQueue {
             command.runCommand(in: self)
         }
-        commands.entityTransactions = []
-        commands.componentTramsactions = []
         commands.commandQueue = []
     }
 }

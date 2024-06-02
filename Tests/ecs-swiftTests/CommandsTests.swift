@@ -41,7 +41,7 @@ final class CommandsTests: XCTestCase {
         }
         
         XCTAssertEqual(commands.commandQueue.count, 3)
-        world.applyCommands()
+        world.applyCommands(commands: commands)
         
         XCTAssertEqual(commands.commandQueue.count, 0)
         XCTAssertEqual(world.entities.data.count, 3)
@@ -51,7 +51,7 @@ final class CommandsTests: XCTestCase {
         }
         
         XCTAssertEqual(commands.commandQueue.count, 3)
-        world.applyCommands()
+        world.applyCommands(commands: commands)
         
         XCTAssertEqual(commands.commandQueue.count, 0)
         XCTAssertEqual(world.entities.data.count, 0)

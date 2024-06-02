@@ -24,7 +24,6 @@ final public class Commands: SystemParameter {
     var commandQueue = [Command]()
     var generator = EntityGenerator()
     var entityTransactions = [EntityTransaction]()
-    var componentTramsactions = [ComponentTransaction]()
     
     /// Commands では, World への登録時には何もしません.
     public static func register(to worldStorage: WorldStorageRef) {

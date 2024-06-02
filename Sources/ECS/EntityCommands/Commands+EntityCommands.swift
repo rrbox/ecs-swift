@@ -8,7 +8,9 @@
 public extension Commands {
     /// Entity を取得して変更を加えます
     func entity(_ entity: Entity) -> SearchedEntityCommands? {
-        return SearchedEntityCommands(entity: entity, commands: self)
+        let queue = SearchedEntityCommandQueue(entity: entity)
+        self.entityTransactions.append(queue)
+        return SearchedEntityCommands(entity: entity, commandsQueue: queue)
     }
     
     /// Entity を追加して変更を加えます.
@@ -21,8 +23,10 @@ public extension Commands {
         self.generator.pop()
         
         self.entityTransactions.append(SpawnCommand(id: entity, entityRecord: record))
+        let queue = SpawnedEntityCommandQueue(record: record)
+        self.entityTransactions.append(queue)
         
-        return SpawnedEntityCommands(entity: entity, record: record, commands: self)
+        return SpawnedEntityCommands(entity: entity, commandsQueue: queue)
     }
     
     /// Entity を削除します.
