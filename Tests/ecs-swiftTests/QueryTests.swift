@@ -246,12 +246,12 @@ final class QueryTests: XCTestCase {
         XCTAssertEqual(testEntityQuery5.components.data.count, 1)
         
         commands.despawn(entity: testEntity_4)
-        let testEntity_5 = commands.spawn()
+        commands.spawn()
             .addComponent(TestComponent(content: "test"))
             .addComponent(TestComponent2(content: "test2"))
             .addComponent(TestComponent3(content: "test2"))
             .addComponent(TestComponent4(content: "test2"))
-            .addComponent(TestComponent5(content: "test2")).id()
+            .addComponent(TestComponent5(content: "test2"))
         
         world.update(currentTime: 0)
         world.update(currentTime: 0)
