@@ -44,20 +44,25 @@ public extension World {
         
         let commands = self.worldStorage.commandsStorage.commands()!
         
-        // world 内の entity のコンポーネントの追加/削除
-        self.worldStorage.chunkStorage.applyUpdatedEntityQueue()
-        
         // will despawn event を配信します.
         self.applyCommandsEventQueue(eventOfType: WillDespawnEvent.self)
         
+        // これから spawn する entity を chunk storage 内で enqueue
+        // despawn 登録された entity を削除
+        // これから spawn する record に addComponent などのコマンドを実行
+        // セットアップされた record を chunk storage 内で enqueue
         self.applyEnityTransactions(commands: commands)
         
-        // apply commands の際に push された entity を chunk に割り振ります.
+        // apply commands の際に push された entity を chunk に割り振ります(spawn).
         self.worldStorage.chunkStorage.applySpawnedEntityQueue()
         
         // Did Spawn event を event system に発信します.
         self.applyCommandsEventQueue(eventOfType: DidSpawnEvent.self)
         
         self.applyCommands(commands: commands)
+        
+        // world 内の entity のコンポーネントの追加/削除.
+        // 同じフレーム内で entity の変更を world 全体に適用するために一番最後に再度実行.
+        self.worldStorage.chunkStorage.applyUpdatedEntityQueue()
     }
 }

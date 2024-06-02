@@ -34,17 +34,6 @@ public struct Graphic<Node: SKNode>: Component {
     }
 }
 
-//class GraphicDespawmDetector: Component {
-//    unowned let nodeRef: SKNode
-//    init(nodeRef: SKNode) {
-//        self.nodeRef = nodeRef
-//    }
-//    
-//    deinit {
-//        self.nodeRef.removeFromParent()
-//    }
-//}
-
 public extension SKNode {
     func ecsEntity() -> Entity {
         self.userData!["ECS/Entity"] as! Entity

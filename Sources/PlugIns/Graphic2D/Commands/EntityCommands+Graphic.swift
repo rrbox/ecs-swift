@@ -22,6 +22,10 @@ public struct Parent: Component {
     }
 }
 
+struct _RemoveFromParentTransaction: Component {
+    
+}
+
 class AddChild: EntityCommand {
     let child: Entity
     init(parent: Entity, child: Entity) {
@@ -31,20 +35,7 @@ class AddChild: EntityCommand {
     
     override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
         let childRecord = world.entityRecord(forEntity: self.child)!
-        guard let node = record.component(ofType: Graphic.self)?.nodeRef,
-              let childNode = childRecord.component(ofType: Graphic.self)?.nodeRef else {
-            fatalError("entity hierarchy error: entity don't have graphic.")
-        }
-        
-        world.worldStorage.chunkStorage.pushUpdated(entity: self.child, entityRecord: childRecord)
-        
-        childNode.removeFromParent()
-        node.addChild(childNode)
-        
-        // record の設定
-        record.componentRef(ofType: Parent.self)?.value._children.insert(child)
-        childRecord.addComponent(Child(_parent: self.entity))
-        
+        childRecord.addComponent(_AddChildNodeTransaction(parentEntity: self.entity))
     }
     
 }
@@ -66,17 +57,7 @@ class RemoveAllChildren: EntityCommand {
 
 class RemoveFromParent: EntityCommand {
     override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
-        let childNode = record.component(ofType: Graphic.self)!.nodeRef
-        let parent = record.component(ofType: Child.self)!.parent
-        let parentRecord = world.entityRecord(forEntity: parent)!
-        let scene = world.worldStorage.resourceBuffer.resource(ofType: SceneResource.self)!.resource.scene
-        childNode.move(toParent: scene)
-        record.removeComponent(ofType: Child.self)
-        
-        parentRecord.componentRef(ofType: Parent.self)?.value._children.remove(self.entity)
-        
-//        world.worldStorage.chunkStorage.apply(record, forEntity: self.entity)
-//        world.worldStorage.chunkStorage.apply(parentRecord, forEntity: parent)
+        record.addComponent(_RemoveFromParentTransaction())
     }
 }
 
@@ -118,10 +99,28 @@ func removeChildIfDespawned(
     }
 }
 
-public func graphicPlugIn(world: World) {
-    world
-        .buildWillDespawnResponder { responder in
-            responder
-                .addSystem(.update, removeChildIfDespawned(despawnEvent:query:parentQuery:))
+// これが実行される時点ですでに parentEntity から despawn した parent が消えている.
+func despawnChildRecursive(
+    despawnedEntity: Entity,
+    children: Query2<Entity, Child>,
+    commands: Commands
+) {
+    children.update { entity, child in
+        if child.parent == despawnedEntity {
+            despawnChildRecursive(despawnedEntity: entity, children: children, commands: commands)
+            commands.despawn(entity: entity)
         }
+    }
+}
+
+// これが実行される時点ですでに parentEntity から despawn した parent が消えている.
+func despawnChildIfParentDespawned(
+    despawnedEntityEvent: EventReader<WillDespawnEvent>,
+    children: Query2<Entity, Child>,
+    commands: Commands
+) {
+    // despawn した entity と自分の親が一致する子を despawn する.
+    despawnChildRecursive(despawnedEntity: despawnedEntityEvent.value.despawnedEntity,
+                          children: children,
+                          commands: commands)
 }

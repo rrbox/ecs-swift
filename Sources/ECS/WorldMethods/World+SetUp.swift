@@ -22,5 +22,8 @@ public extension World {
         self.worldStorage.chunkStorage.applySpawnedEntityQueue()
         
         self.applyCommands(commands: commands)
+        
+        // entity の変更を world 全体に適用.
+        self.worldStorage.chunkStorage.applyUpdatedEntityQueue()
     }
 }

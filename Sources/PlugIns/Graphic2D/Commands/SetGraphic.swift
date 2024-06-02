@@ -8,6 +8,10 @@
 import SpriteKit
 import ECS
 
+struct _AddChildNodeTransaction: Component {
+    var parentEntity: Entity?
+}
+
 class SetGraphic: EntityCommand {
     let node: SKNode
     
@@ -16,10 +20,17 @@ class SetGraphic: EntityCommand {
         super.init(entity: entity)
     }
     
+    func setEntityInfoForNode(_ entity: Entity) {
+        self.node.userData = [:]
+        self.node.userData!["ECS/Entity"] = entity
+    }
+    
     override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
-        world.setGraphic(self.node, forEntity: self.entity)
+        self.setEntityInfoForNode(entity)
+        
         record.addComponent(GraphicStrongRef(node: self.node))
+        record.addComponent(Parent(_children: []))
+        record.addComponent(_AddChildNodeTransaction(parentEntity: nil))
     }
     
 }
-
