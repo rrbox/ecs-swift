@@ -8,32 +8,6 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-//struct BundleMacro: MemberMacro {
-//    static func expansion(
-//        of node: AttributeSyntax,
-//        providingMembersOf declaration: some DeclGroupSyntax,
-//        in context: some MacroExpansionContext
-//    ) throws -> [DeclSyntax] {
-//        let membersAddition = declaration.memberBlock.members
-//            .compactMap { $0.decl.as(VariableDeclSyntax.self) }
-//            .compactMap { i in
-//                i.bindings.first?.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
-//            }
-//            .reduce(into: "") { partialResult, identifier in
-//                partialResult.append("record.addComponent(self.\(identifier))\n")
-//            }
-//            .dropLast()
-//            
-//        return [
-//            """
-//            public func addComponent(forEntity record: EntityRecordRef) {
-//                \(raw: membersAddition)
-//            }
-//            """
-//        ]
-//    }
-//}
-
 struct BundleMacro: ExtensionMacro {
     static func expansion(
         of node: AttributeSyntax,
