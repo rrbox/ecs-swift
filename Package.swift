@@ -1,7 +1,8 @@
-// swift-tools-version: 5.8
+// swift-tools-version: 5.10
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
+import CompilerPluginSupport
 
 struct Module {
     let name: String
@@ -20,6 +21,7 @@ struct Module {
 
 extension Module {
     static let ecs = Module(name: "ECS")
+    static let ecsMacros = Module(name: "ECS_Macros")
     static let plugIns = Module(name: "PlugIns")
     static let graphic2d = Module(name: "ECS_Graphic", path: "Sources/PlugIns/Graphic2D")
     static let keyboard = Module(name: "ECS_Keyboard", path: "Sources/PlugIns/Keyboard")
@@ -52,6 +54,16 @@ extension Target {
             path: module.path
         )
     }
+    
+    static func macro(module: Module, dependencies: [Module]) -> Target {
+        .macro(
+            name: module.name,
+            dependencies: [
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
+            ] + dependencies.map { $0.dependency }
+        )
+    }
 }
 
 let package = Package(
@@ -76,13 +88,18 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             module: .ecs,
-            dependencies: []),
+            dependencies: [.ecsMacros]),
+        .macro(
+            module: .ecsMacros,
+            dependencies: []
+        ),
         .target(
             module: .graphic2d,
             dependencies: [.ecs]),
