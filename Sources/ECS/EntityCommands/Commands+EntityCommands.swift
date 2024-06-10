@@ -14,7 +14,7 @@ public extension Commands {
     }
     
     /// Entity を追加して変更を加えます.
-    func spawn() -> SpawnedEntityCommands {
+    @discardableResult func spawn() -> SpawnedEntityCommands {
         let entity = self.generator.generate()
         let record = EntityRecordRef()
         
