@@ -120,7 +120,7 @@ let package = Package(
             dependencies: [.ecs]),
         .testTarget(
             module: .ecs_swiftTests,
-            dependencies: [.ecs]),
+            dependencies: [.ecs, .ecsMacros]),
         .testTarget(
             module: .graphicPlugInTests,
             dependencies: [.graphic2d]),
