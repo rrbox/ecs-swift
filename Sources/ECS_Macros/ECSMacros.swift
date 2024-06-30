@@ -12,6 +12,7 @@ import SwiftSyntaxMacros
 @main
 struct ECSMacros: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        BundleMacro.self
+        BundleMacro.self,
+        QueryMacro.self,
     ]
 }

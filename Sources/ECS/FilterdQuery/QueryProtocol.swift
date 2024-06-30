@@ -16,7 +16,3 @@ public protocol QueryProtocol: Chunk {
 }
 
 extension Query: QueryProtocol {}
-extension Query2: QueryProtocol {}
-extension Query3: QueryProtocol {}
-extension Query4: QueryProtocol {}
-extension Query5: QueryProtocol {}
