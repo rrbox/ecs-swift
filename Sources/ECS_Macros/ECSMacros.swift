@@ -14,5 +14,8 @@ struct ECSMacros: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         BundleMacro.self,
         QueryMacro.self,
+        SystemMacro.self,
+        AddSystemMacroForWorld.self,
+        AddSystemMacroForEventResponderBuilder.self,
     ]
 }
