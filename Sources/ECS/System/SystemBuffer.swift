@@ -11,7 +11,7 @@ public class SystemExecute {
 }
 
 final public class SystemStorage {
-    final class SystemRegisotry: WorldStorageElement {
+    final class SystemRegistry: WorldStorageElement {
         var systems = [Schedule: [SystemExecute]]()
     }
     
@@ -21,21 +21,21 @@ final public class SystemStorage {
     }
     
     public func systems(_ schedule: Schedule) -> [SystemExecute] {
-        self.buffer.map.valueRef(ofType: SystemRegisotry.self)!.body.systems[schedule]!
+        self.buffer.map.valueRef(ofType: SystemRegistry.self)!.body.systems[schedule]!
     }
     
     func registerSystemRegistry() {
-        self.buffer.map.push(SystemRegisotry.init())
+        self.buffer.map.push(SystemRegistry.init())
     }
     
     func insertSchedule(_ schedule: Schedule) {
-        self.buffer.map.valueRef(ofType: SystemRegisotry.self)!.body.systems[schedule] = []
+        self.buffer.map.valueRef(ofType: SystemRegistry.self)!.body.systems[schedule] = []
     }
     
     func addSystem(_ schedule: Schedule, _ system: SystemExecute) {
         self.buffer
             .map
-            .valueRef(ofType: SystemRegisotry.self)!
+            .valueRef(ofType: SystemRegistry.self)!
             .body
             .systems[schedule]!
             .append(system)
