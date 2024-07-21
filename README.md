@@ -16,7 +16,7 @@ However, the creator acknowledges that `ecs-swift` is not a complete copy of the
 
 I believe I may not be able to actively update this package very often. I sincerely apologize for that. The reason behind this is my personal focus on creating 2D games. Please understand that incorporating new features promptly is rare for me. Additionally, due to this background, support for 3D games is limited.
 
-However, it doesn't mean that I won't update it at all. I plan to maintain, add features, refactor, and debug as needed (though it might be at a slower pace). If you have any opinions or requests, please feel free to share them in the [Discussions](https://github.com/rrbox/ecs-swift/discussions) (under construction)!
+However, it doesn't mean that I won't update it at all. I plan to maintain, add features, refactor, and debug as needed (though it might be at a slower pace). If you have any opinions or requests, please feel free to share them in the [Discussions](https://github.com/rrbox/ecs-swift/discussions)!
 
 From the developer of this tool, @rrbox.
 
