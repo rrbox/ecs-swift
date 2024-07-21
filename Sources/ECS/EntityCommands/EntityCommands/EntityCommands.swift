@@ -70,4 +70,9 @@ public class EntityCommands {
         return self
     }
     
+    @discardableResult public func addBundle<T: BundleProtocol>(_ bundle: T) -> Self {
+        self.pushCommand(AddBundle(entity: self.entity, bundle: bundle))
+        return self
+    }
+    
 }
