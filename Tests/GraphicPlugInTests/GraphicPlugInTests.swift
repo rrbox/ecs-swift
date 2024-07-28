@@ -138,7 +138,7 @@ final class GraphicPlugInTests: XCTestCase {
                 case 2:
                     frags[1] += 1
                     children.update { entity in
-                        commands.entity(entity)?
+                        commands.entity(entity)
                             .removeFromParent()
                     }
                 case 3:

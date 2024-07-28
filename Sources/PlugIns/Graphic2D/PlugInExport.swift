@@ -25,7 +25,7 @@ func _addChildNodeSystem(
             graphics.update(parentEntity) { parentNode, children in
                 parentNode.nodeRef.addChild(graphic.nodeRef)
                 children._children.insert(childEntity)
-                commands.entity(childEntity)?
+                commands.entity(childEntity)
                     .addComponent(Child(_parent: parentEntity))
             }
         } else {
@@ -33,7 +33,7 @@ func _addChildNodeSystem(
         }
         
         commands
-            .entity(childEntity)?
+            .entity(childEntity)
             .removeComponent(ofType: _AddChildNodeTransaction.self)
     }
 }
@@ -54,7 +54,7 @@ func _addChildNodeSystem(
             graphics.update(parentEntity) { parentNode, children in
                 parentNode.nodeRef.addChild(graphic.nodeRef)
                 children._children.insert(childEntity)
-                commands.entity(childEntity)?
+                commands.entity(childEntity)
                     .addComponent(Child(_parent: parentEntity))
             }
         } else {
@@ -62,7 +62,7 @@ func _addChildNodeSystem(
         }
         
         commands
-            .entity(childEntity)?
+            .entity(childEntity)
             .removeComponent(ofType: _AddChildNodeTransaction.self)
     }
 }
@@ -75,7 +75,7 @@ func _removeFromParentSystem(
 ) {
     query.update { childEntity, childNode, child  in
         childNode.nodeRef.removeFromParent()
-        commands.entity(childEntity)?
+        commands.entity(childEntity)
             .removeComponent(ofType: Child.self)
             .removeComponent(ofType: _RemoveFromParentTransaction.self)
         
