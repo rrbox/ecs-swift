@@ -55,7 +55,7 @@ final class QueryTests: XCTestCase {
         XCTAssertEqual(testEntityQuery4.components.data.count, 0)
         XCTAssertEqual(testEntityQuery5.components.data.count, 0)
         
-        commands.entity(testEntity)?.addComponent(TestComponent2(content: "test2"))
+        commands.entity(testEntity).addComponent(TestComponent2(content: "test2"))
         
         world.update(currentTime: 0)
         world.update(currentTime: 0)
@@ -72,7 +72,7 @@ final class QueryTests: XCTestCase {
         XCTAssertEqual(testEntityQuery4.components.data.count, 0)
         XCTAssertEqual(testEntityQuery5.components.data.count, 0)
         
-        commands.entity(testEntity)?.addComponent(TestComponent3(content: "test2"))
+        commands.entity(testEntity).addComponent(TestComponent3(content: "test2"))
         
         world.update(currentTime: 0)
         world.update(currentTime: 0)
@@ -89,7 +89,7 @@ final class QueryTests: XCTestCase {
         XCTAssertEqual(testEntityQuery4.components.data.count, 1)
         XCTAssertEqual(testEntityQuery5.components.data.count, 0)
         
-        commands.entity(testEntity)?.addComponent(TestComponent4(content: "test2"))
+        commands.entity(testEntity).addComponent(TestComponent4(content: "test2"))
         
         world.update(currentTime: 0)
         world.update(currentTime: 0)
@@ -106,7 +106,7 @@ final class QueryTests: XCTestCase {
         XCTAssertEqual(testEntityQuery4.components.data.count, 1)
         XCTAssertEqual(testEntityQuery5.components.data.count, 1)
         
-        commands.entity(testEntity)?.addComponent(TestComponent5(content: "test2"))
+        commands.entity(testEntity).addComponent(TestComponent5(content: "test2"))
         
         world.update(currentTime: 0)
         world.update(currentTime: 0)
@@ -117,7 +117,7 @@ final class QueryTests: XCTestCase {
         XCTAssertEqual(testQuery4.components.data.count, 1)
         XCTAssertEqual(testQuery5.components.data.count, 1)
         
-        commands.entity(testEntity)?.removeComponent(ofType: TestComponent.self)
+        commands.entity(testEntity).removeComponent(ofType: TestComponent.self)
         
         world.update(currentTime: 0)
         world.update(currentTime: 0)

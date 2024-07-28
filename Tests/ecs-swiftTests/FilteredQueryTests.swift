@@ -34,7 +34,7 @@ final class FilteredQueryTests: XCTestCase {
         XCTAssertEqual(testQueryOr.query.components.data.count, 0)
         XCTAssertEqual(testQueryWithout.query.components.data.count, 1)
         
-        commands.entity(entity)?.addComponent(TestComponent2(content: "c1"))
+        commands.entity(entity).addComponent(TestComponent2(content: "c1"))
         
         world.update(currentTime: 0)
         world.update(currentTime: 0)
@@ -43,7 +43,7 @@ final class FilteredQueryTests: XCTestCase {
         XCTAssertEqual(testQueryOr.query.components.data.count, 1)
         XCTAssertEqual(testQueryWithout.query.components.data.count, 0)
         
-        commands.entity(entity)?.addComponent(TestComponent3(content: "c2"))
+        commands.entity(entity).addComponent(TestComponent3(content: "c2"))
         
         world.update(currentTime: 0)
         world.update(currentTime: 0)
@@ -52,7 +52,7 @@ final class FilteredQueryTests: XCTestCase {
         XCTAssertEqual(testQueryOr.query.components.data.count, 1)
         XCTAssertEqual(testQueryWithout.query.components.data.count, 0)
         
-        commands.entity(entity)?.removeComponent(ofType: TestComponent2.self)
+        commands.entity(entity).removeComponent(ofType: TestComponent2.self)
         
         world.update(currentTime: 0)
         world.update(currentTime: 0)
@@ -61,7 +61,7 @@ final class FilteredQueryTests: XCTestCase {
         XCTAssertEqual(testQueryOr.query.components.data.count, 1)
         XCTAssertEqual(testQueryWithout.query.components.data.count, 0)
         
-        commands.entity(entity)?.removeComponent(ofType: TestComponent.self)
+        commands.entity(entity).removeComponent(ofType: TestComponent.self)
         
         world.update(currentTime: 0)
         world.update(currentTime: 0)

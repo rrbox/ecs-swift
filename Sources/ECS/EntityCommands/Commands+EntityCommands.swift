@@ -7,7 +7,7 @@
 
 public extension Commands {
     /// Entity を取得して変更を加えます
-    func entity(_ entity: Entity) -> SearchedEntityCommands? {
+    func entity(_ entity: Entity) -> SearchedEntityCommands {
         let queue = SearchedEntityCommandQueue(entity: entity)
         self.entityTransactions.append(queue)
         return SearchedEntityCommands(entity: entity, commandsQueue: queue)

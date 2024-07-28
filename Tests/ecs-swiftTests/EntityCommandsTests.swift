@@ -25,7 +25,7 @@ final class EntityCommandsTests: XCTestCase {
         
         XCTAssertEqual(world.entityRecord(forEntity: entity)!.ref(TestComponent.self)!.value.content, "test")
         
-        commands.entity(entity)?.removeComponent(ofType: TestComponent.self)
+        commands.entity(entity).removeComponent(ofType: TestComponent.self)
         
         world.update(currentTime: 0)
         
