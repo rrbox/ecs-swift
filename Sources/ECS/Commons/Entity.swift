@@ -1,5 +1,4 @@
-import Foundation
-
-public struct Entity: Hashable {
-    let id = UUID()
+public struct Entity: QueryTarget, Hashable {
+    let slot: Int
+    let generation: UInt
 }

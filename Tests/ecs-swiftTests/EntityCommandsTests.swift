@@ -18,19 +18,24 @@ final class EntityCommandsTests: XCTestCase {
         let entity = commands.spawn()
             .addComponent(TestComponent(content: "test"))
             .id()
-        world.applyCommands()
+        commands.spawn()
+            .addComponent(TestComponent(content: "test_2"))
         
-        XCTAssertEqual(world.entityRecord(forEntity: entity)!.componentRef(TestComponent.self)!.value.content, "test")
+        world.update(currentTime: 0)
         
-        commands.entity(entity)?.removeComponent(ofType: TestComponent.self)
-        world.applyCommands()
+        XCTAssertEqual(world.entityRecord(forEntity: entity)!.ref(TestComponent.self)!.value.content, "test")
+        
+        commands.entity(entity).removeComponent(ofType: TestComponent.self)
+        
+        world.update(currentTime: 0)
         
         // world 内に entity が存在し, component が削除されていることをテストします.
         XCTAssertNotNil(world.entityRecord(forEntity: entity))
-        XCTAssertNil(world.entityRecord(forEntity: entity)!.componentRef(TestComponent.self))
+        XCTAssertNil(world.entityRecord(forEntity: entity)!.ref(TestComponent.self))
         
         commands.despawn(entity: entity)
-        world.applyCommands()
+        
+        world.update(currentTime: 0)
         
         // world から entity が削除されたことをテストします.
         XCTAssertNil(world.entityRecord(forEntity: entity))

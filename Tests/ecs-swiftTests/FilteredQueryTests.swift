@@ -26,38 +26,48 @@ final class FilteredQueryTests: XCTestCase {
             .addComponent(TestComponent(content: "c0"))
             .id()
         
-        world.applyCommands()
+//        world.applyCommands(commands: commands)
+//        world.worldStorage.chunkStorage.applySpawnedEntityQueue()
+        world.update(currentTime: 0)
         
-        XCTAssertEqual(testQueryAnd.query.components.count, 0)
-        XCTAssertEqual(testQueryOr.query.components.count, 0)
-        XCTAssertEqual(testQueryWithout.query.components.count, 1)
+        XCTAssertEqual(testQueryAnd.query.components.data.count, 0)
+        XCTAssertEqual(testQueryOr.query.components.data.count, 0)
+        XCTAssertEqual(testQueryWithout.query.components.data.count, 1)
         
-        commands.entity(entity)?.addComponent(TestComponent2(content: "c1"))
-        world.applyCommands()
+        commands.entity(entity).addComponent(TestComponent2(content: "c1"))
         
-        XCTAssertEqual(testQueryAnd.query.components.count, 0)
-        XCTAssertEqual(testQueryOr.query.components.count, 1)
-        XCTAssertEqual(testQueryWithout.query.components.count, 0)
+        world.update(currentTime: 0)
+        world.update(currentTime: 0)
         
-        commands.entity(entity)?.addComponent(TestComponent3(content: "c2"))
-        world.applyCommands()
+        XCTAssertEqual(testQueryAnd.query.components.data.count, 0)
+        XCTAssertEqual(testQueryOr.query.components.data.count, 1)
+        XCTAssertEqual(testQueryWithout.query.components.data.count, 0)
         
-        XCTAssertEqual(testQueryAnd.query.components.count, 1)
-        XCTAssertEqual(testQueryOr.query.components.count, 1)
-        XCTAssertEqual(testQueryWithout.query.components.count, 0)
+        commands.entity(entity).addComponent(TestComponent3(content: "c2"))
         
-        commands.entity(entity)?.removeComponent(ofType: TestComponent2.self)
-        world.applyCommands()
+        world.update(currentTime: 0)
+        world.update(currentTime: 0)
         
-        XCTAssertEqual(testQueryAnd.query.components.count, 0)
-        XCTAssertEqual(testQueryOr.query.components.count, 1)
-        XCTAssertEqual(testQueryWithout.query.components.count, 0)
+        XCTAssertEqual(testQueryAnd.query.components.data.count, 1)
+        XCTAssertEqual(testQueryOr.query.components.data.count, 1)
+        XCTAssertEqual(testQueryWithout.query.components.data.count, 0)
         
-        commands.entity(entity)?.removeComponent(ofType: TestComponent.self)
-        world.applyCommands()
+        commands.entity(entity).removeComponent(ofType: TestComponent2.self)
         
-        XCTAssertEqual(testQueryAnd.query.components.count, 0)
-        XCTAssertEqual(testQueryOr.query.components.count, 0)
-        XCTAssertEqual(testQueryWithout.query.components.count, 0)
+        world.update(currentTime: 0)
+        world.update(currentTime: 0)
+        
+        XCTAssertEqual(testQueryAnd.query.components.data.count, 0)
+        XCTAssertEqual(testQueryOr.query.components.data.count, 1)
+        XCTAssertEqual(testQueryWithout.query.components.data.count, 0)
+        
+        commands.entity(entity).removeComponent(ofType: TestComponent.self)
+        
+        world.update(currentTime: 0)
+        world.update(currentTime: 0)
+        
+        XCTAssertEqual(testQueryAnd.query.components.data.count, 0)
+        XCTAssertEqual(testQueryOr.query.components.data.count, 0)
+        XCTAssertEqual(testQueryWithout.query.components.data.count, 0)
     }
 }
