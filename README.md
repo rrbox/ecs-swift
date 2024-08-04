@@ -110,6 +110,11 @@ class Scene: SKScene {
 
 Detailed explanations can be found in the Wiki (under construction)!
 
+## Dependencies
+
+This project uses the following third-party packages:
+
+- [swift-syntax](https://github.com/swiftlang/swift-syntax)
 
 ## License
 
