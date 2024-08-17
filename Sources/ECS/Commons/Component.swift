@@ -6,9 +6,9 @@
 //
 
 public protocol QueryTarget {
-    
+
 }
 
 public protocol Component: QueryTarget {
-    
+
 }

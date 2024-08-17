@@ -7,11 +7,11 @@
 
 class DespawnCommand: EntityTransaction {
     let entity: Entity
-    
+
     init(entity: Entity) {
         self.entity = entity
     }
-    
+
     override func runCommand(in world: World) {
         world.despawn(entity: self.entity)
     }

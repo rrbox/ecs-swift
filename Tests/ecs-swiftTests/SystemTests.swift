@@ -12,7 +12,7 @@ func testSetUp(commands: Commands) {
     print("set up")
     commands.spawn()
         .addComponent(TestComponent(content: "sample_1010"))
-    
+
     commands.spawn()
         .addComponent(TestComponent(content: "sample_120391-2"))
 }
@@ -37,7 +37,7 @@ func apiTestSystem(
     q0: Query<TestComponent>,
     q1: Query2<TestComponent, TestComponent>
 ) {
-    
+
 }
 
 func apiTestSystem(
@@ -45,7 +45,7 @@ func apiTestSystem(
     q1: Query2<TestComponent, TestComponent>,
     q2: Query3<TestComponent, TestComponent, TestComponent>
 ) {
-    
+
 }
 
 func apiTestSystem(
@@ -54,7 +54,7 @@ func apiTestSystem(
     q2: Query3<TestComponent, TestComponent, TestComponent>,
     q3: Query4<TestComponent, TestComponent, TestComponent, TestComponent>
 ) {
-    
+
 }
 
 func apiTestSystem(
@@ -80,9 +80,9 @@ final class SystemTests: XCTestCase {
             .addSystem(.update, apiTestSystem(q0:q1:q2:))
             .addSystem(.update, apiTestSystem(q0:q1:q2:q3:))
             .addSystem(.update, apiTestSystem(q0:q1:q2:q3:q4:))
-        
+
         world.setUpWorld()
-        
+
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)

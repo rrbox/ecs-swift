@@ -14,17 +14,17 @@ struct _AddChildNodeTransaction: Component {
 
 class SetGraphic: EntityCommand {
     let node: SKNode
-    
+
     init(node: SKNode, entity: Entity) {
         self.node = node
         super.init(entity: entity)
     }
-    
+
     func setEntityInfoForNode(_ entity: Entity) {
         self.node.userData = [:]
         self.node.userData!["ECS/Entity"] = entity
     }
-    
+
     override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
         self.setEntityInfoForNode(entity)
         
@@ -32,5 +32,5 @@ class SetGraphic: EntityCommand {
         record.addComponent(Parent(_children: []))
         record.addComponent(_AddChildNodeTransaction(parentEntity: nil))
     }
-    
+     
 }

@@ -7,16 +7,16 @@ import CompilerPluginSupport
 struct Module {
     let name: String
     let path: String?
-    
+
     init(name: String, path: String? = nil) {
         self.name = name
         self.path = path
     }
-    
+
     var dependency: Target.Dependency {
         Target.Dependency(stringLiteral: self.name)
     }
-    
+
 }
 
 extension Module {
@@ -29,7 +29,7 @@ extension Module {
     static let objectLink = Module(name: "ECS_ObjectLink", path: "Sources/PlugIns/ObjectLink")
     static let scene = Module(name: "ECS_Scene", path: "Sources/PlugIns/Scene")
     static let scroll = Module(name: "ECS_Scroll", path: "Sources/PlugIns/Scroll")
-    
+
     static let ecs_swiftTests = Module(name: "ecs-swiftTests")
     static let graphicPlugInTests = Module(name: "GraphicPlugInTests")
     static let keyBoardPlugInTests = Module(name: "KeyBoardPlugInTests")
@@ -46,7 +46,7 @@ extension Target {
             dependencies: dependencies.map { $0.dependency },
             path: module.path)
     }
-    
+
     static func testTarget(module: Module, dependencies: [Module]) -> Target {
         .testTarget(
             name: module.name,
@@ -54,7 +54,7 @@ extension Target {
             path: module.path
         )
     }
-    
+
     static func macro(module: Module, dependencies: [Module]) -> Target {
         .macro(
             name: module.name,

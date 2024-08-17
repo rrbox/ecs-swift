@@ -7,17 +7,17 @@
 
 public struct SparseSet<T> {
     typealias DenseIndex = Int
-    
+
     var sparse: [DenseIndex?]
     var dense: [Entity]
     var data: [T]
-    
+
     public func value(forEntity entity: Entity) -> T? {
         guard let i = self.sparse[entity.slot] else { return nil }
         guard self.dense[i] == entity else { return nil }
         return self.data[i]
     }
-    
+
     public mutating func update(forEntity entity: Entity, _ execute: (inout T) -> ()) {
         guard let i = self.sparse[entity.slot] else { return }
         guard self.dense[i].generation == entity.generation else { return }
@@ -29,23 +29,23 @@ public struct SparseSet<T> {
             execute(&self.data[i])
         }
     }
-    
+
     public mutating func allocate() {
         self.sparse.append(nil)
     }
-    
+
     public mutating func insert(_ value: T, withEntity entity: Entity) {
         let denseIndex = self.dense.count
         self.sparse[entity.slot] = denseIndex
         self.dense.append(entity)
         self.data.append(value)
     }
-    
+
     public mutating func pop(entity: Entity) {
         assert(entity.generation == self.dense[self.sparse[entity.slot]!].generation)
         let denseIndexLast = self.dense.count-1
         let removeIndex = self.sparse[entity.slot]!
-        
+
         self.sparse[self.dense[denseIndexLast].slot] = removeIndex
         self.sparse[self.dense[removeIndex].slot] = nil
         self.dense.swapAt(removeIndex, denseIndexLast)
@@ -53,7 +53,7 @@ public struct SparseSet<T> {
         self.data.removeLast()
         self.dense.removeLast()
     }
-    
+
     public func contains(_ entity: Entity) -> Bool {
         guard self.sparse.indices.contains(entity.slot) else { return false }
         guard let i = self.sparse[entity.slot] else { return false }

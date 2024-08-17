@@ -7,12 +7,12 @@
 
 class AddBundle<T: BundleProtocol>: EntityCommand {
     let bundle: T
-    
+
     init(entity: Entity, bundle: T) {
         self.bundle = bundle
         super.init(entity: entity)
     }
-    
+
     override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
         bundle.addComponent(forEntity: record)
     }

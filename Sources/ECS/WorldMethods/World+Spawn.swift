@@ -27,18 +27,18 @@ extension World {
         if entity.generation == 0 {
             self.entities.allocate()
         }
-        
+
         self.insert(entity: entity, entityRecord: entityRecord)
         self.worldStorage
             .chunkStorage
             .pushSpawned(entity: entity, entityRecord: entityRecord)
-        
+
         self.worldStorage
             .eventStorage
             .commandsEventWriter(eventOfType: DidSpawnEvent.self)!
             .send(value: DidSpawnEvent(spawnedEntity: entity))
     }
-    
+
     /// Entity を削除します.
     ///
     /// ``Commands/despawn()`` が実行された後, フレームが終了するタイミングでこの関数が実行されます.
@@ -47,7 +47,7 @@ extension World {
         self.worldStorage
             .chunkStorage
             .despawn(entity: entity)
-        
+
         self.worldStorage
             .eventStorage
             .commandsEventWriter(eventOfType: WillDespawnEvent.self)!

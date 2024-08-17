@@ -15,5 +15,5 @@ public struct Object<T: AnyObject>: Component {
 }
 
 extension Commands {
-    
+
 }

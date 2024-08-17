@@ -6,7 +6,7 @@
 //
 
 extension Chunk: WorldStorageElement {
-    
+
 }
 
 /// Chunk を種類別で格納します
@@ -15,7 +15,7 @@ final public class ChunkStorage {
     init(buffer: WorldStorageRef) {
         self.buffer = buffer
     }
-    
+
     public func chunk<ChunkType: Chunk>(ofType type: ChunkType.Type) -> ChunkType? {
         self.buffer.map.valueRef(ofType: ChunkType.self)?.body
     }

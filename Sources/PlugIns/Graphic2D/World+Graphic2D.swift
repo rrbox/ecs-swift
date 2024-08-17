@@ -14,4 +14,3 @@ extension World {
         entityRecord.removeComponent(ofType: GraphicStrongRef.self)
     }
 }
-

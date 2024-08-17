@@ -31,7 +31,7 @@ func _addChildNodeSystem(
         } else {
             scene.resource.scene.addChild(graphic.nodeRef)
         }
-        
+
         commands
             .entity(childEntity)
             .removeComponent(ofType: _AddChildNodeTransaction.self)
@@ -60,13 +60,12 @@ func _addChildNodeSystem(
         } else {
             fatalError("parent entity not found")
         }
-        
+
         commands
             .entity(childEntity)
             .removeComponent(ofType: _AddChildNodeTransaction.self)
     }
 }
-
 
 func _removeFromParentSystem(
     query: Filtered<Query3<Entity, Graphic<SKNode>, Child>, With<_RemoveFromParentTransaction>>,
@@ -78,7 +77,7 @@ func _removeFromParentSystem(
         commands.entity(childEntity)
             .removeComponent(ofType: Child.self)
             .removeComponent(ofType: _RemoveFromParentTransaction.self)
-        
+
         parents.update(child.parent) { parent in
             parent._children.remove(childEntity)
         }
@@ -91,7 +90,7 @@ public func graphicPlugIn(world: World) {
         .addSystem(.update, _addChildNodeSystem(query:graphics:scene:commands:))
         .addSystem(.update, _addChildNodeSystem(query:graphics:commands:))
         .addSystem(.update, _removeFromParentSystem(query:parents:commands:))
-    
+
         .buildWillDespawnResponder { responder in
             responder
                 .addSystem(.update, removeChildIfDespawned(despawnEvent:query:parentQuery:))
