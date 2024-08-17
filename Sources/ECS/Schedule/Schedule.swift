@@ -31,7 +31,7 @@
 public struct Schedule: Hashable {
     let typeId: ObjectIdentifier
     let id: AnyHashable
-    
+
     init<T: Hashable>(id: T) {
         self.typeId = ObjectIdentifier(T.self)
         self.id = id
@@ -47,15 +47,15 @@ enum DefaultSchedule {
 public extension Schedule {
     /**
      ``World/setUpWorld()`` 実行時にシステムを実行します.
-     
+
      ```swift
      func createEntity(commands: Commands) {
          commands.spawn() // entity
      }
-     
+
      let world = World()
          .addSystem(.startUp, createEntity(commands:))
-     
+
      world.setUpWorld() // entity spawn here
      ```
      */
@@ -63,36 +63,36 @@ public extension Schedule {
     
     /**
      ``World/update(currentTime:)`` 実行時にシステムを実行します.
-     
+
      ```swift
      struct Name: Component {
          let value: String
      }
-     
+
      func createEntity(commands: Commands) {
          commands.spawn() // entity
              .addComponent(Name(value: "Entity_0"))
      }
-     
+
      func echoEntityName(query: Query<Name>) {
          query.update { _, name in
              print(name) // echo entity name
          }
      }
-     
+
      let world = World()
          .addSystem(.startUp, createEntity(commands:))
          .addSystem(.update, echoEntityName(query: Query<Name>)) // system as `update`
-     
+
      world.setUpWorld() // entity spawn here
-     
+
      world.update(currentTime: 0) // prepareing frame
      world.update(currentTime: 1) // "Entity_0"
      world.update(currentTime: 2) // "Entity_0"
      ```
      */
     static let update: Schedule = Schedule(id: DefaultSchedule.update)
-    
+
     static func customSchedule<T: Hashable>(_ value: T) -> Schedule {
         Schedule(id: value)
     }

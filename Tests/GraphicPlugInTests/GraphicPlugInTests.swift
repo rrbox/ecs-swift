@@ -20,13 +20,13 @@ final class GraphicPlugInTests: XCTestCase {
                 commands.spawn()
                     .setGraphic(SKNode())
             }
-        
+
         world.setUpWorld()
         world.update(currentTime: -1) // first frame state
         world.update(currentTime: 0) // update state
         XCTAssertEqual(scene.children.count, 1)
     }
-    
+
     func testAddChild() {
         let scene = SKScene()
         let parentNode = SKNode()
@@ -58,14 +58,14 @@ final class GraphicPlugInTests: XCTestCase {
                 default: return
                 }
             }
-        
+
         world.setUpWorld()
         world.update(currentTime: -1) // first frame state
         world.update(currentTime: 0) // update つまりここで graphic system が実行される
         world.update(currentTime: 1)
         XCTAssertEqual(parentNode.children.count, 1)
     }
-    
+
     func testAddChildIfNotHasNode() {
         let scene = SKScene()
         var frags = [0]
@@ -78,7 +78,7 @@ final class GraphicPlugInTests: XCTestCase {
                     .id()
                 commands.spawn()
                     .addChild(child_0)
-                
+
                 let child_1 = commands.spawn()
                     .id()
                 commands.spawn()
@@ -90,16 +90,16 @@ final class GraphicPlugInTests: XCTestCase {
                 XCTAssertEqual(parents.components.data.count, 2)
                 XCTAssertEqual(children.components.data.count, 0)
             }
-        
+
         world.setUpWorld()
         world.update(currentTime: -1)
         world.update(currentTime: 0)
         world.update(currentTime: 1)
-        
+
         XCTAssertEqual(frags, [2])
-        
+
     }
-    
+
     // entity hierarchy から取り外す処理のテスト
     func testRemoveFromParent() {
         let scene = SKScene()
@@ -152,7 +152,7 @@ final class GraphicPlugInTests: XCTestCase {
                 default: break
                 }
             }
-        
+
         world.setUpWorld()
         world.update(currentTime: -1)
         world.update(currentTime: 0)
@@ -160,10 +160,10 @@ final class GraphicPlugInTests: XCTestCase {
         world.update(currentTime: 2) // この一番最後で _remove from parent tarnsaction 追加
         world.update(currentTime: 3) // remove from parent system 実行, 一番最後に component に変更反映
         world.update(currentTime: 4) // ここで結果が出る
-        
+
         XCTAssertEqual(frags, [2, 3])
     }
-    
+
     // SKNode が紐づけられた Entity がデスポーンするときの挙動をてすと
     func testParentDespawn() {
         // デスポーンする entity の子 entity もデスポーンする.
@@ -205,7 +205,7 @@ final class GraphicPlugInTests: XCTestCase {
                             commands.despawn(entity: entity)
                         }
                     }
-                    
+
                     XCTAssertEqual(parents.components.data.count, 3)
                     XCTAssertEqual(children.components.data.count, 2)
                     XCTAssertEqual(totalEntities.components.data.count, 3)
@@ -224,7 +224,7 @@ final class GraphicPlugInTests: XCTestCase {
                     fatalError() // ここは通過しません.
                 }
             }
-        
+
         world.setUpWorld()
         world.update(currentTime: -1)
         world.update(currentTime: 0)
@@ -232,10 +232,10 @@ final class GraphicPlugInTests: XCTestCase {
         world.update(currentTime: 2)
         world.update(currentTime: 3)
         world.update(currentTime: 4)
-        
+
         XCTAssertEqual(frags, [5])
     }
-    
+
     // 子 entity をデスポーンすると、親から観測されなくなります.
     func testChildDespaen() {
         let scene = SKScene()
@@ -282,14 +282,14 @@ final class GraphicPlugInTests: XCTestCase {
                     fatalError() // ここは通過しません.
                 }
             }
-        
+
         world.setUpWorld()
         world.update(currentTime: -1)
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)
         world.update(currentTime: 3)
-        
+
         XCTAssertEqual(frags, [4])
     }
 }

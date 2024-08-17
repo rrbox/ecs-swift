@@ -7,11 +7,11 @@
 
 class AddResource<T: ResourceProtocol>: Command {
     let resrouce: T
-    
+
     init(resrouce: T) {
         self.resrouce = resrouce
     }
-    
+
     override func runCommand(in world: World) {
         world.addResource(self.resrouce)
     }

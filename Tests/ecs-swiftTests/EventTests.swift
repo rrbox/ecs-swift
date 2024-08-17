@@ -53,7 +53,7 @@ func despanedEntitySystem(eventReader: EventReader<WillDespawnEvent>, commands: 
 final class EventTests: XCTestCase {
     func testEvent() {
         print()
-        
+
         let world = World()
             .addEventStreamer(eventType: TestEvent.self)
             .buildEventResponder(TestEvent.self, { responder in
@@ -62,9 +62,9 @@ final class EventTests: XCTestCase {
             .addSystem(.startUp, setUp(eventWriter:))
             .addSystem(.didSpawn, spawnedEntitySystem(eventReader:commands:currentTime:))
             .addSystem(.willDespawn, despanedEntitySystem(eventReader:commands:currentTime:))
-        
+
         world.setUpWorld()
-        
+
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)

@@ -25,7 +25,7 @@ struct BundleMacro: ExtensionMacro {
                 partialResult.append("record.addComponent(self.\(identifier))\n")
             }
             .dropLast()
-        
+
         let declSyntax: DeclSyntax =
             """
             extension \(type.trimmed): BundleProtocol {
@@ -34,11 +34,11 @@ struct BundleMacro: ExtensionMacro {
                 }
             }
             """
-        
+
         guard let extensionSyntax = declSyntax.as(ExtensionDeclSyntax.self) else {
             return []
         }
-        
+
         return [
             extensionSyntax
         ]

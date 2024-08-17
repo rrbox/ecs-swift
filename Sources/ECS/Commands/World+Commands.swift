@@ -12,7 +12,7 @@ extension World {
         }
         commands.entityTransactions = []
     }
-    
+
     func applyCommands(commands: Commands) {
         for command in commands.commandQueue {
             command.runCommand(in: self)

@@ -17,11 +17,11 @@ public struct SceneResource: ResourceProtocol {
 
 class GraphicStrongRef: Component {
     let node: SKNode
-    
+
     init(node: SKNode) {
         self.node = node
     }
-    
+
     deinit {
         self.node.removeFromParent()
     }

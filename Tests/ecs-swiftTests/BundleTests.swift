@@ -21,11 +21,11 @@ final class BundleTests: XCTestCase {
                 frags[0] += 1
                 XCTAssertEqual(query.components.data.count, 1)
             }
-        
+
         world.setUpWorld()
         world.update(currentTime: -1)
         world.update(currentTime: 0)
-        
+
         XCTAssertEqual(frags, [1])
     }
 }

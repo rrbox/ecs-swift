@@ -46,23 +46,23 @@ public extension World {
     func mouseEntered(with event: NSEvent) {
         self.sendEvent(MouseEnteredEvent(nsEvent: event))
     }
-    
+
     func mouseExited(with event: NSEvent) {
         self.sendEvent(MouseExitedEvent(nsEvent: event))
     }
-    
+
     func mouseMoved(with event: NSEvent) {
         self.sendEvent(MouseMovedEvent(nsEvent: event))
     }
-    
+
     func mouseDown(with event: NSEvent) {
         self.sendEvent(MouseDownEvent(nsEvent: event))
     }
-    
+
     func mouseDragged(with event: NSEvent) {
         self.sendEvent(MouseDraggedEvent(nsEvent: event))
     }
-    
+
     func mouseUp(with event: NSEvent) {
         self.sendEvent(MouseUpEvent(nsEvent: event))
     }

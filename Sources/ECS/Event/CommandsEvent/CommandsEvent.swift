@@ -7,11 +7,11 @@
 
 /// Commands 実行中に発信されるイベントです.
 protocol CommandsEventProtocol {
-    
+
 }
 
 struct OnCommandsEvent<T: CommandsEventProtocol>: Hashable {
-    
+
 }
 
 extension Schedule {

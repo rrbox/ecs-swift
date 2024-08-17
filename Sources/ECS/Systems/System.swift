@@ -7,11 +7,11 @@
 
 class System<P: SystemParameter>: SystemExecute {
     let execute: (P) -> ()
-    
-   init(_ execute: @escaping (P) -> ()) {
+
+    init(_ execute: @escaping (P) -> ()) {
         self.execute = execute
     }
-    
+
     override func execute(_ worldStorageRef: WorldStorageRef) {
         self.execute(P.getParameter(from: worldStorageRef)!)
     }
@@ -30,7 +30,7 @@ public extension EventResponderBuilder {
         if !self.systems.keys.contains(schedule) {
             self.systems[schedule] = []
         }
-        
+
         self.systems[schedule]!.append(System<P>(system))
         P.register(to: self.worldStorage)
         return self

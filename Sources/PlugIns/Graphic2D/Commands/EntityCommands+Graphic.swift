@@ -23,7 +23,7 @@ public struct Parent: Component {
 }
 
 struct _RemoveFromParentTransaction: Component {
-    
+
 }
 
 class AddChild: EntityCommand {
@@ -32,12 +32,12 @@ class AddChild: EntityCommand {
         self.child = child
         super.init(entity: parent)
     }
-    
+
     override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
         let childRecord = world.entityRecord(forEntity: self.child)!
         childRecord.addComponent(_AddChildNodeTransaction(parentEntity: self.entity))
     }
-    
+
 }
 
 class RemoveAllChildren: EntityCommand {
@@ -45,13 +45,13 @@ class RemoveAllChildren: EntityCommand {
         let node = record.component(ofType: Graphic.self)!.nodeRef
         node.removeAllChildren()
         record.componentRef(ofType: Parent.self)?.value._children = []
-        
+
         for child in record.componentRef(ofType: Parent.self)!.value.children {
             let childRecord = world.entityRecord(forEntity: child)!
             childRecord.removeComponent(ofType: Child.self)
             world.worldStorage.chunkStorage.pushUpdated(entity: child, entityRecord: childRecord)
         }
-        
+
     }
 }
 
@@ -70,17 +70,17 @@ public extension EntityCommands {
         self.pushCommand(SetGraphic(node: node, entity: self.id()))
         return self.addComponent(Graphic(node: node)).addComponent(Graphic<SKNode>(node: node))
     }
-    
+
     @discardableResult func addChild(_ entity: Entity) -> Self {
         self.pushCommand(AddChild(parent: self.id(), child: entity))
         return self
     }
-    
+
     @discardableResult func removeAllChildren() -> Self {
         self.pushCommand(RemoveAllChildren(entity: self.id()))
         return self
     }
-    
+
     @discardableResult func removeFromParent() -> Self {
         self.pushCommand(RemoveFromParent(entity: self.id()))
         return self

@@ -9,5 +9,5 @@ import XCTest
 @testable import ECS_ObjectLink
 
 final class ObjectLinkTests: XCTestCase {
-    
+
 }

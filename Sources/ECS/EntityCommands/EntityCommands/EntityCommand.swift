@@ -10,8 +10,8 @@ open class EntityCommand {
     public init(entity: Entity) {
         self.entity = entity
     }
-    
+
     open func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
-        
+
     }
 }

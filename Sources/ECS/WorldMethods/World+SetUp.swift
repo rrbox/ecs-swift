@@ -17,12 +17,12 @@ public extension World {
             }
         }
         let commands = self.worldStorage.commandsStorage.commands()!
-        
+
         self.applyEnityTransactions(commands: commands)
         self.worldStorage.chunkStorage.applySpawnedEntityQueue()
-        
+
         self.applyCommands(commands: commands)
-        
+
         // entity の変更を world 全体に適用.
         self.worldStorage.chunkStorage.applyUpdatedEntityQueue()
     }
