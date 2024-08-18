@@ -1,17 +1,12 @@
 version: 2.1
 
-executors:
-  swift:
-    docker:
-      - image: swift:5.9
-    working_directory: ~/project
-
 jobs:
   build:
-    executor: swift
+    macos:
+      xcode: 14.3.1
     steps:
       - checkout
-      - run: apt-get update && apt-get install -y curl
+      # - run: apt-get update && apt-get install -y curl
       - run:
           name: Install dependencies
           command: swift package resolve
