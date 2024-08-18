@@ -3,6 +3,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/rrbox/ecs-swift)](https://github.com/rrbox/ecs-swift/issues)
 [![GitHub License](https://img.shields.io/github/license/rrbox/ecs-swift)](https://github.com/rrbox/ecs-swift/blob/main/LICENSE)
 [![Swift](https://github.com/rrbox/ecs-swift/actions/workflows/swift.yml/badge.svg?branch=release%2Flatest)](https://github.com/rrbox/ecs-swift/actions/workflows/swift.yml)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/rrbox/ecs-swift/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/rrbox/ecs-swift/tree/main)
 
 `ecs-swift` is a library that implements the Entity Component System (ECS) in Swift. It is used for developing games with ECS design in frameworks such as SpriteKit and SceneKit.
 
