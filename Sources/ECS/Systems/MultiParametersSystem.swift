@@ -5,8 +5,6 @@
 //  Created by rrbox on 2024/06/30.
 //
 
-import ECS_Macros
-
 @freestanding(declaration, names: arbitrary)
 macro System(_ n: Int) = #externalMacro(module: "ECS_Macros", type: "SystemMacro")
 
