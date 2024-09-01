@@ -5,8 +5,6 @@
 //  Created by rrbox on 2024/06/23.
 //
 
-import ECS_Macros
-
 @freestanding(declaration, names: arbitrary)
 macro Query(_ c: Int) = #externalMacro(module: "ECS_Macros", type: "QueryMacro")
 
