@@ -5,6 +5,8 @@
 //  Created by rrbox on 2023/10/09.
 //
 
+#if os(macOS)
+
 import SpriteKit
 
 class MouseTrackableView: SKView {
@@ -27,3 +29,5 @@ class MouseTrackableView: SKView {
         self.setTrackingArea()
     }
 }
+
+#endif
