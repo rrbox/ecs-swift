@@ -29,6 +29,7 @@ extension Module {
     static let objectLink = Module(name: "ECS_ObjectLink", path: "Sources/PlugIns/ObjectLink")
     static let scene = Module(name: "ECS_Scene", path: "Sources/PlugIns/Scene")
     static let scroll = Module(name: "ECS_Scroll", path: "Sources/PlugIns/Scroll")
+    static let touch = Module(name: "ECS_Touch", path: "Sources/PlugIns/Touch")
 
     static let ecs_swiftTests = Module(name: "ecs-swiftTests")
     static let graphicPlugInTests = Module(name: "GraphicPlugInTests")
@@ -37,6 +38,7 @@ extension Module {
     static let objectLinkPlugInTests = Module(name: "ObjectLinkPlugInTests")
     static let scenePlugInTests = Module(name: "ScenePlugInTests")
     static let scrollPlugInTests = Module(name: "ScrollPlugInTests")
+    static let touchPlugInTests = Module(name: "TouchPlugInTests")
 }
 
 extension Target {
@@ -83,6 +85,7 @@ let package = Package(
                 Module.objectLink.name,
                 Module.scene.name,
                 Module.scroll.name,
+                Module.touch.name,
             ]),
     ],
     dependencies: [
@@ -118,6 +121,9 @@ let package = Package(
         .target(
             module: .scroll,
             dependencies: [.ecs]),
+        .target(
+            module: .touch,
+            dependencies: [.ecs]),
         .testTarget(
             module: .ecs_swiftTests,
             dependencies: [.ecs]),
@@ -139,5 +145,8 @@ let package = Package(
         .testTarget(
             module: .scrollPlugInTests,
             dependencies: [.scroll]),
+        .testTarget(
+            module: .touchPlugInTests,
+            dependencies: [.touch]),
     ]
 )
