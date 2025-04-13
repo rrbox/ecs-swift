@@ -19,23 +19,29 @@ public extension World {
         // resrouce buffer に world の情報関係の resource を追加します.
         self.worldStorage.resourceBuffer.addResource(EntityCount(count: 0))
 
+        let systemStorage = self.worldStorage.systemStorage
+        let eventStorage = self.worldStorage.eventStorage
+
         // world storage に system を保持する領域を確保します.
-        self.worldStorage.systemStorage.registerSystemRegistry()
+        systemStorage.registerSystemRegistry()
 
         // world buffer に setup system を保持する領域を確保します.
-        self.worldStorage.systemStorage.insertSchedule(.startUp)
+        systemStorage.insertSchedule(.preStartUp)
+        systemStorage.insertSchedule(.startUp)
+        systemStorage.insertSchedule(.postStartUp)
 
-        // world buffer に update system を保持する領域を確保します.
-        self.worldStorage.systemStorage.insertSchedule(.firstFrame)
-        self.worldStorage.systemStorage.insertSchedule(.update)
+        // world buffer に update system を保持する領域を確保します. 
+        systemStorage.insertSchedule(.preUpdate)
+        systemStorage.insertSchedule(.update)
+        systemStorage.insertSchedule(.postUpdate)
 
         // state storage に schedule 管理をするための準備をします.
         self.worldStorage.stateStorage.setUp()
 
         // world buffer に event queue を作成します.
-        self.worldStorage.eventStorage.setUpEventQueue()
-        self.worldStorage.eventStorage.setUpCommandsEventQueue(eventOfType: DidSpawnEvent.self)
-        self.worldStorage.eventStorage.setUpCommandsEventQueue(eventOfType: WillDespawnEvent.self)
+        eventStorage.setUpEventQueue()
+        eventStorage.setUpCommandsEventQueue(eventOfType: DidSpawnEvent.self)
+        eventStorage.setUpCommandsEventQueue(eventOfType: WillDespawnEvent.self)
 
         // world buffer に spawn/despawn event の streamer を登録します.
         self.addCommandsEventStreamer(eventType: DidSpawnEvent.self)
@@ -45,6 +51,8 @@ public extension World {
         self.worldStorage.commandsStorage.setCommands(Commands())
 
         // world に一番最初のフレームで実行されるシステムを追加します.
-        self.worldStorage.systemStorage.addSystem(.firstFrame, System(firstFrameSystem(commands:)))
+        systemStorage.addSystem(.preStartUp, System(preUpdateSystemFirstFrameSystem(commands:)))
+        systemStorage.addSystem(.startUp, System(updateSystemFirstFrameSystem(commands:)))
+        systemStorage.addSystem(.postStartUp, System(postUpdateSystemFirstFrameSystem(commands:)))
     }
 }

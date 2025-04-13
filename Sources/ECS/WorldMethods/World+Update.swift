@@ -28,6 +28,31 @@ public extension World {
 
         currentTimeResource.resource = CurrentTime(value: currentTime)
 
+        let commands = self.worldStorage.commandsStorage.commands()!
+
+        // lifecycle 1: pre update
+        self.preUpdatePhase()
+        self.applyCommandsPhase(commands)
+
+        // lifecycle 2: udpate
+        self.updatePhase()
+        self.applyCommandsPhase(commands)
+
+        // lifecycle 3: post update
+        self.postUpdatePhase()
+        self.applyCommandsPhase(commands)
+    }
+}
+
+extension World {
+    func preUpdatePhase() {
+        let systemStorage = worldStorage.systemStorage
+        for system in systemStorage.systems(self.preUpdateSchedule) {
+            system.execute(worldStorage)
+        }
+    }
+
+    func updatePhase() {
         for system in self.worldStorage.systemStorage.systems(self.updateSchedule) {
             system.execute(self.worldStorage)
         }
@@ -41,9 +66,16 @@ public extension World {
 
         // world が受信した event を event system に発信します.
         self.applyEventQueue()
+    }
 
-        let commands = self.worldStorage.commandsStorage.commands()!
+    func postUpdatePhase() {
+        for system in self.worldStorage.systemStorage.systems(self.postUpdateSchedule) {
+            system.execute(self.worldStorage)
+        }
+    }
 
+    // 各システムが動いた後に実行される
+    func applyCommandsPhase(_ commands: Commands) {
         // will despawn event を配信します.
         self.applyCommandsEventQueue(eventOfType: WillDespawnEvent.self)
 

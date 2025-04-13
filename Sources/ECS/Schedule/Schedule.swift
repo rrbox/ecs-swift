@@ -39,12 +39,16 @@ public struct Schedule: Hashable {
 }
 
 enum DefaultSchedule {
+    case preStartUp
     case startUp
-    case firstFrame
+    case postStartUp
+    case preUpdate
     case update
+    case postUpdate
 }
 
 public extension Schedule {
+    static let preStartUp: Schedule = .init(id: DefaultSchedule.preStartUp)
     /**
      ``World/setUpWorld()`` 実行時にシステムを実行します.
 
@@ -60,7 +64,8 @@ public extension Schedule {
      ```
      */
     static let startUp: Schedule = Schedule(id: DefaultSchedule.startUp)
-    
+    static let postStartUp: Schedule = .init(id: DefaultSchedule.postStartUp)
+    static let preUpdate: Schedule = .init(id: DefaultSchedule.preUpdate)
     /**
      ``World/update(currentTime:)`` 実行時にシステムを実行します.
 
@@ -92,12 +97,9 @@ public extension Schedule {
      ```
      */
     static let update: Schedule = Schedule(id: DefaultSchedule.update)
+    static let postUpdate: Schedule = .init(id: DefaultSchedule.postUpdate)
 
     static func customSchedule<T: Hashable>(_ value: T) -> Schedule {
         Schedule(id: value)
     }
-}
-
-extension Schedule {
-    static let firstFrame: Schedule = Schedule(id: DefaultSchedule.firstFrame)
 }

@@ -56,17 +56,17 @@ struct Test {
         var flags = [0, 0, 0, 0]
         let world = World()
             .addState(initialState: StateCase.title, states: [.title, .inGame])
-            .addSystem(.didEnter(StateCase.title), { (_ :Commands) in // 3
-                flags[2] += 1
-                #expect(flags == [1, 1, 1, 0])
+            .addSystem(.didEnter(StateCase.title), { (_ :Commands) in // 2
+                flags[1] += 1
+                #expect(flags == [1, 1, 0, 0])
             })
             .addSystem(.preStartUp) { (_: Commands) in // 1
                 flags[0] += 1
                 #expect(flags == [1, 0, 0, 0])
             }
-            .addSystem(.startUp) { (_: Commands) in // 2
-                flags[1] += 1
-                #expect(flags == [1, 1, 0, 0])
+            .addSystem(.startUp) { (_: Commands) in // 3
+                flags[2] += 1
+                #expect(flags == [1, 1, 1, 0])
             }
             .addSystem(.postStartUp) { (_: Commands) in // 4
                 flags[3] += 1
@@ -76,7 +76,6 @@ struct Test {
         world.setUpWorld()
 
         world.update(currentTime: -1)
-        world.update(currentTime: 0)
 
         #expect(flags == [1, 1, 1, 1])
     }

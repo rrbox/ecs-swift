@@ -44,12 +44,16 @@
  */
 final public class World {
     var entities: SparseSet<EntityRecordRef>
+    var preUpdateSchedule: Schedule
     var updateSchedule: Schedule
+    var postUpdateSchedule: Schedule
     public let worldStorage: WorldStorageRef
 
     init(worldStorage: WorldStorageRef) {
         self.entities = SparseSet(sparse: [], dense: [], data: [])
-        self.updateSchedule = .firstFrame
+        self.preUpdateSchedule = .preStartUp
+        self.updateSchedule = .startUp
+        self.postUpdateSchedule = .postStartUp
         self.worldStorage = worldStorage
     }
 
