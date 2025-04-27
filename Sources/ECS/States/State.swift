@@ -9,26 +9,88 @@ public protocol StateProtocol: Hashable {
 
 }
 
-public class StateStorage {
-    class StateRegistry<T: StateProtocol>: WorldStorageElement {
-        var currentState: T
-        var inactiveStates = [T]()
+class StateRegistry<T: StateProtocol>: WorldStorageElement {
+    var currentState: T
+    var inactiveStates = [T]()
 
-        init(currentState: T) {
-            self.currentState = currentState
-        }
-
+    init(currentState: T) {
+        self.currentState = currentState
     }
+}
 
+public class StateStorage {
     class StateAssociatedSchedules: WorldStorageElement {
         var schedules = Set<Schedule>()
     }
 
-    class StatesDidEnterInStartUp: WorldStorageElement {
-        // world 構築時に初期値として設定された state を一時的に保持します.
-        // world の start up 時に didEnter system が実行されます.
-        // start up 実行後も保持され続けられるため, world 初期化のために start up を実行した場合も同じ効果が得られます.
-        var schedules = Set<Schedule>()
+    class StateTransitionQueue: WorldStorageElement {
+        private(set) var didEnterQueue = [Schedule]()
+        private(set) var willExitQueue = [Schedule]()
+        private(set) var onResumeQueue = [Schedule]()
+        private(set) var onPauseQueue = [Schedule]()
+        private(set) var onUpdateNewStateQueue = [Schedule]()
+        private(set) var onUpdatePreviousStateQueue = [Schedule]()
+        private(set) var onStackUpdateNewStateQueue = [Schedule]()
+        private(set) var onStackUpdatePreviousStateQueue = [Schedule]()
+        private(set) var onInactiveUpdateNewStateQueue = [Schedule]()
+        private(set) var onInactiveUpdatePreviousStateQueue = [Schedule]()
+
+        // enter
+
+        func enqueueEntered<T: StateProtocol>(state: T) {
+            didEnterQueue.append(.didEnter(state))
+            onUpdateNewStateQueue.append(.onUpdate(state))
+            onStackUpdateNewStateQueue.append(.onStackUpdate(state))
+        }
+
+        func enqueueExited<T: StateProtocol>(state: T) {
+            willExitQueue.append(.willExit(state))
+            onUpdatePreviousStateQueue.append(.onUpdate(state))
+            onStackUpdatePreviousStateQueue.append(.onStackUpdate(state))
+        }
+
+        // push
+
+        func enqueuePushed<T: StateProtocol>(state: T) {
+            didEnterQueue.append(.didEnter(state))
+            onUpdateNewStateQueue.append(.onUpdate(state))
+            onStackUpdateNewStateQueue.append(.onStackUpdate(state))
+        }
+
+        func enqueuePaused<T: StateProtocol>(state: T) {
+            onPauseQueue.append(.onPause(state))
+            onUpdatePreviousStateQueue.append(.onUpdate(state))
+            onInactiveUpdateNewStateQueue.append(.onInactiveUpdate(state))
+        }
+
+        // pop
+
+        func enqueuePopped<T: StateProtocol>(state: T) {
+            onUpdatePreviousStateQueue.append(.onUpdate(state))
+            onStackUpdatePreviousStateQueue.append(.onStackUpdate(state))
+            willExitQueue.append(.willExit(state))
+        }
+
+        func enqueueResumed<T: StateProtocol>(state: T) {
+            onResumeQueue.append(.onResume(state))
+            onUpdateNewStateQueue.append(.onUpdate(state))
+            onInactiveUpdatePreviousStateQueue.append(.onInactiveUpdate(state))
+        }
+
+        // clear
+
+        func clear() {
+            didEnterQueue = []
+            willExitQueue = []
+            onResumeQueue = []
+            onPauseQueue = []
+            onUpdatePreviousStateQueue = []
+            onUpdateNewStateQueue = []
+            onStackUpdatePreviousStateQueue = []
+            onStackUpdateNewStateQueue = []
+            onInactiveUpdatePreviousStateQueue = []
+            onInactiveUpdateNewStateQueue = []
+        }
     }
 
     let storageRef: WorldStorageRef
@@ -39,13 +101,13 @@ public class StateStorage {
 
     func setUp() {
         self.storageRef.map.push(StateAssociatedSchedules())
-        self.storageRef.map.push(StatesDidEnterInStartUp())
+        self.storageRef.map.push(StateTransitionQueue())
     }
 
     func registerState<T: StateProtocol>(initialState: T, states: [T]) {
         self.storageRef.map.push(StateRegistry(currentState: initialState))
-        self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body.schedules.insert(.onUpdate(initialState))
-        self.storageRef.map.valueRef(ofType: StatesDidEnterInStartUp.self)!.body.schedules.insert(.didEnter(initialState))
+        let queue = self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!.body
+        queue.enqueueEntered(state: initialState)
     }
 
     func currentState<T: StateProtocol>(ofType type: T.Type) -> T? {
@@ -56,74 +118,105 @@ public class StateStorage {
         self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body.schedules
     }
 
+    // MARK: - queue
+
+    func didEnterQueue() -> [Schedule] {
+        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .didEnterQueue
+    }
+
+    func willExitQueue() -> [Schedule] {
+        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .willExitQueue
+    }
+
+    func onPauseQueue() -> [Schedule] {
+        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .onPauseQueue
+    }
+
+    func onResumeQueue() -> [Schedule] {
+        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .onResumeQueue
+    }
+
+    func onUpdatePreviousStateQueue() -> [Schedule] {
+        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .onUpdatePreviousStateQueue
+    }
+
+    func onStackUpdatePreviousStateQueue() -> [Schedule] {
+        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .onStackUpdatePreviousStateQueue
+    }
+
+    func onUpdateNewStateQueue() -> [Schedule] {
+        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .onUpdateNewStateQueue
+    }
+
+    func onStackUpdateNewStateQueue() -> [Schedule] {
+        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .onStackUpdateNewStateQueue
+    }
+
+    func onInactiveNewStateQueue() -> [Schedule] {
+        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .onInactiveUpdateNewStateQueue
+    }
+
+    func onInactivePreviousStateQueue() -> [Schedule] {
+        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .onInactiveUpdatePreviousStateQueue
+    }
+
+    func clearQueue() {
+        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+            .body.clear()
+    }
+
+    // MARK: - commands
+
     func enter<T: StateProtocol>(_ state: T) {
         let stateRegistry = self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body
-        let schedulesManager = self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body
+        let queue = self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!.body
+        let previous = stateRegistry.currentState
 
-        schedulesManager.schedules.remove(.onUpdate(stateRegistry.currentState))
-        schedulesManager.schedules.remove(.onStackUpdate(stateRegistry.currentState))
-
-        // will exit
-        for system in self.storageRef.systemStorage.systems(.willExit(stateRegistry.currentState)) {
-            system.execute(self.storageRef)
-        }
-
-        self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body.currentState = state
-
-        // did enter
-        for system in self.storageRef.systemStorage.systems(.didEnter(state)) {
-            system.execute(self.storageRef)
-        }
-
-        schedulesManager.schedules.insert(.onUpdate(state))
-        schedulesManager.schedules.insert(.onStackUpdate(state))
+        queue.enqueueExited(state: previous)
+        queue.enqueueEntered(state: state)
+        stateRegistry.currentState = state
     }
 
     func push<T: StateProtocol>(_ state: T) {
-        let registry = self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body
-        let schedulesManager = self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body
+        let stateRegistry = self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body
+        let queue = self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!.body
+        let previous = stateRegistry.currentState
 
-        // on pause
-        for system in self.storageRef.systemStorage.systems(.onPause(registry.currentState)) {
-            system.execute(self.storageRef)
-        }
-
-        schedulesManager.schedules.remove(.onUpdate(registry.currentState))
-        schedulesManager.schedules.insert(.onInactiveUpdate(registry.currentState))
-
-        registry.inactiveStates.append(registry.currentState)
-        registry.currentState = state
-
-        schedulesManager.schedules.insert(.onUpdate(state))
-        schedulesManager.schedules.insert(.onStackUpdate(state))
-
-        // did enter
-        for system in self.storageRef.systemStorage.systems(.didEnter(state)) {
-            system.execute(self.storageRef)
-        }
+        queue.enqueuePaused(state: previous)
+        queue.enqueuePushed(state: state)
+        stateRegistry.inactiveStates.append(previous)
+        stateRegistry.currentState = state
     }
 
     func pop<T: StateProtocol>(_ stateType: T.Type) {
         let registry = self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body
-        let schedulesManager = self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body
+        let queue = self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!.body
+        let previeous = registry.currentState
+        let new = registry.inactiveStates.removeLast()
 
-        // will exit
-        for system in self.storageRef.systemStorage.systems(.willExit(registry.currentState)) {
-            system.execute(self.storageRef)
-        }
-
-        schedulesManager.schedules.remove(.onUpdate(registry.currentState))
-        schedulesManager.schedules.remove(.onStackUpdate(registry.currentState))
-
-        registry.currentState = registry.inactiveStates.removeLast()
-
-        // on resume
-        for system in self.storageRef.systemStorage.systems(.onResume(registry.currentState)) {
-            system.execute(self.storageRef)
-        }
-
-        schedulesManager.schedules.remove(.onInactiveUpdate(registry.currentState))
-        schedulesManager.schedules.insert(.onUpdate(registry.currentState))
+        queue.enqueuePopped(state: previeous)
+        queue.enqueueResumed(state: new)
+        registry.currentState = new
     }
 
 }
@@ -135,6 +228,23 @@ public extension WorldStorageRef {
 }
 
 public extension World {
+    /// Adds a set of states to the world and registers their associated schedules.
+    ///
+    /// - Parameters:
+    ///   - initialState: The initial state to be registered. This state must conform to `StateProtocol`.
+    ///   - states: An array of states to be added to the world. Each state must conform to `StateProtocol`.
+    /// - Returns: The current `World` instance, allowing for method chaining.
+    ///
+    /// This method performs the following actions:
+    /// 1. Registers the initial state and the provided states with the world's state storage.
+    /// 2. For each state in the `states` array, it inserts the following schedules into the world's system storage:
+    ///    - `.onUpdate`: Called when the state is updated.
+    ///    - `.onInactiveUpdate`: Called when the state is updated while inactive.
+    ///    - `.onStackUpdate`: Called when the state is updated while on the stack.
+    ///    - `.didEnter`: Called when the state is entered. This is also invoked for the initialState during the world's startup phase.
+    ///    - `.willExit`: Called when the state is about to exit.
+    ///    - `.onPause`: Called when the state is paused.
+    ///    - `.onResume`: Called when the state is resumed.
     @discardableResult func addState<T: StateProtocol>(initialState: T, states: [T]) -> World {
         self.worldStorage.stateStorage.registerState(initialState: initialState, states: states)
 

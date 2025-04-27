@@ -47,8 +47,79 @@ public extension World {
 extension World {
     func preUpdatePhase() {
         let systemStorage = worldStorage.systemStorage
+        let stateStorage = worldStorage.stateStorage
+        let stateSchedulesManager = worldStorage
+            .map
+            .valueRef(ofType: StateStorage.StateAssociatedSchedules.self)!
+            .body
+
+        let willExitQueue = stateStorage.willExitQueue()
+        let didEnterQueue = stateStorage.didEnterQueue()
+        let onPauseQueue = stateStorage.onPauseQueue()
+        let onResumeQueue = stateStorage.onResumeQueue()
+
+        let onUpdatePreviousStateQueue = stateStorage.onUpdatePreviousStateQueue()
+        let onUpdateNewStateQueue = stateStorage.onUpdateNewStateQueue()
+        let onStackUpdatePreviousStateQueue = stateStorage.onStackUpdatePreviousStateQueue()
+        let onStackUpdateNewStateQueue = stateStorage.onStackUpdateNewStateQueue()
+        let onInactiveUpdatePreviousStateQueue = stateStorage.onInactivePreviousStateQueue()
+        let onInactiveUpdateNewStateQueue = stateStorage.onInactiveNewStateQueue()
+
+        stateStorage.clearQueue()
+
         for system in systemStorage.systems(self.preUpdateSchedule) {
             system.execute(worldStorage)
+        }
+
+        // state が queue に入っていたら will exit と did enter を呼び出す
+        // queue を for-loop して state を取り出す
+
+        for previousState in onUpdatePreviousStateQueue {
+            stateSchedulesManager.schedules.remove(previousState)
+        }
+        
+        for previousState in onStackUpdatePreviousStateQueue {
+            stateSchedulesManager.schedules.remove(previousState)
+        }
+
+        for previousState in onInactiveUpdatePreviousStateQueue {
+            stateSchedulesManager.schedules.remove(previousState)
+        }
+
+        for willExit in willExitQueue {
+            for system in systemStorage.systems(willExit) {
+                system.execute(worldStorage)
+            }
+        }
+
+        for onPause in onPauseQueue {
+            for system in systemStorage.systems(onPause) {
+                system.execute(worldStorage)
+            }
+        }
+
+        for onResume in onResumeQueue {
+            for system in systemStorage.systems(onResume) {
+                system.execute(worldStorage)
+            }
+        }
+
+        for didEnter in didEnterQueue {
+            for system in systemStorage.systems(didEnter) {
+                system.execute(worldStorage)
+            }
+        }
+
+        for newState in onUpdateNewStateQueue {
+            stateSchedulesManager.schedules.insert(newState)
+        }
+
+        for newState in onStackUpdateNewStateQueue {
+            stateSchedulesManager.schedules.insert(newState)
+        }
+
+        for newState in onInactiveUpdateNewStateQueue {
+            stateSchedulesManager.schedules.insert(newState)
         }
     }
 
