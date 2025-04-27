@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     macos:
-      xcode: 15.4.0
+      xcode: 16.1.0
     steps:
       - checkout
       # - run: apt-get update && apt-get install -y curl
