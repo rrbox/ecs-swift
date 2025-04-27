@@ -85,6 +85,7 @@ func _removeFromParentSystem(
     
 }
 
+@MainActor
 public func graphicPlugIn(world: World) {
     world
         .addSystem(.update, _addChildNodeSystem(query:graphics:scene:commands:))
