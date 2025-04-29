@@ -23,12 +23,12 @@
 ### Requirements
 
 - Xcode 14.3 
-- Swift 5.8
+- Swift 5.9
 
 ### Swift Package Manager
 
 ```swift
-// swift-tools-version:5.8
+// swift-tools-version:5.9
 
 import PackageDescription
 

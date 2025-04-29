@@ -26,12 +26,12 @@ From the developer of this tool, [@rrbox](https://github.com/rrbox).
 ### Requirements
 
 - Xcode 14.3 
-- Swift 5.8
+- Swift 5.9
 
 ### Swift package
 
 ```swift
-// swift-tools-version:5.8
+// swift-tools-version:5.9
 
 import PackageDescription
 
