@@ -27,10 +27,9 @@ class SetGraphic: EntityCommand {
 
     override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
         self.setEntityInfoForNode(entity)
-        
-        record.addComponent(GraphicStrongRef(node: self.node))
+
         record.addComponent(Parent(_children: []))
         record.addComponent(_AddChildNodeTransaction(parentEntity: nil))
     }
-     
+
 }

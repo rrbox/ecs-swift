@@ -11,6 +11,5 @@ import ECS
 extension World {
     func removeGraphic(fromEntity entity: Entity) {
         let entityRecord = self.entityRecord(forEntity: entity)!
-        entityRecord.removeComponent(ofType: GraphicStrongRef.self)
     }
 }
