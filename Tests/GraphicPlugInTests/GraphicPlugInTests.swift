@@ -28,7 +28,7 @@ final class GraphicPlugInTests: XCTestCase {
         XCTAssertEqual(scene.children.count, 1)
     }
 
-    func testAddChild() {
+    func testAddChildOnUpdate() {
         let scene = SKScene()
         let parentNode = SKNode()
         let world = World()
@@ -54,11 +54,13 @@ final class GraphicPlugInTests: XCTestCase {
                 switch currentTime.resource.value {
                 case -1: fatalError() // ここは通過しない.
                 case 0:
+                    XCTAssertEqual(parents.components.data.count, 0)
+                    XCTAssertEqual(parentNode.children.count, 0)
+                    XCTAssertEqual(children.components.data.count, 0)
+                case 1:
                     XCTAssertEqual(parents.components.data.count, 2)
                     XCTAssertEqual(parentNode.children.count, 1)
                     XCTAssertEqual(children.components.data.count, 1)
-                    break
-                case 1: break
                 default: return
                 }
             }
@@ -66,7 +68,7 @@ final class GraphicPlugInTests: XCTestCase {
         world.setUpWorld()
         world.update(currentTime: -1) // first frame state
         world.update(currentTime: 0) // update つまりここで graphic system が実行される
-        world.update(currentTime: 1)
+        world.update(currentTime: 1) // FIXME: - 削除
         XCTAssertEqual(parentNode.children.count, 1)
     }
 

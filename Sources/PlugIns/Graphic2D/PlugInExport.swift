@@ -88,9 +88,13 @@ func _removeFromParentSystem(
 @MainActor
 public func graphicPlugIn(world: World) {
     world
-        .addSystem(.update, _addChildNodeSystem(query:graphics:scene:commands:))
-        .addSystem(.update, _addChildNodeSystem(query:graphics:commands:))
-        .addSystem(.update, _removeFromParentSystem(query:parents:commands:))
+        .addResource(Nodes())
+        .addSystem(.postStartUp, _addChildNodeSystem(query:graphics:scene:commands:))
+        .addSystem(.postStartUp, _addChildNodeSystem(query:graphics:commands:))
+        .addSystem(.postStartUp, _removeFromParentSystem(query:parents:commands:))
+        .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:scene:commands:))
+        .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:commands:))
+        .addSystem(.postUpdate, _removeFromParentSystem(query:parents:commands:))
 
         .buildWillDespawnResponder { responder in
             responder
