@@ -10,6 +10,21 @@
 import SpriteKit
 import XCTest
 
+func XCTAssertStepOrder(
+    currentStep: Int,
+    steps: inout [Int],
+    file: StaticString = #filePath,
+    line: UInt = #line
+) {
+    let stepCount = steps.count
+    var targetSteps = [Int](repeating: 0, count: stepCount)
+    for i in 0 ... currentStep {
+        targetSteps[i] += 1
+    }
+    steps[currentStep] += 1
+    XCTAssertEqual(targetSteps, steps, file: file, line: line)
+}
+
 @MainActor
 final class GraphicPlugInTests: XCTestCase {
     func testSetGraphic() {
@@ -262,7 +277,7 @@ final class GraphicPlugInTests: XCTestCase {
     // 子 entity をデスポーンすると、親から観測されなくなります.
     func testChildDespaen() {
         let scene = SKScene()
-        var flags = [0]
+        var flags = [0, 0, 0]
         let world = World()
             .addResource(SceneResource(scene))
             .addPlugIn(graphicPlugIn(world:))
@@ -280,17 +295,12 @@ final class GraphicPlugInTests: XCTestCase {
                 switch currentTime.resource.value {
                 case -1: fatalError() // ここは通過しません.
                 case 0:
-                    flags[0] += 1
+                    XCTAssertStepOrder(currentStep: 0, steps: &flags)
                     XCTAssertEqual(parents.components.data.count, 2)
                     XCTAssertEqual(children.query.components.data.count, 1)
                     XCTAssertEqual(totalEntities.components.data.count, 2)
-                case 1: // FIXME: - 削除
-                    flags[0] += 1
-                    XCTAssertEqual(parents.components.data.count, 2)
-                    XCTAssertEqual(children.query.components.data.count, 1)
-                    XCTAssertEqual(totalEntities.components.data.count, 2)
-                case 2:
-                    flags[0] += 1
+                case 1:
+                    XCTAssertStepOrder(currentStep: 1, steps: &flags)
                     children.update { entity in
                         commands.despawn(entity: entity)
                     }
@@ -298,8 +308,8 @@ final class GraphicPlugInTests: XCTestCase {
                     XCTAssertEqual(parents.components.data.count, 2)
                     XCTAssertEqual(children.query.components.data.count, 1)
                     XCTAssertEqual(totalEntities.components.data.count, 2)
-                case 3:
-                    flags[0] += 1
+                case 2:
+                    XCTAssertStepOrder(currentStep: 2, steps: &flags)
                     XCTAssertEqual(parents.components.data.count, 1)
                     XCTAssertEqual(children.query.components.data.count, 0)
                     XCTAssertEqual(totalEntities.components.data.count, 1)
@@ -311,10 +321,9 @@ final class GraphicPlugInTests: XCTestCase {
         world.setUpWorld()
         world.update(currentTime: -1)
         world.update(currentTime: 0)
-        world.update(currentTime: 1) // FIXME: - 削除
+        world.update(currentTime: 1)
         world.update(currentTime: 2)
-        world.update(currentTime: 3)
 
-        XCTAssertEqual(flags, [4])
+        XCTAssertEqual(flags, [1, 1, 1])
     }
 }
