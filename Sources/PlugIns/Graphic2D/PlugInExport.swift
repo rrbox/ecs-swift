@@ -88,6 +88,13 @@ func _removeFromParentSystem(
 }
 
 @MainActor
+func _removeNodeIfDespawned(despawn: EventReader<WillDespawnEvent>, nodes: Resource<Nodes>) {
+    let entity = despawn.value.despawnedEntity
+    nodes.resource.removeNode(forEntity: entity)
+}
+
+// TODO: - Node 操作イベントのハンドリングは他のフェーズでもお同様に行なわなくてもOK?
+@MainActor
 public func graphicPlugIn(world: World) {
     world
         .addResource(Nodes())
@@ -102,5 +109,8 @@ public func graphicPlugIn(world: World) {
             responder
                 .addSystem(.update, removeChildIfDespawned(despawnEvent:query:parentQuery:))
                 .addSystem(.update, despawnChildIfParentDespawned(despawnedEntityEvent:children:commands:))
+                .addSystem(.preUpdate, _removeNodeIfDespawned(despawn:nodes:))
+                .addSystem(.update, _removeNodeIfDespawned(despawn:nodes:))
+                .addSystem(.postUpdate, _removeNodeIfDespawned(despawn:nodes:))
         }
 }

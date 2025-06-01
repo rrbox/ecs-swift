@@ -50,7 +50,8 @@ final class GraphicPlugInTests: XCTestCase {
                 children: Query<Child>,
                 parents: Query3<Entity, Parent, Graphic<SKNode>>,
                 currentTime: Resource<CurrentTime>,
-                commands: Commands
+                commands: Commands,
+                nodes: Resource<Nodes>
             ) in
                 switch currentTime.resource.value {
                 case -1: fatalError() // ここは通過しない.
@@ -58,11 +59,13 @@ final class GraphicPlugInTests: XCTestCase {
                     XCTAssertEqual(parents.components.data.count, 0)
                     XCTAssertEqual(parentNode.children.count, 0)
                     XCTAssertEqual(children.components.data.count, 0)
+                    XCTAssertEqual(nodes.resource.store.count, 2)
                     flags[0] += 1
                 case 1:
                     XCTAssertEqual(parents.components.data.count, 2)
                     XCTAssertEqual(parentNode.children.count, 1)
                     XCTAssertEqual(children.components.data.count, 1)
+                    XCTAssertEqual(nodes.resource.store.count, 2)
                     flags[1] += 1
                 default: return
                 }
@@ -83,6 +86,7 @@ final class GraphicPlugInTests: XCTestCase {
             .addResource(SceneResource(scene))
             .addPlugIn(graphicPlugIn(world:))
             .addSystem(.startUp) { (commands: Commands, nodes: Resource<Nodes>) in
+                // set graphic されていない entity に対して addChild を動かす
                 let childNode_0 = SKNode()
                 let childNode_1 = SKNode()
 
@@ -98,10 +102,15 @@ final class GraphicPlugInTests: XCTestCase {
                     .setGraphic(nodes.resource.create(node: childNode_1))
                     .addChild(child_1)
             }
-            .addSystem(.update) { (children: Query<Child>, parents: Query2<Entity, Parent>) in
+            .addSystem(.update) { (
+                children: Query<Child>,
+                parents: Query2<Entity, Parent>,
+                nodes: Resource<Nodes>
+            ) in
                 flags[0] += 1
                 XCTAssertEqual(parents.components.data.count, 2)
                 XCTAssertEqual(children.components.data.count, 0)
+                XCTAssertEqual(nodes.resource.store.count, 2)
             }
 
         world.setUpWorld()
@@ -143,7 +152,14 @@ final class GraphicPlugInTests: XCTestCase {
                 default: return
                 }
             }
-            .addSystem(.update) { (children: Filtered<Query<Entity>, With<Child>>, parents: Query<Parent>, commands: Commands, currentTime: Resource<CurrentTime>) in
+            .addSystem(.update) { (
+                children: Filtered<Query<Entity>,
+                With<Child>>,
+                parents: Query<Parent>,
+                commands: Commands,
+                currentTime: Resource<CurrentTime>,
+                nodes: Resource<Nodes>
+            ) in
                 // remove from parent 関数の効果をチェック
                 XCTAssertEqual(parents.components.data.count, 2)
                 switch currentTime.resource.value {
@@ -157,6 +173,7 @@ final class GraphicPlugInTests: XCTestCase {
                     flags[1] += 1
                     XCTAssertEqual(children.query.components.data.count, 0)
                     XCTAssertEqual(parentNode.children.count, 0)
+                    XCTAssertEqual(nodes.resource.store.count, 1)
                 default: break
                 }
             }
@@ -175,7 +192,7 @@ final class GraphicPlugInTests: XCTestCase {
         // デスポーンする entity の子 entity もデスポーンする.
         let scene = SKScene()
         let parent = SKNode()
-        var flags = [0, 0, 0, 0]
+        var flags = [0, 0, 0]
         let world = World()
             .addResource(SceneResource(scene))
             .addPlugIn(graphicPlugIn(world:))
@@ -239,7 +256,7 @@ final class GraphicPlugInTests: XCTestCase {
         world.update(currentTime: 1)
         world.update(currentTime: 2)
 
-        XCTAssertEqual(flags, [1, 1, 1, 1])
+        XCTAssertEqual(flags, [1, 1, 1])
     }
 
     // 子 entity をデスポーンすると、親から観測されなくなります.
