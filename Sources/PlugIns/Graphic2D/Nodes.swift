@@ -27,4 +27,8 @@ public final class Nodes: ResourceProtocol {
     func regiester<Node: SKNode>(entity: Entity, node: Node) {
         store[entity] = node
     }
+
+    func removeNode(forEntity entity: Entity) {
+        store.removeValue(forKey: entity)
+    }
 }

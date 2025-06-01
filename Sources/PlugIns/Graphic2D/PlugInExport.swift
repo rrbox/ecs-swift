@@ -67,13 +67,16 @@ func _addChildNodeSystem(
     }
 }
 
+@MainActor
 func _removeFromParentSystem(
     query: Filtered<Query3<Entity, Graphic<SKNode>, Child>, With<_RemoveFromParentTransaction>>,
     parents: Query<Parent>,
+    nodes: Resource<Nodes>,
     commands: Commands
 ) {
     query.update { childEntity, childNode, child  in
         childNode.nodeRef.removeFromParent()
+        nodes.resource.removeNode(forEntity: childEntity)
         commands.entity(childEntity)
             .removeComponent(ofType: Child.self)
             .removeComponent(ofType: _RemoveFromParentTransaction.self)
@@ -82,7 +85,6 @@ func _removeFromParentSystem(
             parent._children.remove(childEntity)
         }
     }
-    
 }
 
 @MainActor
@@ -91,10 +93,10 @@ public func graphicPlugIn(world: World) {
         .addResource(Nodes())
         .addSystem(.postStartUp, _addChildNodeSystem(query:graphics:scene:commands:))
         .addSystem(.postStartUp, _addChildNodeSystem(query:graphics:commands:))
-        .addSystem(.postStartUp, _removeFromParentSystem(query:parents:commands:))
+        .addSystem(.postStartUp, _removeFromParentSystem(query:parents:nodes:commands:))
         .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:scene:commands:))
         .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:commands:))
-        .addSystem(.postUpdate, _removeFromParentSystem(query:parents:commands:))
+        .addSystem(.postUpdate, _removeFromParentSystem(query:parents:nodes:commands:))
 
         .buildWillDespawnResponder { responder in
             responder

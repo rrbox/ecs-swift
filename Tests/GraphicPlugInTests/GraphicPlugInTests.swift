@@ -31,6 +31,7 @@ final class GraphicPlugInTests: XCTestCase {
     func testAddChildOnUpdate() {
         let scene = SKScene()
         let parentNode = SKNode()
+        var flags = [0, 0]
         let world = World()
             .addResource(SceneResource(scene))
             .addPlugIn(graphicPlugIn(world:))
@@ -57,19 +58,22 @@ final class GraphicPlugInTests: XCTestCase {
                     XCTAssertEqual(parents.components.data.count, 0)
                     XCTAssertEqual(parentNode.children.count, 0)
                     XCTAssertEqual(children.components.data.count, 0)
+                    flags[0] += 1
                 case 1:
                     XCTAssertEqual(parents.components.data.count, 2)
                     XCTAssertEqual(parentNode.children.count, 1)
                     XCTAssertEqual(children.components.data.count, 1)
+                    flags[1] += 1
                 default: return
                 }
             }
 
         world.setUpWorld()
         world.update(currentTime: -1) // first frame state
-        world.update(currentTime: 0) // update つまりここで graphic system が実行される
-        world.update(currentTime: 1) // FIXME: - 削除
+        world.update(currentTime: 0) // update: ここで graphic system が実行される
+        world.update(currentTime: 1)
         XCTAssertEqual(parentNode.children.count, 1)
+        XCTAssertEqual(flags, [1, 1])
     }
 
     func testAddChildIfNotHasNode() {
@@ -136,10 +140,6 @@ final class GraphicPlugInTests: XCTestCase {
                     flags[0] += 1
                     XCTAssertEqual(parentNode.children.count, 1)
                     XCTAssertEqual(children.components.data.count, 1)
-                case 1: // FIXME: - 削除
-                    flags[0] += 1
-                    XCTAssertEqual(parentNode.children.count, 1)
-                    XCTAssertEqual(children.components.data.count, 1)
                 default: return
                 }
             }
@@ -147,17 +147,13 @@ final class GraphicPlugInTests: XCTestCase {
                 // remove from parent 関数の効果をチェック
                 XCTAssertEqual(parents.components.data.count, 2)
                 switch currentTime.resource.value {
-                case 2:
+                case 1:
                     flags[1] += 1
                     children.update { entity in
                         commands.entity(entity)
                             .removeFromParent()
                     }
-                case 3:
-                    flags[1] += 1
-                    XCTAssertEqual(children.query.components.data.count, 0)
-                    XCTAssertEqual(parentNode.children.count, 0)
-                case 4: // FIXME: - 削除
+                case 2:
                     flags[1] += 1
                     XCTAssertEqual(children.query.components.data.count, 0)
                     XCTAssertEqual(parentNode.children.count, 0)
@@ -168,12 +164,10 @@ final class GraphicPlugInTests: XCTestCase {
         world.setUpWorld()
         world.update(currentTime: -1)
         world.update(currentTime: 0)
-        world.update(currentTime: 1) // FIXME: - 削除
-        world.update(currentTime: 2) // この一番最後で _remove from parent tarnsaction 追加
-        world.update(currentTime: 3) // remove from parent system 実行, 一番最後に component に変更反映 | ここで結果が出る
-        world.update(currentTime: 4) // FIXME: - 削除
+        world.update(currentTime: 1) // この一番最後で _remove from parent tarnsaction 追加
+        world.update(currentTime: 2) // remove from parent system 実行, 一番最後に component に変更反映 | ここで結果が出る
 
-        XCTAssertEqual(flags, [2, 3])
+        XCTAssertEqual(flags, [1, 2])
     }
 
     // SKNode が紐づけられた Entity がデスポーンするときの挙動をてすと
