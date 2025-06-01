@@ -6,7 +6,7 @@
 //
 
 @testable import ECS
-import ECS_Graphic
+@testable import ECS_Graphic
 import SpriteKit
 import XCTest
 
@@ -175,7 +175,7 @@ final class GraphicPlugInTests: XCTestCase {
         // デスポーンする entity の子 entity もデスポーンする.
         let scene = SKScene()
         let parent = SKNode()
-        var flags = [0]
+        var flags = [0, 0, 0, 0]
         let world = World()
             .addResource(SceneResource(scene))
             .addPlugIn(graphicPlugIn(world:))
@@ -194,7 +194,14 @@ final class GraphicPlugInTests: XCTestCase {
                     .setGraphic(nodes.resource.create(node: parent))
                     .addChild(child)
             }
-            .addSystem(.update) { (currentTime: Resource<CurrentTime>, commands: Commands, children: Query<Child>, parents: Query2<Entity, Parent>, totalEntities: Query<Entity>) in
+            .addSystem(.update) { (
+                currentTime: Resource<CurrentTime>,
+                commands: Commands,
+                children: Query<Child>,
+                parents: Query2<Entity, Parent>,
+                totalEntities: Query<Entity>,
+                nodes: Resource<Nodes>
+            ) in
                 switch currentTime.resource.value {
                 case -1: fatalError() // ここは通過しません.
                 case 0:
@@ -202,13 +209,9 @@ final class GraphicPlugInTests: XCTestCase {
                     XCTAssertEqual(parents.components.data.count, 3)
                     XCTAssertEqual(children.components.data.count, 2)
                     XCTAssertEqual(totalEntities.components.data.count, 3)
-                case 1: // FIXME: - 削除
-                    flags[0] += 1
-                    XCTAssertEqual(parents.components.data.count, 3)
-                    XCTAssertEqual(children.components.data.count, 2)
-                    XCTAssertEqual(totalEntities.components.data.count, 3)
-                case 2:
-                    flags[0] += 1
+                    XCTAssertEqual(nodes.resource.store.count, 3)
+                case 1:
+                    flags[1] += 1
                     parents.update { entity, parent in
                         if parent.children.count == 1 {
                             commands.despawn(entity: entity)
@@ -218,32 +221,25 @@ final class GraphicPlugInTests: XCTestCase {
                     XCTAssertEqual(parents.components.data.count, 3)
                     XCTAssertEqual(children.components.data.count, 2)
                     XCTAssertEqual(totalEntities.components.data.count, 3)
-                case 3:
-                    // TODO: - テスト項目を見直す
-                    flags[0] += 1
+                    XCTAssertEqual(nodes.resource.store.count, 3)
+                case 2:
+                    flags[2] += 1
                     XCTAssertEqual(parents.components.data.count, 0)
                     XCTAssertEqual(children.components.data.count, 0)
                     XCTAssertEqual(totalEntities.components.data.count, 0)
-                    // このフレームの時だけ、world に存在しない 親を持つ子がいることになる.
-                case 4: // FIXME: - 削除
-                    flags[0] += 1
-                    XCTAssertEqual(parents.components.data.count, 0)
-                    XCTAssertEqual(children.components.data.count, 0)
-                    XCTAssertEqual(totalEntities.components.data.count, 0)
+                    XCTAssertEqual(nodes.resource.store.count, 0)
                 default:
-                    fatalError() // ここは通過しません.
+                    fatalError()
                 }
             }
 
         world.setUpWorld()
         world.update(currentTime: -1)
         world.update(currentTime: 0)
-        world.update(currentTime: 1) // FIXME: - 削除
+        world.update(currentTime: 1)
         world.update(currentTime: 2)
-        world.update(currentTime: 3)
-        world.update(currentTime: 4)  // FIXME: - 削除
 
-        XCTAssertEqual(flags, [5])
+        XCTAssertEqual(flags, [1, 1, 1, 1])
     }
 
     // 子 entity をデスポーンすると、親から観測されなくなります.
