@@ -53,7 +53,7 @@ extension World {
                 }
             }
 
-            for schedule in self.worldStorage.stateStorage.currentSchedulesWhichAssociatedStates() {
+            for schedule in self.worldStorage.stateStorage.currentEventSchedulesWhichAssociatedStates() {
                 guard let systems = eventStorage.commandsEventResponder(eventOfType: T.self)!.systems[schedule] else { continue }
                 for system in systems {
                     system.execute(self.worldStorage)

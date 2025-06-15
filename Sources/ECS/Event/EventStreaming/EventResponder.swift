@@ -9,7 +9,7 @@ import Foundation
 
 final public class EventResponderBuilder {
     unowned let worldStorage: WorldStorageRef
-    var systems: [Schedule: [SystemExecute]] = [:]
+    var systems: [EventSchedule: [SystemExecute]] = [:]
 
     init(worldStorage: WorldStorageRef) {
         self.worldStorage = worldStorage
@@ -17,7 +17,7 @@ final public class EventResponderBuilder {
 }
 
 final public class EventResponder<T>: WorldStorageElement {
-    var systems: [Schedule: [SystemExecute]] = [:]
+    var systems: [EventSchedule: [SystemExecute]] = [:]
 }
 
 public extension World {

@@ -42,9 +42,9 @@ public extension EventSchedule {
     /**
      ``World/update(currentTime:)`` 実行時にイベントを受信します.
      */
-    static let update: Schedule = Schedule(id: DefaultSchedule.update)
+    static let update: EventSchedule = EventSchedule(id: DefaultSchedule.update)
 
-    static func customSchedule<T: Hashable>(_ value: T) -> Schedule {
-        Schedule(id: value)
+    static func customSchedule<T: Hashable>(_ value: T) -> EventSchedule {
+        EventSchedule(id: value)
     }
 }

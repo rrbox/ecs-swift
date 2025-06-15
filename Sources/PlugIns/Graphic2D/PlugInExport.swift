@@ -109,8 +109,6 @@ public func graphicPlugIn(world: World) {
             responder
                 .addSystem(.update, removeChildIfDespawned(despawnEvent:query:parentQuery:))
                 .addSystem(.update, despawnChildIfParentDespawned(despawnedEntityEvent:children:commands:))
-                .addSystem(.preUpdate, _removeNodeIfDespawned(despawn:nodes:))
                 .addSystem(.update, _removeNodeIfDespawned(despawn:nodes:))
-                .addSystem(.postUpdate, _removeNodeIfDespawned(despawn:nodes:))
         }
 }

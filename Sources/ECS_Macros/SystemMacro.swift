@@ -105,7 +105,7 @@ struct AddSystemMacroForEventResponderBuilder: DeclarationMacro {
         }.dropLast()
 
         let result: DeclSyntax = """
-        @discardableResult func addSystem<\(raw: genericArguments)>(_ schedule: Schedule, _ system: @escaping (\(raw: valueTypes)) -> ()) -> EventResponderBuilder {
+        @discardableResult func addSystem<\(raw: genericArguments)>(_ schedule: EventSchedule, _ system: @escaping (\(raw: valueTypes)) -> ()) -> EventResponderBuilder {
             if !self.systems.keys.contains(schedule) {
                 self.systems[schedule] = []
             }

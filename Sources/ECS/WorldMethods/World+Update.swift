@@ -121,6 +121,8 @@ extension World {
         for newState in onInactiveUpdateNewStateQueue {
             stateSchedulesManager.schedules.insert(newState)
         }
+
+        self.applyEventQueue()
     }
 
     func updatePhase() {
@@ -143,6 +145,8 @@ extension World {
         for system in self.worldStorage.systemStorage.systems(self.postUpdateSchedule) {
             system.execute(self.worldStorage)
         }
+
+        self.applyEventQueue()
     }
 
     // 各システムが動いた後に実行される
