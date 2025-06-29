@@ -32,7 +32,7 @@ class SearchedEntityCommandQueue: EntityCommandQueue {
 
     override func runCommand(in world: World) {
         guard let record = world.entityRecord(forEntity: self.entity) else { return }
-        world.worldStorage.chunkStorage.pushUpdated(entity: self.entity, entityRecord: record)
+        world.worldStorage.chunkStorage.pushUpdated(entityRecord: record)
         self.queue.forEach { command in
             command.runCommand(forRecord: record, inWorld: world)
         }

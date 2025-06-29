@@ -39,3 +39,15 @@ final public class Commands: SystemParameter {
         self.commandQueue.append(command)
     }
 }
+
+// MARK: - life cycle
+
+extension Commands {
+    func refreshEntityTransactions() {
+        entityTransactions = []
+    }
+
+    func refreshCommandQueue() {
+        commandQueue = []
+    }
+}

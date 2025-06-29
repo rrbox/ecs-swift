@@ -64,10 +64,47 @@ final class EventTests: XCTestCase {
             .addSystem(.willDespawn, despanedEntitySystem(eventReader:commands:currentTime:))
 
         world.setUpWorld()
+        world.update(currentTime: -1)
 
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)
         world.update(currentTime: 3)
+    }
+
+    func testEventStream() {
+        var flags = [0, 0, 0, 0]
+
+        let world = World()
+            .addEventStreamer(eventType: TestEvent.self)
+            .addSystem(.startUp, { (eventWriter: EventWriter<TestEvent>) in
+                eventWriter.send(value: .init(name: "test event"))
+                ECSTAssertStepOrder(currentStep: 0, steps: &flags)
+            })
+            .buildEventResponder(TestEvent.self) { responder in
+                responder.addSystem(.update) { (event: EventReader<TestEvent>, commands: Commands) in
+                    ECSTAssertStepOrder(currentStep: 1, steps: &flags)
+                    commands.spawn().addComponent(TestComponent(content: event.value.name))
+                }
+            }
+            .buildDidSpawnResponder { responder in
+                responder
+                    .addSystem(.update) { (event: EventReader<DidSpawnEvent>, commands: Commands) in
+                        ECSTAssertStepOrder(currentStep: 2, steps: &flags)
+                        commands.despawn(entity: event.value.spawnedEntity)
+                    }
+            }
+            .buildWillDespawnResponder { responder in
+                responder
+                    .addSystem(.update) { (event: EventReader<WillDespawnEvent>) in
+                        ECSTAssertStepOrder(currentStep: 3, steps: &flags)
+                    }
+            }
+
+        world.setUpWorld()
+        world.update(currentTime: -1)
+        world.update(currentTime: 0)
+
+        XCTAssertEqual(flags, [1, 1, 1, 1])
     }
 }

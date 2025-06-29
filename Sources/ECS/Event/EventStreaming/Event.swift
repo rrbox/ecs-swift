@@ -31,7 +31,7 @@ final class Event<T: EventProtocol>: AnyEvent {
             }
         }
 
-        for schedule in worldStorage.stateStorage.currentSchedulesWhichAssociatedStates() {
+        for schedule in worldStorage.stateStorage.currentEventSchedulesWhichAssociatedStates() {
             guard let systems = worldStorage.eventStorage.eventResponder(eventOfType: T.self)!.systems[schedule] else { continue }
             for system in systems {
                 system.execute(worldStorage)

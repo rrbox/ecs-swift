@@ -54,6 +54,7 @@ final class ecs_swiftTests: XCTestCase {
             .addSystem(.startUp, entitycreate(commands:))
             .addSystem(.update, update(query:))
         world.setUpWorld()
+        world.update(currentTime: -1)
 
         print(world.entities.data.count)
 
@@ -74,6 +75,7 @@ final class ecs_swiftTests: XCTestCase {
             .addSystem(.update, update3(query:))
             .addSystem(.update, update4(query:))
         world.setUpWorld()
+        world.update(currentTime: -1)
 
         print(world.entities.data.count)
 

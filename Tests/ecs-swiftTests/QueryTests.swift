@@ -168,7 +168,6 @@ final class QueryTests: XCTestCase {
         let testEntity = commands.spawn().addComponent(TestComponent(content: "test")).id()
 
         world.update(currentTime: 0)
-        world.update(currentTime: 0)
 
         XCTAssertEqual(testQuery.components.data.count, 1)
         XCTAssertEqual(testQuery2.components.data.count, 0)
@@ -187,7 +186,6 @@ final class QueryTests: XCTestCase {
             .addComponent(TestComponent(content: "test"))
             .addComponent(TestComponent2(content: "test2")).id()
 
-        world.update(currentTime: 0)
         world.update(currentTime: 0)
 
         XCTAssertEqual(testQuery.components.data.count, 1)
@@ -208,7 +206,6 @@ final class QueryTests: XCTestCase {
             .addComponent(TestComponent2(content: "test2"))
             .addComponent(TestComponent3(content: "test2")).id()
 
-        world.update(currentTime: 0)
         world.update(currentTime: 0)
 
         XCTAssertEqual(testQuery.components.data.count, 1)
@@ -231,7 +228,6 @@ final class QueryTests: XCTestCase {
             .addComponent(TestComponent4(content: "test2")).id()
 
         world.update(currentTime: 0)
-        world.update(currentTime: 0)
 
         XCTAssertEqual(testQuery.components.data.count, 1)
         XCTAssertEqual(testQuery2.components.data.count, 1)
@@ -253,7 +249,6 @@ final class QueryTests: XCTestCase {
             .addComponent(TestComponent4(content: "test2"))
             .addComponent(TestComponent5(content: "test2"))
 
-        world.update(currentTime: 0)
         world.update(currentTime: 0)
 
         XCTAssertEqual(testQuery.components.data.count, 1)

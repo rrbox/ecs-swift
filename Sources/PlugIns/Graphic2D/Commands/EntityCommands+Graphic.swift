@@ -49,7 +49,7 @@ class RemoveAllChildren: EntityCommand {
         for child in record.componentRef(ofType: Parent.self)!.value.children {
             let childRecord = world.entityRecord(forEntity: child)!
             childRecord.removeComponent(ofType: Child.self)
-            world.worldStorage.chunkStorage.pushUpdated(entity: child, entityRecord: childRecord)
+            world.worldStorage.chunkStorage.pushUpdated(entityRecord: childRecord)
         }
 
     }
@@ -61,13 +61,11 @@ class RemoveFromParent: EntityCommand {
     }
 }
 
-public protocol GraphicCommands {
-    @discardableResult func setGraphic<Node: SKNode>(_ node: Node) -> Self
-}
-
 public extension EntityCommands {
-    @discardableResult func setGraphic<Node: SKNode>(_ node: Node) -> Self {
-        self.pushCommand(SetGraphic(node: node, entity: self.id()))
+    @discardableResult func setGraphic<Node: SKNode>(_ nodeCreate: Nodes.NodeCreate<Node>) -> Self {
+        let node = nodeCreate.node
+        nodeCreate.register(id(), node)
+        self.pushCommand(SetGraphic(node: node, entity: id()))
         return self.addComponent(Graphic(node: node)).addComponent(Graphic<SKNode>(node: node))
     }
 

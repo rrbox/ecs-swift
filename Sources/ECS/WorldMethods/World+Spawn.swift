@@ -23,20 +23,19 @@ extension World {
     ///
     /// ``Commands/spawn()`` が実行された後, フレームが終了するタイミングでこの関数が実行されます.
     /// entity へのコンポーネントの登録などは, push の後に行われます.
-    func push(entity: Entity, entityRecord: EntityRecordRef) {
-        if entity.generation == 0 {
+    func push(entityRecord: EntityRecordRef) {
+        if entityRecord.entity.generation == 0 {
             self.entities.allocate()
         }
 
-        self.insert(entity: entity, entityRecord: entityRecord)
+        self.insert(entityRecord: entityRecord)
         self.worldStorage
             .chunkStorage
-            .pushSpawned(entity: entity, entityRecord: entityRecord)
-
+            .pushSpawned(entityRecord: entityRecord)
         self.worldStorage
             .eventStorage
             .commandsEventWriter(eventOfType: DidSpawnEvent.self)!
-            .send(value: DidSpawnEvent(spawnedEntity: entity))
+            .send(value: DidSpawnEvent(spawnedEntity: entityRecord.entity))
     }
 
     /// Entity を削除します.
@@ -47,7 +46,6 @@ extension World {
         self.worldStorage
             .chunkStorage
             .despawn(entity: entity)
-
         self.worldStorage
             .eventStorage
             .commandsEventWriter(eventOfType: WillDespawnEvent.self)!

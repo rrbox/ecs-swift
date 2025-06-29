@@ -41,7 +41,23 @@ final public class ImmutableRef<T>: Ref<T> {
 }
 
 final public class EntityRecordRef {
+    let entity: Entity
     var map = AnyMap<EntityRecord>()
+
+    init(entity: Entity) {
+        self.entity = entity
+    }
+}
+
+extension EntityRecordRef: Hashable {
+    public static func == (lhs: EntityRecordRef, rhs: EntityRecordRef) -> Bool {
+        lhs.entity == rhs.entity
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(entity)
+    }
+
 }
 
 public extension EntityRecordRef {
