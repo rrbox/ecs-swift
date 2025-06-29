@@ -26,8 +26,6 @@ final class FilteredQueryTests: XCTestCase {
             .addComponent(TestComponent(content: "c0"))
             .id()
 
-//        world.applyCommands(commands: commands)
-//        world.worldStorage.chunkStorage.applySpawnedEntityQueue()
         world.update(currentTime: 0)
 
         XCTAssertEqual(testQueryAnd.query.components.data.count, 0)
@@ -37,7 +35,6 @@ final class FilteredQueryTests: XCTestCase {
         commands.entity(entity).addComponent(TestComponent2(content: "c1"))
 
         world.update(currentTime: 0)
-        world.update(currentTime: 0)
 
         XCTAssertEqual(testQueryAnd.query.components.data.count, 0)
         XCTAssertEqual(testQueryOr.query.components.data.count, 1)
@@ -45,7 +42,6 @@ final class FilteredQueryTests: XCTestCase {
 
         commands.entity(entity).addComponent(TestComponent3(content: "c2"))
         
-        world.update(currentTime: 0)
         world.update(currentTime: 0)
 
         XCTAssertEqual(testQueryAnd.query.components.data.count, 1)
@@ -55,7 +51,6 @@ final class FilteredQueryTests: XCTestCase {
         commands.entity(entity).removeComponent(ofType: TestComponent2.self)
 
         world.update(currentTime: 0)
-        world.update(currentTime: 0)
 
         XCTAssertEqual(testQueryAnd.query.components.data.count, 0)
         XCTAssertEqual(testQueryOr.query.components.data.count, 1)
@@ -63,7 +58,6 @@ final class FilteredQueryTests: XCTestCase {
 
         commands.entity(entity).removeComponent(ofType: TestComponent.self)
 
-        world.update(currentTime: 0)
         world.update(currentTime: 0)
 
         XCTAssertEqual(testQueryAnd.query.components.data.count, 0)

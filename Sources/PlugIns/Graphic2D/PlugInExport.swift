@@ -93,7 +93,7 @@ func _removeNodeIfDespawned(despawn: EventReader<WillDespawnEvent>, nodes: Resou
     nodes.resource.removeNode(forEntity: entity)
 }
 
-// TODO: - Node 操作イベントのハンドリングは他のフェーズでもお同様に行なわなくてもOK?
+// TODO: - Node 操作イベントのハンドリングは他のフェーズでも同様に行なわなくてもOK?
 @MainActor
 public func graphicPlugIn(world: World) {
     world
