@@ -16,13 +16,13 @@ public extension Commands {
     /// Entity を追加して変更を加えます.
     @discardableResult func spawn() -> SpawnedEntityCommands {
         let entity = self.generator.generate()
-        let record = EntityRecordRef()
+        let record = EntityRecordRef(entity: entity)
 
         record.map.body[ObjectIdentifier(Entity.self)] = ImmutableRef(value: entity)
 
         self.generator.pop()
 
-        self.entityTransactions.append(SpawnCommand(id: entity, entityRecord: record))
+        self.entityTransactions.append(SpawnCommand(entityRecord: record))
         let queue = SpawnedEntityCommandQueue(record: record)
         self.entityTransactions.append(queue)
 

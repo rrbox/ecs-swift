@@ -6,11 +6,12 @@
 //
 
 public extension World {
-    func insert(entity: Entity, entityRecord: EntityRecordRef) {
-        self.entities.insert(entityRecord, withEntity: entity)
+    func insert(entityRecord: EntityRecordRef) {
+        self.entities.insert(entityRecord, withEntity: entityRecord.entity)
     }
 
     func remove(entity: Entity) {
+        guard self.entities.contains(entity) else { return }
         self.entities.pop(entity: entity)
     }
 

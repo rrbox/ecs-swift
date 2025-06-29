@@ -23,7 +23,7 @@ public struct SparseSet<T> {
         guard self.dense[i].generation == entity.generation else { return }
         execute(&self.data[i])
     }
-    
+
     public mutating func update(_ execute: (inout T) -> ()) {
         for i in self.data.indices {
             execute(&self.data[i])

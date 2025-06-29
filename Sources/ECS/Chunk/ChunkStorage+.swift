@@ -15,16 +15,16 @@ extension ChunkStorage {
         self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.add(chunk: chunk)
     }
 
-    func pushSpawned(entity: Entity, entityRecord: EntityRecordRef) {
-        self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.pushSpawned(entity: entity, entityRecord: entityRecord)
+    func pushSpawned(entityRecord: EntityRecordRef) {
+        self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.pushSpawned(entityRecord: entityRecord)
     }
 
     func applySpawnedEntityQueue() {
         self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.applySpawnedEntityQueue()
     }
 
-    public func pushUpdated(entity: Entity, entityRecord: EntityRecordRef) {
-        self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.pushUpdated(entity: entity, entityRecord: entityRecord)
+    public func pushUpdated(entityRecord: EntityRecordRef) {
+        self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.pushUpdated(entityRecord: entityRecord)
     }
 
     func applyUpdatedEntityQueue() {

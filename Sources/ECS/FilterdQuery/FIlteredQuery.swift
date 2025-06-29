@@ -8,12 +8,12 @@
 final public class Filtered<Q: QueryProtocol, F: Filter>: Chunk, SystemParameter {
     let query: Q = Q()
 
-    override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
-        if entity.generation == 0 {
+    override func spawn(entityRecord: EntityRecordRef) {
+        if entityRecord.entity.generation == 0 {
             self.query.allocate()
         }
         guard F.condition(forEntityRecord: entityRecord) else { return }
-        self.query.insert(entity: entity, entityRecord: entityRecord)
+        self.query.insert(entityRecord: entityRecord)
     }
 
     override func despawn(entity: Entity) {
@@ -40,12 +40,12 @@ final public class Filtered<Q: QueryProtocol, F: Filter>: Chunk, SystemParameter
         worldStorage.chunkStorage.addChunk(Filtered<Q, F>())
     }
 
-    override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
+    override func applyCurrentState(_ entityRecord: EntityRecordRef) {
         guard F.condition(forEntityRecord: entityRecord) else {
-            self.query.despawn(entity: entity)
+            self.query.despawn(entity: entityRecord.entity)
             return
         }
-        self.query.applyCurrentState(entityRecord, forEntity: entity)
+        self.query.applyCurrentState(entityRecord)
     }
 
 }

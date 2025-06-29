@@ -14,30 +14,37 @@ final public class Query<C: QueryTarget>: Chunk, SystemParameter {
         self.components.allocate()
     }
 
-    public func insert(entity: Entity, entityRecord: EntityRecordRef) {
+    public func insert(entityRecord: EntityRecordRef) {
         guard let componentRef = entityRecord.ref(C.self) else { return }
-        self.components.insert(componentRef, withEntity: entity)
+        self.components.insert(componentRef, withEntity: entityRecord.entity)
     }
 
-    public override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
-        if entity.generation == 0 {
-            self.components.allocate()
-        }
-        self.insert(entity: entity, entityRecord: entityRecord)
-    }
-
-    public override func despawn(entity: Entity) {
+    public func remove(entity: Entity) {
         guard self.components.contains(entity) else { return }
         self.components.pop(entity: entity)
     }
 
-    override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
+    override func spawn(entityRecord: EntityRecordRef) {
+        if entityRecord.entity.generation == 0 {
+            self.components.allocate()
+        }
+        self.insert(entityRecord: entityRecord)
+    }
+
+    override func despawn(entity: Entity) {
+        self.remove(entity: entity)
+    }
+
+    override func applyCurrentState(_ entityRecord: EntityRecordRef) {
         guard let componentRef = entityRecord.ref(C.self) else {
-            self.despawn(entity: entity)
+            self.despawn(entity: entityRecord.entity)
             return
         }
-        guard !components.contains(entity) else { return }
-        self.components.insert(componentRef, withEntity: entity)
+        guard !components.contains(entityRecord.entity) else { return }
+        self.components.insert(
+            componentRef,
+            withEntity: entityRecord.entity
+        )
     }
 
     /// Query で指定した Component を持つ entity を world から取得し, イテレーションします.

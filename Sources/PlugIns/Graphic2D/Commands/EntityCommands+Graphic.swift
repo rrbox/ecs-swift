@@ -49,7 +49,7 @@ class RemoveAllChildren: EntityCommand {
         for child in record.componentRef(ofType: Parent.self)!.value.children {
             let childRecord = world.entityRecord(forEntity: child)!
             childRecord.removeComponent(ofType: Child.self)
-            world.worldStorage.chunkStorage.pushUpdated(entity: child, entityRecord: childRecord)
+            world.worldStorage.chunkStorage.pushUpdated(entityRecord: childRecord)
         }
 
     }

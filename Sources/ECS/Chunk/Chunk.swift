@@ -6,7 +6,9 @@
 //
 
 public class Chunk {
-    func spawn(entity: Entity, entityRecord: EntityRecordRef) {}
+    /// World に追加された
+    func spawn(entityRecord: EntityRecordRef) {}
     func despawn(entity: Entity) {}
-    func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {}
+
+    func applyCurrentState(_ entityRecord: EntityRecordRef) {}
 }

@@ -57,30 +57,34 @@ struct QueryMacro: DeclarationMacro {
                     self.components.allocate()
                 }
 
-                public func insert(entity: Entity, entityRecord: EntityRecordRef) {
+                public func insert(entityRecord: EntityRecordRef) {
                     guard \(raw: refDeclarationsFromRecord) else { return }
-                    self.components.insert((\(raw: refs)), withEntity: entity)
+                    self.components.insert((\(raw: refs)), withEntity: entityRecord.entity)
                 }
 
-                public override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
-                    if entity.generation == 0 {
-                        self.components.allocate()
-                    }
-                    self.insert(entity: entity, entityRecord: entityRecord)
-                }
-
-                public override func despawn(entity: Entity) {
+                public func remove(entity: Entity) {
                     guard self.components.contains(entity) else { return }
                     self.components.pop(entity: entity)
                 }
 
-                override func applyCurrentState(_ entityRecord: EntityRecordRef, forEntity entity: Entity) {
+                public override func spawn(entityRecord: EntityRecordRef) {
+                    if entityRecord.entity.generation == 0 {
+                        self.components.allocate()
+                    }
+                    self.insert(entityRecord: entityRecord)
+                }
+
+                override func despawn(entity: Entity) {
+                    self.remove(entity: entity)
+                }
+
+                override func applyCurrentState(_ entityRecord: EntityRecordRef) {
                     guard \(raw: refDeclarationsFromRecord) else {
-                        self.despawn(entity: entity)
+                        self.despawn(entity: entityRecord.entity)
                         return
                     }
-                    guard !components.contains(entity) else { return }
-                    self.components.insert((\(raw: refs)), withEntity: entity)
+                    guard !components.contains(entityRecord.entity) else { return }
+                    self.components.insert((\(raw: refs)), withEntity: entityRecord.entity)
                 }
 
                 public func update(_ f: (\(raw: parameters)) -> ()) {

@@ -10,8 +10,8 @@ import XCTest
 
 class TestChunk: Chunk {
     var entities = [Entity: EntityRecordRef]()
-    override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
-        self.entities[entity] = entityRecord
+    override func spawn(entityRecord: EntityRecordRef) {
+        self.entities[entityRecord.entity] = entityRecord
     }
 
     override func despawn(entity: Entity) {
@@ -21,8 +21,8 @@ class TestChunk: Chunk {
 
 class TestChunk_2: Chunk {
     var entities = [Entity: EntityRecordRef]()
-    override func spawn(entity: Entity, entityRecord: EntityRecordRef) {
-        self.entities[entity] = entityRecord
+    override func spawn(entityRecord: EntityRecordRef) {
+        self.entities[entityRecord.entity] = entityRecord
     }
 
     override func despawn(entity: Entity) {
@@ -43,7 +43,7 @@ final class ChunkTests: XCTestCase {
 
         // chunk interface を介して chunk に entity を push します（回数: 5回）.
         for entity in mockEntities {
-            world.push(entity: entity, entityRecord: EntityRecordRef())
+            world.push(entityRecord: EntityRecordRef(entity: entity))
         }
 
         world.worldStorage.chunkStorage.applySpawnedEntityQueue()

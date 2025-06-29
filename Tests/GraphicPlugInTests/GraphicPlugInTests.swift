@@ -326,4 +326,38 @@ final class GraphicPlugInTests: XCTestCase {
 
         XCTAssertEqual(flags, [1, 1, 1])
     }
+
+    func testExclusiveControl() {
+        let scene = SKScene()
+        let world = World()
+            .addResource(SceneResource(scene))
+            .addPlugIn(graphicPlugIn(world:))
+            .addSystem(.startUp) { (commands: Commands, nodes: Resource<Nodes>) in
+                let child = commands.spawn()
+                    .setGraphic(nodes.resource.create(node: SKNode()))
+                    .id()
+                commands.spawn()
+                    .setGraphic(nodes.resource.create(node: SKNode()))
+                    .addChild(child)
+            }
+            .addSystem(.update, { (graphic: Query2<Entity, Graphic<SKNode>>, commands: Commands) in
+                graphic.update { entity, _ in
+                    commands.entity(entity).removeAllChildren()
+                }
+            })
+            .addSystem(.update, { (graphic: Query2<Entity, Graphic<SKNode>>, commands: Commands) in
+                graphic.update { entity, _ in
+                    commands.despawn(entity: entity)
+                }
+            })
+            .addSystem(.update) { (graphic: Query2<Entity, Graphic<SKNode>>) in
+                graphic.update { entity, graphic in
+                    graphic.nodeRef.position.x += 1
+                }
+            }
+
+        world.setUpWorld()
+        world.update(currentTime: -1)
+        world.update(currentTime: 0)
+    }
 }
