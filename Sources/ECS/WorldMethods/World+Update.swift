@@ -28,7 +28,7 @@ public extension World {
 
         currentTimeResource.resource = CurrentTime(value: currentTime)
 
-        let commands = self.worldStorage.commandsStorage.commands()!
+        let commands = worldStorage.commands
 
         // lifecycle 1: pre update
         self.preUpdatePhase()

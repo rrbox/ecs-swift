@@ -10,9 +10,8 @@ import XCTest
 
 final class EntityCommandsTests: XCTestCase {
     func testEntityCommands() {
-        let commands = Commands()
         let world = World()
-        world.worldStorage.commandsStorage.setCommands(commands)
+        let commands = world.worldStorage.commands
 
         // world に entity を生成し, component を追加し, id(id としての entity) を受け取ります.
         let entity = commands.spawn()

@@ -31,7 +31,7 @@ final public class Commands: SystemParameter {
     }
 
     public static func getParameter(from worldStorage: WorldStorageRef) -> Commands? {
-        worldStorage.commandsStorage.commands()
+        worldStorage.commands
     }
 
     /// CommandQueue にコマンドを追加します.

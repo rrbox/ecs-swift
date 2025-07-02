@@ -47,9 +47,6 @@ public extension World {
         self.addCommandsEventStreamer(eventType: DidSpawnEvent.self)
         self.addCommandsEventStreamer(eventType: WillDespawnEvent.self)
 
-        // world buffer に commands の初期値を設定します.
-        self.worldStorage.commandsStorage.setCommands(Commands())
-
         // world に一番最初のフレームで実行されるシステムを追加します.
         systemStorage.addSystem(.preStartUp, System(preUpdateSystemFirstFrameSystem(commands:)))
         systemStorage.addSystem(.startUp, System(updateSystemFirstFrameSystem(commands:)))

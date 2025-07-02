@@ -6,5 +6,6 @@
 //
 
 final public class WorldStorageRef {
+    let commands = Commands()
     var map = AnyMap<WorldStorage>()
 }

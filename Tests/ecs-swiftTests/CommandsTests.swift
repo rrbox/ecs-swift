@@ -31,8 +31,7 @@ class TestCommand_Despawn: Command {
 final class CommandsTests: XCTestCase {
     func testCommands() {
         let world = World()
-        world.worldStorage.commandsStorage.setCommands(Commands())
-        let commands = world.worldStorage.commandsStorage.commands()!
+        let commands = world.worldStorage.commands
 
         let testEntities = [Entity(slot: 0, generation: 0), Entity(slot: 1, generation: 0), Entity(slot: 2, generation: 0)]
 

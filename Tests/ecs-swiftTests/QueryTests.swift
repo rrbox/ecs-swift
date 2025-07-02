@@ -36,7 +36,7 @@ final class QueryTests: XCTestCase {
         world.worldStorage.chunkStorage.addChunk(testEntityQuery4)
         world.worldStorage.chunkStorage.addChunk(testEntityQuery5)
 
-        let commands = world.worldStorage.commandsStorage.commands()!
+        let commands = world.worldStorage.commands
 
         let testEntity = commands.spawn().addComponent(TestComponent(content: "test")).id()
 
@@ -163,7 +163,7 @@ final class QueryTests: XCTestCase {
         world.worldStorage.chunkStorage.addChunk(testEntityQuery4)
         world.worldStorage.chunkStorage.addChunk(testEntityQuery5)
 
-        let commands = world.worldStorage.commandsStorage.commands()!
+        let commands = world.worldStorage.commands
 
         let testEntity = commands.spawn().addComponent(TestComponent(content: "test")).id()
 
