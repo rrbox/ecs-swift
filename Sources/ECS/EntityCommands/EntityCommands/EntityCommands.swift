@@ -9,7 +9,7 @@ class EntityCommandQueue: EntityTransaction {
     var queue = [EntityCommand]()
 }
 
-class SpawnedEntityCommandQueue: EntityCommandQueue {
+final class SpawnedEntityCommandQueue: EntityCommandQueue {
     let record: EntityRecordRef
 
     init(record: EntityRecordRef) {
@@ -23,7 +23,7 @@ class SpawnedEntityCommandQueue: EntityCommandQueue {
     }
 }
 
-class SearchedEntityCommandQueue: EntityCommandQueue {
+final class SearchedEntityCommandQueue: EntityCommandQueue {
     let entity: Entity
 
     init(entity: Entity) {

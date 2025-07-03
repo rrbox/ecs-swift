@@ -5,19 +5,19 @@
 //  Created by rrbox on 2023/11/20.
 //
 
-private class PreUpdateFirstFrameCommand: Command {
+final private class PreUpdateFirstFrameCommand: Command {
     override func runCommand(in world: World) {
         world.preUpdateSchedule = .preUpdate
     }
 }
 
-private class UpdateSystemFirstFrameCommand: Command {
+final private class UpdateSystemFirstFrameCommand: Command {
     override func runCommand(in world: World) {
         world.updateSchedule = .update
     }
 }
 
-private class PostUpdateFirstFrameCommand: Command {
+final private class PostUpdateFirstFrameCommand: Command {
     override func runCommand(in world: World) {
         world.postUpdateSchedule = .postUpdate
     }

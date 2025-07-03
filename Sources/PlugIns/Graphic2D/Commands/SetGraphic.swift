@@ -12,7 +12,7 @@ struct _AddChildNodeTransaction: Component {
     var parentEntity: Entity?
 }
 
-class SetGraphic: EntityCommand {
+final class SetGraphic: EntityCommand {
     let node: SKNode
 
     init(node: SKNode, entity: Entity) {

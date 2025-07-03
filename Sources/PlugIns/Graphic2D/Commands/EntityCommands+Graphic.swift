@@ -26,7 +26,7 @@ struct _RemoveFromParentTransaction: Component {
 
 }
 
-class AddChild: EntityCommand {
+final class AddChild: EntityCommand {
     let child: Entity
     init(parent: Entity, child: Entity) {
         self.child = child
@@ -40,7 +40,7 @@ class AddChild: EntityCommand {
 
 }
 
-class RemoveAllChildren: EntityCommand {
+final class RemoveAllChildren: EntityCommand {
     override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
         let node = record.component(ofType: Graphic.self)!.nodeRef
         node.removeAllChildren()
@@ -55,7 +55,7 @@ class RemoveAllChildren: EntityCommand {
     }
 }
 
-class RemoveFromParent: EntityCommand {
+final class RemoveFromParent: EntityCommand {
     override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
         record.addComponent(_RemoveFromParentTransaction())
     }

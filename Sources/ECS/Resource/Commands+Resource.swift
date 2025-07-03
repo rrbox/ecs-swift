@@ -5,7 +5,7 @@
 //  Created by rrbox on 2023/08/12.
 //
 
-class AddResource<T: ResourceProtocol>: Command {
+final class AddResource<T: ResourceProtocol>: Command {
     let resrouce: T
 
     init(resrouce: T) {

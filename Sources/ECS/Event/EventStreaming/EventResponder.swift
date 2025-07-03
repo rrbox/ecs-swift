@@ -16,7 +16,7 @@ final public class EventResponderBuilder {
     }
 }
 
-final public class EventResponder<T>: WorldStorageElement {
+final public class EventResponder<T>: EventStorageElement {
     var systems: [EventSchedule: [SystemExecute]] = [:]
 }
 

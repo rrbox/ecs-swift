@@ -5,7 +5,7 @@
 //  Created by rrbox on 2023/08/14.
 //
 
-class EventQueue: WorldStorageElement {
+final class EventQueue: EventStorageElement {
     var eventQueue = [AnyEvent]()
     var sendingEvents = [AnyEvent]()
 }
