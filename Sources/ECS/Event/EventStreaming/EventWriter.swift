@@ -6,7 +6,7 @@
 //
 
 // Commands と基本的な仕組みは同じ.
-final public class EventWriter<T: EventProtocol>: SystemParameter, WorldStorageElement {
+final public class EventWriter<T: EventProtocol>: SystemParameter, EventStorageElement {
     unowned let eventQueue: EventQueue
 
     init(eventQueue: EventQueue) {

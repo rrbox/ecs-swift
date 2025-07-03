@@ -12,22 +12,22 @@
  */
 
 final public class State<T: StateProtocol>: SystemParameter {
-    let stateStrageRef: StateStorage
+    let worldStorage: WorldStorageRef
     let currentState: T
 
-    init?(stateStrageRef: StateStorage, currentStaete: T?) {
-        guard let currentStaete = currentStaete else { return nil }
-        self.stateStrageRef = stateStrageRef
-        self.currentState = currentStaete
+    init?(worldStorage: WorldStorageRef, currentState: T?) {
+        guard let currentState = currentState else { return nil }
+        self.worldStorage = worldStorage
+        self.currentState = currentState
     }
     
     public static func register(to worldStorage: WorldStorageRef) {
 
     }
-    
+
     public static func getParameter(from worldStorage: WorldStorageRef) -> State<T>? {
-        State<T>(stateStrageRef: worldStorage.stateStorage,
-                 currentStaete: worldStorage.stateStorage.currentState(ofType: T.self))
+        State<T>(worldStorage: worldStorage,
+                 currentState: worldStorage.stateStorage.currentState(ofType: T.self))
     }
 
     /**
@@ -35,7 +35,7 @@ final public class State<T: StateProtocol>: SystemParameter {
      - Parameter state: 遷移先の `State` を指定します.
      */
     public func enter(_ state: T) {
-        self.stateStrageRef.enter(state)
+        worldStorage.stateStorage.enter(state)
     }
 
     /**
@@ -49,7 +49,7 @@ final public class State<T: StateProtocol>: SystemParameter {
      - 以前の状態および `state` の ``Schedule/onStackUpdate(_:)`` と関連づけられたシステムが常時実行されます.
      */
     public func push(_ state: T) {
-        self.stateStrageRef.push(state)
+        worldStorage.stateStorage.push(state)
     }
 
     /**
@@ -62,7 +62,7 @@ final public class State<T: StateProtocol>: SystemParameter {
      - 直前の状態の ``Schedule/onStackUpdate(_:)`` のシステムが実行しなくなります. 戻り先の状態の ``Schedule/onStackUpdate(_:)`` のシステムは引き続き常時実行されます.
      */
     public func pop() {
-        self.stateStrageRef.pop(T.self)
+        worldStorage.stateStorage.pop(T.self)
     }
 
 }

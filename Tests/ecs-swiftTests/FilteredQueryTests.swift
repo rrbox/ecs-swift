@@ -20,7 +20,7 @@ final class FilteredQueryTests: XCTestCase {
         world.worldStorage.chunkStorage.addChunk(testQueryOr)
         world.worldStorage.chunkStorage.addChunk(testQueryWithout)
 
-        let commands = world.worldStorage.commandsStorage.commands()!
+        let commands = world.worldStorage.commands
 
         let entity = commands.spawn()
             .addComponent(TestComponent(content: "c0"))

@@ -5,7 +5,7 @@
 //  Created by rrbox on 2023/08/10.
 //
 
-class AddComponent<C: Component>: EntityCommand {
+final class AddComponent<C: Component>: EntityCommand {
     let component: C
 
     init(entity: Entity, component: C) {

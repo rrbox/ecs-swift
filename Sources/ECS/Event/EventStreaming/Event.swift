@@ -23,7 +23,7 @@ final class Event<T: EventProtocol>: AnyEvent {
     }
 
     override func runEventReceiver(worldStorage: WorldStorageRef) {
-        worldStorage.map.push(EventReader(value: self.value))
+        worldStorage.eventStorage.push(EventReader(value: self.value))
 
         if let systems = worldStorage.eventStorage.eventResponder(eventOfType: T.self)!.systems[.update] {
             for system in systems {
@@ -38,6 +38,6 @@ final class Event<T: EventProtocol>: AnyEvent {
             }
         }
 
-        worldStorage.map.pop(EventReader<T>.self)
+        worldStorage.eventStorage.pop(EventReader<T>.self)
     }
 }

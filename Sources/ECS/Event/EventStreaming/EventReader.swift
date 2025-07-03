@@ -5,7 +5,7 @@
 //  Created by rrbox on 2023/08/14.
 //
 
-final public class EventReader<T>: SystemParameter, WorldStorageElement {
+final public class EventReader<T>: SystemParameter, EventStorageElement {
     public let value: T
 
     init(value: T) {
@@ -17,6 +17,6 @@ final public class EventReader<T>: SystemParameter, WorldStorageElement {
     }
 
     public static func getParameter(from worldStorage: WorldStorageRef) -> EventReader<T>? {
-        return worldStorage.map.valueRef(ofType: EventReader<T>.self)?.body
+        return worldStorage.eventStorage.valueRef(ofType: EventReader<T>.self)?.body
     }
 }

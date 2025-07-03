@@ -7,43 +7,50 @@
 
 import Foundation
 
-// world buffer にプロパティをつけておく
-class EventStorage {
-    let buffer: WorldStorageRef
+enum EventStorage: WorldStorageType {}
 
-    init(buffer: WorldStorageRef) {
-        self.buffer = buffer
+protocol EventStorageElement: WorldStorageElement {}
+
+extension AnyMap where Mode == EventStorage {
+    mutating func push<T: EventStorageElement>(_ data: T) {
+        self.body[ObjectIdentifier(T.self)] = Box(body: data)
     }
 
-    func setUpEventQueue() {
-        self.buffer.map.push(EventQueue())
+    mutating func pop<T: EventStorageElement>(_ type: T.Type) {
+        self.body.removeValue(forKey: ObjectIdentifier(T.self))
+    }
+
+    func valueRef<T: EventStorageElement>(ofType type: T.Type) -> Box<T>? {
+        guard let result = self.body[ObjectIdentifier(T.self)] else { return nil }
+        return (result as! Box<T>)
+    }
+}
+
+// world buffer にプロパティをつけておく
+
+extension AnyMap<EventStorage> {
+    mutating func setUpEventQueue() {
+        push(EventQueue())
     }
 
     func eventQueue() -> EventQueue? {
-        self.buffer.map.valueRef(ofType: EventQueue.self)?.body
+        valueRef(ofType: EventQueue.self)?.body
     }
 
     func eventWriter<T>(eventOfType type: T.Type) -> EventWriter<T>? {
-        self.buffer.map.valueRef(ofType: EventWriter<T>.self)?.body
+        valueRef(ofType: EventWriter<T>.self)?.body
     }
 
-    func registerEventWriter<T: EventProtocol>(eventType: T.Type) {
-        let eventQueue = self.buffer.map.valueRef(ofType: EventQueue.self)!.body
-        self.buffer.map.push(EventWriter<T>(eventQueue: eventQueue))
+    mutating func registerEventWriter<T: EventProtocol>(eventType: T.Type) {
+        let eventQueue = valueRef(ofType: EventQueue.self)!.body
+        push(EventWriter<T>(eventQueue: eventQueue))
     }
 
     func eventResponder<T: EventProtocol>(eventOfType type: T.Type) -> EventResponder<T>? {
-        self.buffer.map.valueRef(ofType: EventResponder<T>.self)?.body
+        valueRef(ofType: EventResponder<T>.self)?.body
     }
 
-    func registerEventResponder<T: EventProtocol>(eventType: T.Type) {
-        self.buffer.map.push(EventResponder<T>())
-    }
-
-}
-
-extension WorldStorageRef {
-    var eventStorage: EventStorage {
-        EventStorage(buffer: self)
+    mutating func registerEventResponder<T: EventProtocol>(eventType: T.Type) {
+        push(EventResponder<T>())
     }
 }

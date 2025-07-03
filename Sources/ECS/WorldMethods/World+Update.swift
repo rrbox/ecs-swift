@@ -22,13 +22,13 @@ public extension World {
      - note: 最初のフレーム (current time = 0) は準備用フレームとして実行されるため, システムが実行されません.
      */
     func update(currentTime: TimeInterval) {
-        let currentTimeResource = self.worldStorage.resourceBuffer.resource(ofType: CurrentTime.self)!
+        let currentTimeResource = worldStorage.resourceStorage.resource(ofType: CurrentTime.self)!
 
-        self.worldStorage.resourceBuffer.resource(ofType: DeltaTime.self)?.resource = DeltaTime(value: currentTime - currentTimeResource.resource.value)
+        worldStorage.resourceStorage.resource(ofType: DeltaTime.self)?.resource = DeltaTime(value: currentTime - currentTimeResource.resource.value)
 
         currentTimeResource.resource = CurrentTime(value: currentTime)
 
-        let commands = self.worldStorage.commandsStorage.commands()!
+        let commands = worldStorage.commands
 
         // lifecycle 1: pre update
         self.preUpdatePhase()
@@ -49,8 +49,8 @@ extension World {
         let systemStorage = worldStorage.systemStorage
         let stateStorage = worldStorage.stateStorage
         let stateSchedulesManager = worldStorage
-            .map
-            .valueRef(ofType: StateStorage.StateAssociatedSchedules.self)!
+            .stateStorage
+            .valueRef(ofType: StateAssociatedSchedules.self)!
             .body
 
         let willExitQueue = stateStorage.willExitQueue()

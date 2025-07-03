@@ -10,49 +10,43 @@ public extension World {
         self.init(worldStorage: WorldStorageRef())
 
         // chunk buffer に chunk entity interface を追加します.
-        self.worldStorage.chunkStorage.setUpChunkBuffer()
+        worldStorage.chunkStorage.setUpChunkBuffer()
 
         // resource buffer に 時間関係の resource を追加します.
-        self.worldStorage.resourceBuffer.addResource(CurrentTime(value: 0))
-        self.worldStorage.resourceBuffer.addResource(DeltaTime(value: 0))
+        worldStorage.resourceStorage.addResource(CurrentTime(value: 0))
+        worldStorage.resourceStorage.addResource(DeltaTime(value: 0))
 
         // resrouce buffer に world の情報関係の resource を追加します.
-        self.worldStorage.resourceBuffer.addResource(EntityCount(count: 0))
-
-        let systemStorage = self.worldStorage.systemStorage
-        let eventStorage = self.worldStorage.eventStorage
+        worldStorage.resourceStorage.addResource(EntityCount(count: 0))
 
         // world storage に system を保持する領域を確保します.
-        systemStorage.registerSystemRegistry()
+        worldStorage.systemStorage.registerSystemRegistry()
 
         // world buffer に setup system を保持する領域を確保します.
-        systemStorage.insertSchedule(.preStartUp)
-        systemStorage.insertSchedule(.startUp)
-        systemStorage.insertSchedule(.postStartUp)
+        worldStorage.systemStorage.insertSchedule(.preStartUp)
+        worldStorage.systemStorage.insertSchedule(.startUp)
+        worldStorage.systemStorage.insertSchedule(.postStartUp)
 
         // world buffer に update system を保持する領域を確保します. 
-        systemStorage.insertSchedule(.preUpdate)
-        systemStorage.insertSchedule(.update)
-        systemStorage.insertSchedule(.postUpdate)
+        worldStorage.systemStorage.insertSchedule(.preUpdate)
+        worldStorage.systemStorage.insertSchedule(.update)
+        worldStorage.systemStorage.insertSchedule(.postUpdate)
 
         // state storage に schedule 管理をするための準備をします.
-        self.worldStorage.stateStorage.setUp()
+        worldStorage.stateStorage.setUp()
 
         // world buffer に event queue を作成します.
-        eventStorage.setUpEventQueue()
-        eventStorage.setUpCommandsEventQueue(eventOfType: DidSpawnEvent.self)
-        eventStorage.setUpCommandsEventQueue(eventOfType: WillDespawnEvent.self)
+        worldStorage.eventStorage.setUpEventQueue()
+        worldStorage.eventStorage.setUpCommandsEventQueue(eventOfType: DidSpawnEvent.self)
+        worldStorage.eventStorage.setUpCommandsEventQueue(eventOfType: WillDespawnEvent.self)
 
         // world buffer に spawn/despawn event の streamer を登録します.
-        self.addCommandsEventStreamer(eventType: DidSpawnEvent.self)
-        self.addCommandsEventStreamer(eventType: WillDespawnEvent.self)
-
-        // world buffer に commands の初期値を設定します.
-        self.worldStorage.commandsStorage.setCommands(Commands())
+        addCommandsEventStreamer(eventType: DidSpawnEvent.self)
+        addCommandsEventStreamer(eventType: WillDespawnEvent.self)
 
         // world に一番最初のフレームで実行されるシステムを追加します.
-        systemStorage.addSystem(.preStartUp, System(preUpdateSystemFirstFrameSystem(commands:)))
-        systemStorage.addSystem(.startUp, System(updateSystemFirstFrameSystem(commands:)))
-        systemStorage.addSystem(.postStartUp, System(postUpdateSystemFirstFrameSystem(commands:)))
+        worldStorage.systemStorage.addSystem(.preStartUp, System(preUpdateSystemFirstFrameSystem(commands:)))
+        worldStorage.systemStorage.addSystem(.startUp, System(updateSystemFirstFrameSystem(commands:)))
+        worldStorage.systemStorage.addSystem(.postStartUp, System(postUpdateSystemFirstFrameSystem(commands:)))
     }
 }

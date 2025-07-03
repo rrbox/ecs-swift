@@ -6,5 +6,11 @@
 //
 
 final public class WorldStorageRef {
-    var map = AnyMap<WorldStorage>()
+    let commands = Commands()
+    var eventStorage = AnyMap<EventStorage>()
+    public var chunkStorage = AnyMap<ChunkStorage>()
+    var resourceStorage = AnyMap<ResourceStorage>()
+    var stateStorage = AnyMap<StateStorage>()
+    var systemStorage = AnyMap<SystemStorage>()
+    public var additionalStorage = AnyMap<AdditionalStorage>()
 }

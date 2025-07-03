@@ -9,7 +9,7 @@ public protocol StateProtocol: Hashable {
 
 }
 
-class StateRegistry<T: StateProtocol>: WorldStorageElement {
+class StateRegistry<T: StateProtocol>: StateStorageElement {
     var currentState: T
     var inactiveStates = [T]()
 
@@ -18,223 +18,237 @@ class StateRegistry<T: StateProtocol>: WorldStorageElement {
     }
 }
 
-public class StateStorage {
-    class StateAssociatedSchedules: WorldStorageElement {
-        var schedules = Set<Schedule>()
-        var eventSchedules = Set<EventSchedule>()
+enum StateStorage: WorldStorageType {}
+
+protocol StateStorageElement: WorldStorageElement {}
+
+extension AnyMap where Mode == StateStorage {
+    mutating func pushStorageElement<T: StateStorageElement>(_ data: T) {
+        self.body[ObjectIdentifier(T.self)] = Box(body: data)
     }
 
-    class StateTransitionQueue: WorldStorageElement {
-        private(set) var didEnterQueue = [Schedule]()
-        private(set) var willExitQueue = [Schedule]()
-        private(set) var onResumeQueue = [Schedule]()
-        private(set) var onPauseQueue = [Schedule]()
-        private(set) var onUpdateNewStateQueue = [Schedule]()
-        private(set) var onUpdatePreviousStateQueue = [Schedule]()
-        private(set) var onStackUpdateNewStateQueue = [Schedule]()
-        private(set) var onStackUpdatePreviousStateQueue = [Schedule]()
-        private(set) var onInactiveUpdateNewStateQueue = [Schedule]()
-        private(set) var onInactiveUpdatePreviousStateQueue = [Schedule]()
-
-        private(set) var didEnterEventQueue = [EventSchedule]()
-        private(set) var willExitEventQueue = [EventSchedule]()
-        private(set) var onResumeEventQueue = [EventSchedule]()
-        private(set) var onPauseEventQueue = [EventSchedule]()
-        private(set) var onUpdateNewStateEventQueue = [EventSchedule]()
-        private(set) var onUpdatePreviousStateEventQueue = [EventSchedule]()
-        private(set) var onStackUpdateNewStateEventQueue = [EventSchedule]()
-        private(set) var onStackUpdatePreviousStateEventQueue = [EventSchedule]()
-        private(set) var onInactiveUpdateNewStateEventQueue = [EventSchedule]()
-        private(set) var onInactiveUpdatePreviousStateEventQueue = [EventSchedule]()
-
-        // enter
-
-        func enqueueEntered<T: StateProtocol>(state: T) {
-            didEnterQueue.append(.didEnter(state))
-            didEnterEventQueue.append(.didEnter(state))
-            onUpdateNewStateQueue.append(.onUpdate(state))
-            onUpdateNewStateEventQueue.append(.onUpdate(state))
-            onStackUpdateNewStateQueue.append(.onStackUpdate(state))
-            onStackUpdateNewStateEventQueue.append(.onStackUpdate(state))
-        }
-
-        func enqueueExited<T: StateProtocol>(state: T) {
-            willExitQueue.append(.willExit(state))
-            willExitEventQueue.append(.willExit(state))
-            onUpdatePreviousStateQueue.append(.onUpdate(state))
-            onUpdatePreviousStateEventQueue.append(.onUpdate(state))
-            onStackUpdatePreviousStateQueue.append(.onStackUpdate(state))
-            onStackUpdatePreviousStateEventQueue.append(.onStackUpdate(state))
-        }
-
-        // push
-
-        func enqueuePushed<T: StateProtocol>(state: T) {
-            didEnterQueue.append(.didEnter(state))
-            didEnterEventQueue.append(.didEnter(state))
-            onUpdateNewStateQueue.append(.onUpdate(state))
-            onUpdateNewStateEventQueue.append(.onUpdate(state))
-            onStackUpdateNewStateQueue.append(.onStackUpdate(state))
-            onStackUpdateNewStateEventQueue.append(.onStackUpdate(state))
-        }
-
-        func enqueuePaused<T: StateProtocol>(state: T) {
-            onPauseQueue.append(.onPause(state))
-            onPauseEventQueue.append(.onPause(state))
-            onUpdatePreviousStateQueue.append(.onUpdate(state))
-            onUpdatePreviousStateEventQueue.append(.onUpdate(state))
-            onInactiveUpdateNewStateQueue.append(.onInactiveUpdate(state))
-            onInactiveUpdateNewStateEventQueue.append(.onInactiveUpdate(state))
-        }
-
-        // pop
-
-        func enqueuePopped<T: StateProtocol>(state: T) {
-            onUpdatePreviousStateQueue.append(.onUpdate(state))
-            onUpdatePreviousStateEventQueue.append(.onUpdate(state))
-            onStackUpdatePreviousStateQueue.append(.onStackUpdate(state))
-            onStackUpdatePreviousStateEventQueue.append(.onStackUpdate(state))
-            willExitQueue.append(.willExit(state))
-            willExitEventQueue.append(.willExit(state))
-        }
-
-        func enqueueResumed<T: StateProtocol>(state: T) {
-            onResumeQueue.append(.onResume(state))
-            onResumeEventQueue.append(.onResume(state))
-            onUpdateNewStateQueue.append(.onUpdate(state))
-            onUpdateNewStateEventQueue.append(.onUpdate(state))
-            onInactiveUpdatePreviousStateQueue.append(.onInactiveUpdate(state))
-            onInactiveUpdatePreviousStateEventQueue.append(.onInactiveUpdate(state))
-        }
-
-        // clear
-
-        func clear() {
-            didEnterQueue = []
-            willExitQueue = []
-            onResumeQueue = []
-            onPauseQueue = []
-            onUpdatePreviousStateQueue = []
-            onUpdateNewStateQueue = []
-            onStackUpdatePreviousStateQueue = []
-            onStackUpdateNewStateQueue = []
-            onInactiveUpdatePreviousStateQueue = []
-            onInactiveUpdateNewStateQueue = []
-
-            didEnterEventQueue = []
-            willExitEventQueue = []
-            onResumeEventQueue = []
-            onPauseEventQueue = []
-            onUpdateNewStateEventQueue = []
-            onUpdatePreviousStateEventQueue = []
-            onStackUpdateNewStateEventQueue = []
-            onStackUpdatePreviousStateEventQueue = []
-            onInactiveUpdateNewStateEventQueue = []
-            onInactiveUpdatePreviousStateEventQueue = []
-        }
+    mutating func pop<T: StateStorageElement>(_ type: T.Type) {
+        self.body.removeValue(forKey: ObjectIdentifier(T.self))
     }
 
-    let storageRef: WorldStorageRef
+    func valueRef<T: StateStorageElement>(ofType type: T.Type) -> Box<T>? {
+        guard let result = self.body[ObjectIdentifier(T.self)] else { return nil }
+        return (result as! Box<T>)
+    }
+}
 
-    init(storageRef: WorldStorageRef) {
-        self.storageRef = storageRef
+final class StateAssociatedSchedules: StateStorageElement {
+    var schedules = Set<Schedule>()
+    var eventSchedules = Set<EventSchedule>()
+}
+
+final class StateTransitionQueue: StateStorageElement {
+    private(set) var didEnterQueue = [Schedule]()
+    private(set) var willExitQueue = [Schedule]()
+    private(set) var onResumeQueue = [Schedule]()
+    private(set) var onPauseQueue = [Schedule]()
+    private(set) var onUpdateNewStateQueue = [Schedule]()
+    private(set) var onUpdatePreviousStateQueue = [Schedule]()
+    private(set) var onStackUpdateNewStateQueue = [Schedule]()
+    private(set) var onStackUpdatePreviousStateQueue = [Schedule]()
+    private(set) var onInactiveUpdateNewStateQueue = [Schedule]()
+    private(set) var onInactiveUpdatePreviousStateQueue = [Schedule]()
+
+    private(set) var didEnterEventQueue = [EventSchedule]()
+    private(set) var willExitEventQueue = [EventSchedule]()
+    private(set) var onResumeEventQueue = [EventSchedule]()
+    private(set) var onPauseEventQueue = [EventSchedule]()
+    private(set) var onUpdateNewStateEventQueue = [EventSchedule]()
+    private(set) var onUpdatePreviousStateEventQueue = [EventSchedule]()
+    private(set) var onStackUpdateNewStateEventQueue = [EventSchedule]()
+    private(set) var onStackUpdatePreviousStateEventQueue = [EventSchedule]()
+    private(set) var onInactiveUpdateNewStateEventQueue = [EventSchedule]()
+    private(set) var onInactiveUpdatePreviousStateEventQueue = [EventSchedule]()
+
+    // enter
+
+    func enqueueEntered<T: StateProtocol>(state: T) {
+        didEnterQueue.append(.didEnter(state))
+        didEnterEventQueue.append(.didEnter(state))
+        onUpdateNewStateQueue.append(.onUpdate(state))
+        onUpdateNewStateEventQueue.append(.onUpdate(state))
+        onStackUpdateNewStateQueue.append(.onStackUpdate(state))
+        onStackUpdateNewStateEventQueue.append(.onStackUpdate(state))
     }
 
-    func setUp() {
-        self.storageRef.map.push(StateAssociatedSchedules())
-        self.storageRef.map.push(StateTransitionQueue())
+    func enqueueExited<T: StateProtocol>(state: T) {
+        willExitQueue.append(.willExit(state))
+        willExitEventQueue.append(.willExit(state))
+        onUpdatePreviousStateQueue.append(.onUpdate(state))
+        onUpdatePreviousStateEventQueue.append(.onUpdate(state))
+        onStackUpdatePreviousStateQueue.append(.onStackUpdate(state))
+        onStackUpdatePreviousStateEventQueue.append(.onStackUpdate(state))
     }
 
-    func registerState<T: StateProtocol>(initialState: T, states: [T]) {
-        self.storageRef.map.push(StateRegistry(currentState: initialState))
-        let queue = self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!.body
+    // push
+
+    func enqueuePushed<T: StateProtocol>(state: T) {
+        didEnterQueue.append(.didEnter(state))
+        didEnterEventQueue.append(.didEnter(state))
+        onUpdateNewStateQueue.append(.onUpdate(state))
+        onUpdateNewStateEventQueue.append(.onUpdate(state))
+        onStackUpdateNewStateQueue.append(.onStackUpdate(state))
+        onStackUpdateNewStateEventQueue.append(.onStackUpdate(state))
+    }
+
+    func enqueuePaused<T: StateProtocol>(state: T) {
+        onPauseQueue.append(.onPause(state))
+        onPauseEventQueue.append(.onPause(state))
+        onUpdatePreviousStateQueue.append(.onUpdate(state))
+        onUpdatePreviousStateEventQueue.append(.onUpdate(state))
+        onInactiveUpdateNewStateQueue.append(.onInactiveUpdate(state))
+        onInactiveUpdateNewStateEventQueue.append(.onInactiveUpdate(state))
+    }
+
+    // pop
+
+    func enqueuePopped<T: StateProtocol>(state: T) {
+        onUpdatePreviousStateQueue.append(.onUpdate(state))
+        onUpdatePreviousStateEventQueue.append(.onUpdate(state))
+        onStackUpdatePreviousStateQueue.append(.onStackUpdate(state))
+        onStackUpdatePreviousStateEventQueue.append(.onStackUpdate(state))
+        willExitQueue.append(.willExit(state))
+        willExitEventQueue.append(.willExit(state))
+    }
+
+    func enqueueResumed<T: StateProtocol>(state: T) {
+        onResumeQueue.append(.onResume(state))
+        onResumeEventQueue.append(.onResume(state))
+        onUpdateNewStateQueue.append(.onUpdate(state))
+        onUpdateNewStateEventQueue.append(.onUpdate(state))
+        onInactiveUpdatePreviousStateQueue.append(.onInactiveUpdate(state))
+        onInactiveUpdatePreviousStateEventQueue.append(.onInactiveUpdate(state))
+    }
+
+    // clear
+
+    func clear() {
+        didEnterQueue = []
+        willExitQueue = []
+        onResumeQueue = []
+        onPauseQueue = []
+        onUpdatePreviousStateQueue = []
+        onUpdateNewStateQueue = []
+        onStackUpdatePreviousStateQueue = []
+        onStackUpdateNewStateQueue = []
+        onInactiveUpdatePreviousStateQueue = []
+        onInactiveUpdateNewStateQueue = []
+
+        didEnterEventQueue = []
+        willExitEventQueue = []
+        onResumeEventQueue = []
+        onPauseEventQueue = []
+        onUpdateNewStateEventQueue = []
+        onUpdatePreviousStateEventQueue = []
+        onStackUpdateNewStateEventQueue = []
+        onStackUpdatePreviousStateEventQueue = []
+        onInactiveUpdateNewStateEventQueue = []
+        onInactiveUpdatePreviousStateEventQueue = []
+    }
+}
+
+extension AnyMap<StateStorage> {
+
+    mutating func setUp() {
+        pushStorageElement(StateAssociatedSchedules())
+        pushStorageElement(StateTransitionQueue())
+    }
+
+    mutating func registerState<T: StateProtocol>(initialState: T, states: [T]) {
+        pushStorageElement(StateRegistry(currentState: initialState))
+        let queue = valueRef(ofType: StateTransitionQueue.self)!.body
         queue.enqueueEntered(state: initialState)
     }
 
     func currentState<T: StateProtocol>(ofType type: T.Type) -> T? {
-        self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)?.body.currentState
+        valueRef(ofType: StateRegistry<T>.self)?.body.currentState
     }
 
     func currentSchedulesWhichAssociatedStates() -> Set<Schedule> {
-        self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body.schedules
+        valueRef(ofType: StateAssociatedSchedules.self)!.body.schedules
     }
 
     func currentEventSchedulesWhichAssociatedStates() -> Set<EventSchedule> {
-        self.storageRef.map.valueRef(ofType: StateAssociatedSchedules.self)!.body.eventSchedules
+        valueRef(ofType: StateAssociatedSchedules.self)!.body.eventSchedules
     }
 
     // MARK: - queue
 
     func didEnterQueue() -> [Schedule] {
-        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+        valueRef(ofType: StateTransitionQueue.self)!
             .body
             .didEnterQueue
     }
 
     func willExitQueue() -> [Schedule] {
-        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+        valueRef(ofType: StateTransitionQueue.self)!
             .body
             .willExitQueue
     }
 
     func onPauseQueue() -> [Schedule] {
-        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+        valueRef(ofType: StateTransitionQueue.self)!
             .body
             .onPauseQueue
     }
 
     func onResumeQueue() -> [Schedule] {
-        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+        valueRef(ofType: StateTransitionQueue.self)!
             .body
             .onResumeQueue
     }
 
     func onUpdatePreviousStateQueue() -> [Schedule] {
-        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+        valueRef(ofType: StateTransitionQueue.self)!
             .body
             .onUpdatePreviousStateQueue
     }
 
     func onStackUpdatePreviousStateQueue() -> [Schedule] {
-        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+        valueRef(ofType: StateTransitionQueue.self)!
             .body
             .onStackUpdatePreviousStateQueue
     }
 
     func onUpdateNewStateQueue() -> [Schedule] {
-        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+        valueRef(ofType: StateTransitionQueue.self)!
             .body
             .onUpdateNewStateQueue
     }
 
     func onStackUpdateNewStateQueue() -> [Schedule] {
-        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+        valueRef(ofType: StateTransitionQueue.self)!
             .body
             .onStackUpdateNewStateQueue
     }
 
     func onInactiveNewStateQueue() -> [Schedule] {
-        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+        valueRef(ofType: StateTransitionQueue.self)!
             .body
             .onInactiveUpdateNewStateQueue
     }
 
     func onInactivePreviousStateQueue() -> [Schedule] {
-        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+        valueRef(ofType: StateTransitionQueue.self)!
             .body
             .onInactiveUpdatePreviousStateQueue
     }
 
     func clearQueue() {
-        self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!
+        valueRef(ofType: StateTransitionQueue.self)!
             .body.clear()
     }
 
     // MARK: - commands
 
     func enter<T: StateProtocol>(_ state: T) {
-        let stateRegistry = self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body
-        let queue = self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!.body
+        let stateRegistry = valueRef(ofType: StateRegistry<T>.self)!.body
+        let queue = valueRef(ofType: StateTransitionQueue.self)!.body
         let previous = stateRegistry.currentState
 
         queue.enqueueExited(state: previous)
@@ -243,8 +257,8 @@ public class StateStorage {
     }
 
     func push<T: StateProtocol>(_ state: T) {
-        let stateRegistry = self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body
-        let queue = self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!.body
+        let stateRegistry = valueRef(ofType: StateRegistry<T>.self)!.body
+        let queue = valueRef(ofType: StateTransitionQueue.self)!.body
         let previous = stateRegistry.currentState
 
         queue.enqueuePaused(state: previous)
@@ -254,8 +268,8 @@ public class StateStorage {
     }
 
     func pop<T: StateProtocol>(_ stateType: T.Type) {
-        let registry = self.storageRef.map.valueRef(ofType: StateRegistry<T>.self)!.body
-        let queue = self.storageRef.map.valueRef(ofType: StateTransitionQueue.self)!.body
+        let registry = valueRef(ofType: StateRegistry<T>.self)!.body
+        let queue = valueRef(ofType: StateTransitionQueue.self)!.body
         let previeous = registry.currentState
         let new = registry.inactiveStates.removeLast()
 
@@ -264,12 +278,6 @@ public class StateStorage {
         registry.currentState = new
     }
 
-}
-
-public extension WorldStorageRef {
-    var stateStorage: StateStorage {
-        StateStorage(storageRef: self)
-    }
 }
 
 public extension World {

@@ -5,7 +5,7 @@
 //  Created by rrbox on 2023/08/11.
 //
 
-public class Chunk {
+public class Chunk: ChunkStorageElement {
     /// World に追加された
     func spawn(entityRecord: EntityRecordRef) {}
     func despawn(entity: Entity) {}

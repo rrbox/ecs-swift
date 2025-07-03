@@ -5,47 +5,54 @@
 //  Created by rrbox on 2023/08/12.
 //
 
+enum SystemStorage: WorldStorageType {}
+
+protocol SystemStorageElement: WorldStorageElement {}
+
 public class SystemExecute {
     init() {}
     public func execute(_ worldStorage: WorldStorageRef) {}
 }
 
-final public class SystemStorage {
-    final class SystemRegistry: WorldStorageElement {
-        var systems = [Schedule: [SystemExecute]]()
+final class SystemRegistry: SystemStorageElement {
+    var systems = [Schedule: [SystemExecute]]()
+}
+
+extension AnyMap where Mode == SystemStorage {
+    mutating func push<T: SystemStorageElement>(_ data: T) {
+        self.body[ObjectIdentifier(T.self)] = Box(body: data)
     }
 
-    let buffer: WorldStorageRef
-
-    init(buffer: WorldStorageRef) {
-        self.buffer = buffer
+    mutating func pop<T: SystemStorageElement>(_ type: T.Type) {
+        self.body.removeValue(forKey: ObjectIdentifier(T.self))
     }
 
-    public func systems(_ schedule: Schedule) -> [SystemExecute] {
-        self.buffer.map.valueRef(ofType: SystemRegistry.self)!.body.systems[schedule]!
-    }
-
-    func registerSystemRegistry() {
-        self.buffer.map.push(SystemRegistry.init())
-    }
-
-    func insertSchedule(_ schedule: Schedule) {
-        self.buffer.map.valueRef(ofType: SystemRegistry.self)!.body.systems[schedule] = []
-    }
-
-    func addSystem(_ schedule: Schedule, _ system: SystemExecute) {
-        self.buffer
-            .map
-            .valueRef(ofType: SystemRegistry.self)!
-            .body
-            .systems[schedule]!
-            .append(system)
+    func valueRef<T: SystemStorageElement>(ofType type: T.Type) -> Box<T>? {
+        guard let result = self.body[ObjectIdentifier(T.self)] else { return nil }
+        return (result as! Box<T>)
     }
 }
 
-public extension WorldStorageRef {
-    var systemStorage: SystemStorage {
-        SystemStorage(buffer: self)
+
+extension AnyMap<SystemStorage> {
+
+    public func systems(_ schedule: Schedule) -> [SystemExecute] {
+        valueRef(ofType: SystemRegistry.self)!.body.systems[schedule]!
+    }
+
+    mutating func registerSystemRegistry() {
+        push(SystemRegistry.init())
+    }
+
+    func insertSchedule(_ schedule: Schedule) {
+        valueRef(ofType: SystemRegistry.self)!.body.systems[schedule] = []
+    }
+
+    func addSystem(_ schedule: Schedule, _ system: SystemExecute) {
+        valueRef(ofType: SystemRegistry.self)!
+            .body
+            .systems[schedule]!
+            .append(system)
     }
 }
 
