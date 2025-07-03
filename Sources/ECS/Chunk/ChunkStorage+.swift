@@ -6,9 +6,16 @@
 //
 
 extension AnyMap<ChunkStorage> {
-    mutating func setUpChunkBuffer() {
-        push(ChunkEntityInterface())
+
+    // MARK: - public
+    
+    /// World 内の特定の entity を更新します
+    /// - Parameter entityRecord: entity の components 構成クラス
+    public func pushUpdated(entityRecord: EntityRecordRef) {
+        valueRef(ofType: ChunkEntityInterface.self)!.body.pushUpdated(entityRecord: entityRecord)
     }
+
+    // MARK: - internal
 
     mutating func addChunk<ChunkType: Chunk>(_ chunk: ChunkType) {
         push(chunk)
@@ -19,12 +26,14 @@ extension AnyMap<ChunkStorage> {
         valueRef(ofType: ChunkEntityInterface.self)!.body.pushSpawned(entityRecord: entityRecord)
     }
 
-    func applySpawnedEntityQueue() {
-        valueRef(ofType: ChunkEntityInterface.self)!.body.applySpawnedEntityQueue()
+    // MARK: - life cycle
+
+    mutating func setUpChunkBuffer() {
+        push(ChunkEntityInterface())
     }
 
-    public func pushUpdated(entityRecord: EntityRecordRef) {
-        valueRef(ofType: ChunkEntityInterface.self)!.body.pushUpdated(entityRecord: entityRecord)
+    func applySpawnedEntityQueue() {
+        valueRef(ofType: ChunkEntityInterface.self)!.body.applySpawnedEntityQueue()
     }
 
     func applyUpdatedEntityQueue() {

@@ -10,7 +10,7 @@ protocol WorldStorageType {}
 public protocol WorldStorageElement {}
 
 final public class Box<T: WorldStorageElement>: Item {
-    private(set) var body: T
+    private(set) public var body: T
 
     init(body: T) {
         self.body = body
