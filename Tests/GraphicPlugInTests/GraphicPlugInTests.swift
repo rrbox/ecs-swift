@@ -43,6 +43,33 @@ final class GraphicPlugInTests: XCTestCase {
         XCTAssertEqual(scene.children.count, 1)
     }
 
+    func testSetGraphicConnectNode() {
+        let scene = SKScene()
+        let node = SKNode()
+        node.name = "test_node"
+        scene.addChild(node)
+        var flags = [0]
+
+        let world = World()
+            .addResource(SceneResource(scene))
+            .addPlugIn(graphicPlugIn(world:))
+            .addSystem(.startUp) { (commands: Commands, nodes: Resource<Nodes>) in
+                commands.spawn()
+                    .setGraphic(nodes.resource.connect(node: node))
+            }
+            .addSystem(.update) { (node: Query<Graphic>) in
+                node.update { _ in
+                    XCTAssertStepOrder(currentStep: 0, steps: &flags)
+                }
+            }
+
+        world.setUpWorld()
+        world.update(currentTime: -1) // first frame state
+        world.update(currentTime: 0)
+        XCTAssertEqual(scene.children.count, 1)
+        XCTAssertEqual(flags, [1])
+    }
+
     func testAddChildOnUpdate() {
         let scene = SKScene()
         let parentNode = SKNode()

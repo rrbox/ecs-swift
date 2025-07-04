@@ -29,7 +29,6 @@ final class SetGraphic: EntityCommand {
         self.setEntityInfoForNode(entity)
 
         record.addComponent(Parent(_children: []))
-        record.addComponent(_AddChildNodeTransaction(parentEntity: nil))
     }
 
 }
