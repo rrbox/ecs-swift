@@ -24,17 +24,17 @@ final class QueryTests: XCTestCase {
 
         let world = World()
 
-        world.worldStorage.chunkStorage.addChunk(testQuery)
-        world.worldStorage.chunkStorage.addChunk(testQuery2)
-        world.worldStorage.chunkStorage.addChunk(testQuery3)
-        world.worldStorage.chunkStorage.addChunk(testQuery4)
-        world.worldStorage.chunkStorage.addChunk(testQuery5)
+        world.worldStorage.chunkStorageRef.addChunk(testQuery)
+        world.worldStorage.chunkStorageRef.addChunk(testQuery2)
+        world.worldStorage.chunkStorageRef.addChunk(testQuery3)
+        world.worldStorage.chunkStorageRef.addChunk(testQuery4)
+        world.worldStorage.chunkStorageRef.addChunk(testQuery5)
 
-        world.worldStorage.chunkStorage.addChunk(testEntityQuery)
-        world.worldStorage.chunkStorage.addChunk(testEntityQuery2)
-        world.worldStorage.chunkStorage.addChunk(testEntityQuery3)
-        world.worldStorage.chunkStorage.addChunk(testEntityQuery4)
-        world.worldStorage.chunkStorage.addChunk(testEntityQuery5)
+        world.worldStorage.chunkStorageRef.addChunk(testEntityQuery)
+        world.worldStorage.chunkStorageRef.addChunk(testEntityQuery2)
+        world.worldStorage.chunkStorageRef.addChunk(testEntityQuery3)
+        world.worldStorage.chunkStorageRef.addChunk(testEntityQuery4)
+        world.worldStorage.chunkStorageRef.addChunk(testEntityQuery5)
 
         let commands = world.worldStorage.commands
 
@@ -151,17 +151,17 @@ final class QueryTests: XCTestCase {
 
         let world = World()
 
-        world.worldStorage.chunkStorage.addChunk(testQuery)
-        world.worldStorage.chunkStorage.addChunk(testQuery2)
-        world.worldStorage.chunkStorage.addChunk(testQuery3)
-        world.worldStorage.chunkStorage.addChunk(testQuery4)
-        world.worldStorage.chunkStorage.addChunk(testQuery5)
+        world.worldStorage.chunkStorageRef.addChunk(testQuery)
+        world.worldStorage.chunkStorageRef.addChunk(testQuery2)
+        world.worldStorage.chunkStorageRef.addChunk(testQuery3)
+        world.worldStorage.chunkStorageRef.addChunk(testQuery4)
+        world.worldStorage.chunkStorageRef.addChunk(testQuery5)
 
-        world.worldStorage.chunkStorage.addChunk(testEntityQuery)
-        world.worldStorage.chunkStorage.addChunk(testEntityQuery2)
-        world.worldStorage.chunkStorage.addChunk(testEntityQuery3)
-        world.worldStorage.chunkStorage.addChunk(testEntityQuery4)
-        world.worldStorage.chunkStorage.addChunk(testEntityQuery5)
+        world.worldStorage.chunkStorageRef.addChunk(testEntityQuery)
+        world.worldStorage.chunkStorageRef.addChunk(testEntityQuery2)
+        world.worldStorage.chunkStorageRef.addChunk(testEntityQuery3)
+        world.worldStorage.chunkStorageRef.addChunk(testEntityQuery4)
+        world.worldStorage.chunkStorageRef.addChunk(testEntityQuery5)
 
         let commands = world.worldStorage.commands
 

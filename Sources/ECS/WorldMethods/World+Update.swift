@@ -161,7 +161,7 @@ extension World {
         self.applyEnityTransactions(commands: commands)
 
         // apply commands の際に push された entity を chunk に割り振ります(spawn).
-        self.worldStorage.chunkStorage.applySpawnedEntityQueue()
+        self.worldStorage.chunkStorageRef.applySpawnedEntityQueue()
 
         // Did Spawn event を event system に発信します.
         self.applyCommandsEventQueue(eventOfType: DidSpawnEvent.self)
@@ -170,6 +170,6 @@ extension World {
 
         // world 内の entity のコンポーネントの追加/削除.
         // 同じフレーム内で entity の変更を world 全体に適用するために一番最後に再度実行.
-        self.worldStorage.chunkStorage.applyUpdatedEntityQueue()
+        self.worldStorage.chunkStorageRef.applyUpdatedEntityQueue()
     }
 }

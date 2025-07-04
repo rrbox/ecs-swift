@@ -30,7 +30,7 @@ extension World {
 
         self.insert(entityRecord: entityRecord)
         self.worldStorage
-            .chunkStorage
+            .chunkStorageRef
             .pushSpawned(entityRecord: entityRecord)
         self.worldStorage
             .eventStorage
@@ -44,7 +44,7 @@ extension World {
     func despawn(entity: Entity) {
         self.remove(entity: entity)
         self.worldStorage
-            .chunkStorage
+            .chunkStorageRef
             .despawn(entity: entity)
         self.worldStorage
             .eventStorage
