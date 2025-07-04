@@ -16,9 +16,9 @@ final class FilteredQueryTests: XCTestCase {
 
         let world = World()
 
-        world.worldStorage.chunkStorage.addChunk(testQueryAnd)
-        world.worldStorage.chunkStorage.addChunk(testQueryOr)
-        world.worldStorage.chunkStorage.addChunk(testQueryWithout)
+        world.worldStorage.chunkStorageRef.addChunk(testQueryAnd)
+        world.worldStorage.chunkStorageRef.addChunk(testQueryOr)
+        world.worldStorage.chunkStorageRef.addChunk(testQueryWithout)
 
         let commands = world.worldStorage.commands
 
