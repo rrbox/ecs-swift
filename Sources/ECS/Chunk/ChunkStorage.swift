@@ -9,7 +9,7 @@ protocol ChunkStorageElement: WorldStorageElement {
 
 }
 
-public enum ChunkStorage: WorldStorageType {
+enum ChunkStorage: WorldStorageType {
 
 }
 
