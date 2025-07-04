@@ -29,15 +29,15 @@ final public class Filtered<Q: QueryProtocol, F: Filter>: Chunk, SystemParameter
     }
 
     public static func getParameter(from worldStorage: WorldStorageRef) -> Filtered<Q, F>? {
-        worldStorage.chunkStorage.chunk(ofType: Filtered<Q, F>.self)
+        worldStorage.chunkStorageRef.chunk(ofType: Filtered<Q, F>.self)
     }
 
     public static func register(to worldStorage: WorldStorageRef) {
-        guard worldStorage.chunkStorage.chunk(ofType: Self.self) == nil else {
+        guard worldStorage.chunkStorageRef.chunk(ofType: Self.self) == nil else {
             return
         }
 
-        worldStorage.chunkStorage.addChunk(Filtered<Q, F>())
+        worldStorage.chunkStorageRef.addChunk(Filtered<Q, F>())
     }
 
     override func applyCurrentState(_ entityRecord: EntityRecordRef) {

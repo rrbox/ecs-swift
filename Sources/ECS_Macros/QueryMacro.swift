@@ -104,13 +104,13 @@ struct QueryMacro: DeclarationMacro {
                 }
 
                 public static func register(to worldStorage: WorldStorageRef) {
-                    guard worldStorage.chunkStorage.chunk(ofType: Self.self) == nil else { return }
+                    guard worldStorage.chunkStorageRef.chunk(ofType: Self.self) == nil else { return }
                     let queryRegistory = Self()
-                    worldStorage.chunkStorage.addChunk(queryRegistory)
+                    worldStorage.chunkStorageRef.addChunk(queryRegistory)
                 }
 
                 public static func getParameter(from worldStorage: WorldStorageRef) -> Self? {
-                    worldStorage.chunkStorage.chunk(ofType: Self.self)
+                    worldStorage.chunkStorageRef.chunk(ofType: Self.self)
                 }
             }
             """

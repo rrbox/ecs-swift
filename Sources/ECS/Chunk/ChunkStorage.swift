@@ -13,6 +13,10 @@ public enum ChunkStorage: WorldStorageType {
 
 }
 
+final public class ChunkStorageRef {
+    var storage = AnyMap<ChunkStorage>()
+}
+
 extension AnyMap where Mode == ChunkStorage {
     mutating func push<T: ChunkStorageElement>(_ data: T) {
         self.body[ObjectIdentifier(T.self)] = Box(body: data)
@@ -25,11 +29,5 @@ extension AnyMap where Mode == ChunkStorage {
     func valueRef<T: ChunkStorageElement>(ofType type: T.Type) -> Box<T>? {
         guard let result = self.body[ObjectIdentifier(T.self)] else { return nil }
         return (result as! Box<T>)
-    }
-}
-
-extension AnyMap<ChunkStorage> {
-    func chunk<ChunkType: Chunk>(ofType type: ChunkType.Type) -> ChunkType? {
-        valueRef(ofType: ChunkType.self)?.body
     }
 }
