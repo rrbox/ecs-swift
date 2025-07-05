@@ -47,6 +47,21 @@ public final class Nodes: ResourceProtocol {
 
     /// SKScene にすでに配置された SKNode を entity に紐付けます.
     public func connect<Node: SKNode>(
+        nodeWithName name: String,
+        typeOf type: Node.Type,
+        fromScene scene: SceneResource
+    ) -> NodeConnect<Node>? {
+        guard let node = scene.scene.childNode(withName: name) as? Node else {
+            return nil
+        }
+        return .init(
+            node: node,
+            register: regiester(entity:node:)
+        )
+    }
+
+    /// SKScene にすでに配置された SKNode を entity に紐付けます.
+    public func connect<Node: SKNode>(
         node: Node
     ) -> NodeConnect<Node> {
         return .init(
