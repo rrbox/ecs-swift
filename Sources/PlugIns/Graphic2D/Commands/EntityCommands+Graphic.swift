@@ -62,11 +62,30 @@ final class RemoveFromParent: EntityCommand {
 }
 
 public extension EntityCommands {
-    @discardableResult func setGraphic<Node: SKNode>(_ nodeCreate: Nodes.NodeCreate<Node>) -> Self {
+    /// Node hierarchy に存在しない SKNode を entity に紐づけて SceneResource の SKScene に配置します.
+    @discardableResult func setGraphic<Node: SKNode>(
+        _ nodeCreate: Nodes.NodeCreate<Node>
+    ) -> Self {
         let node = nodeCreate.node
         nodeCreate.register(id(), node)
         self.pushCommand(SetGraphic(node: node, entity: id()))
-        return self.addComponent(Graphic(node: node)).addComponent(Graphic<SKNode>(node: node))
+        return self
+            .addComponent(Graphic(node: node))
+            .addComponent(Graphic<SKNode>(node: node))
+            .addComponent(_AddChildNodeTransaction(parentEntity: nil))
+    }
+
+    /// SKScene にすでに追加されている SKNode を entity に紐付けます.
+    @discardableResult func setGraphic<Node: SKNode>(
+        _ nodeCreate: Nodes.NodeConnect<Node>
+    ) -> Self {
+        let node = nodeCreate.node
+        nodeCreate.register(id(), node)
+        self.pushCommand(SetGraphic(node: node, entity: id()))
+        // _AddChildNodeTransaction を追加しない
+        return self
+            .addComponent(Graphic(node: node))
+            .addComponent(Graphic<SKNode>(node: node))
     }
 
     @discardableResult func addChild(_ entity: Entity) -> Self {
