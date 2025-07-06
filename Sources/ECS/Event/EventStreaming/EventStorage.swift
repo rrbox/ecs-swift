@@ -29,12 +29,23 @@ extension AnyMap where Mode == EventStorage {
 // world buffer にプロパティをつけておく
 
 extension AnyMap<EventStorage> {
-    mutating func setUpEventQueue() {
-        push(EventQueue())
+    func eventReceivers() -> EventReceivers? {
+        valueRef(ofType: EventReceivers.self)?.body
     }
 
-    func eventQueue() -> EventQueue? {
-        valueRef(ofType: EventQueue.self)?.body
+    mutating func registerEventReceivers() {
+        push(EventReceivers())
+    }
+
+    func eventReceiver<T>(eventOfType type: T.Type) -> EventReceiver<T>? {
+        valueRef(ofType: EventReceiver<T>.self)?.body
+    }
+
+    mutating func registerEventReceiver<T: EventProtocol>(eventType: T.Type) {
+        let eventReceiver = EventReceiver<T>()
+        let eventReceivers = eventReceivers()
+        eventReceivers?.eventReceivers.append(eventReceiver)
+        push(eventReceiver)
     }
 
     func eventWriter<T>(eventOfType type: T.Type) -> EventWriter<T>? {
@@ -42,8 +53,8 @@ extension AnyMap<EventStorage> {
     }
 
     mutating func registerEventWriter<T: EventProtocol>(eventType: T.Type) {
-        let eventQueue = valueRef(ofType: EventQueue.self)!.body
-        push(EventWriter<T>(eventQueue: eventQueue))
+        let receiver = valueRef(ofType: EventReceiver<T>.self)!.body
+        push(EventWriter<T>(receiver: receiver))
     }
 
     func eventResponder<T: EventProtocol>(eventOfType type: T.Type) -> EventResponder<T>? {

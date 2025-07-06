@@ -7,14 +7,14 @@
 
 // Commands と基本的な仕組みは同じ.
 final public class EventWriter<T: EventProtocol>: SystemParameter, EventStorageElement {
-    unowned let eventQueue: EventQueue
+    unowned let receiver: EventReceiver<T>
 
-    init(eventQueue: EventQueue) {
-        self.eventQueue = eventQueue
+    init(receiver: EventReceiver<T>) {
+        self.receiver = receiver
     }
 
     public func send(value: T) {
-        self.eventQueue.eventQueue.append(Event<T>(value: value))
+        receiver.eventBuffer.append(value)
     }
 
     public static func register(to worldStorage: WorldStorageRef) {

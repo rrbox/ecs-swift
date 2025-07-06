@@ -6,14 +6,14 @@
 //
 
 final class CommandsEventWriter<T: CommandsEventProtocol>: SystemParameter, EventStorageElement {
-    unowned let eventQueue: CommandsEventQueue<T>
+    unowned let receiver: CommandsEventReceiver<T>
 
-    init(eventQueue: CommandsEventQueue<T>) {
-        self.eventQueue = eventQueue
+    init(receiver: CommandsEventReceiver<T>) {
+        self.receiver = receiver
     }
 
     public func send(value: T) {
-        self.eventQueue.eventQueue.append(value)
+        receiver.eventBuffer.append(value)
     }
 
     public static func register(to worldStorage: WorldStorageRef) {

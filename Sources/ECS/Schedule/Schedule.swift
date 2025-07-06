@@ -22,11 +22,7 @@
  - ``Schedule/onStackUpdate(_:)``
  - ``Schedule/onPause(_:)``
  - ``Schedule/onResume(_:)``
- 
- Entity spawn / despawn
- 
- - ``Schedule/didSpawn``
- - ``Schedule/willDespawn``
+
  */
 public struct Schedule: Hashable {
     let typeId: ObjectIdentifier

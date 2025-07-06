@@ -36,9 +36,7 @@ public extension World {
         worldStorage.stateStorage.setUp()
 
         // world buffer に event queue を作成します.
-        worldStorage.eventStorage.setUpEventQueue()
-        worldStorage.eventStorage.setUpCommandsEventQueue(eventOfType: DidSpawnEvent.self)
-        worldStorage.eventStorage.setUpCommandsEventQueue(eventOfType: WillDespawnEvent.self)
+        worldStorage.eventStorage.registerEventReceivers()
 
         // world buffer に spawn/despawn event の streamer を登録します.
         addCommandsEventStreamer(eventType: DidSpawnEvent.self)

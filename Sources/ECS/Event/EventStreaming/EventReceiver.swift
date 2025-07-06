@@ -1,43 +1,29 @@
 //
-//  Event.swift
-//  
+//  EventReceiver.swift
+//  ECS_Swift
 //
-//  Created by rrbox on 2023/08/14.
+//  Created by rrbox on 2025/07/06.
 //
 
-public protocol EventProtocol {
+final class EventReceiver<T: EventProtocol>: AnyEventReceiver, EventStorageElement {
+    var eventBuffer = [T]()
 
-}
-
-class AnyEvent {
-    func runEventReceiver(worldStorage: WorldStorageRef) {
-
-    }
-}
-
-final class Event<T: EventProtocol>: AnyEvent {
-    let value: T
-
-    init(value: T) {
-        self.value = value
-    }
-
-    override func runEventReceiver(worldStorage: WorldStorageRef) {
-        worldStorage.eventStorage.push(EventReader(value: self.value))
-
+    override func receive(worldStorage: WorldStorageRef) {
+        let events = eventBuffer
+        eventBuffer = []
+        guard !events.isEmpty else { return }
+        worldStorage.eventStorage.push(EventReader(events: events))
         if let systems = worldStorage.eventStorage.eventResponder(eventOfType: T.self)!.systems[.update] {
             for system in systems {
                 system.execute(worldStorage)
             }
         }
-
         for schedule in worldStorage.stateStorage.currentEventSchedulesWhichAssociatedStates() {
             guard let systems = worldStorage.eventStorage.eventResponder(eventOfType: T.self)!.systems[schedule] else { continue }
             for system in systems {
                 system.execute(worldStorage)
             }
         }
-
         worldStorage.eventStorage.pop(EventReader<T>.self)
     }
 }
