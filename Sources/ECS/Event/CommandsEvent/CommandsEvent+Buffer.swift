@@ -6,12 +6,12 @@
 //
 
 extension AnyMap<EventStorage> {
-    mutating func setUpCommandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) {
-        push(CommandsEventQueue<T>())
+    func commandsEventReceiver<T: CommandsEventProtocol>(eventOfType type: T.Type) -> CommandsEventReceiver<T>? {
+        valueRef(ofType: CommandsEventReceiver<T>.self)?.body
     }
 
-    func commandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) -> CommandsEventQueue<T>? {
-        valueRef(ofType: CommandsEventQueue<T>.self)?.body
+    mutating func registerCommandsEventReceiver<T: CommandsEventProtocol>(eventType: T.Type) {
+        push(CommandsEventReceiver<T>())
     }
 
     func commandsEventWriter<T>(eventOfType type: T.Type) -> CommandsEventWriter<T>? {
@@ -19,8 +19,8 @@ extension AnyMap<EventStorage> {
     }
 
     mutating func registerCommandsEventWriter<T: CommandsEventProtocol>(eventType: T.Type) {
-        let eventQueue = valueRef(ofType: CommandsEventQueue<T>.self)!.body
-        push(CommandsEventWriter<T>(eventQueue: eventQueue))
+        let receiver = valueRef(ofType: CommandsEventReceiver<T>.self)!.body
+        push(CommandsEventWriter<T>(receiver: receiver))
     }
 
     func commandsEventResponder<T: CommandsEventProtocol>(eventOfType type: T.Type) -> EventResponder<T>? {

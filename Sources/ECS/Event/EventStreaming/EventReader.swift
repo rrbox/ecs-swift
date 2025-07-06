@@ -6,10 +6,10 @@
 //
 
 final public class EventReader<T>: SystemParameter, EventStorageElement {
-    public let value: T
+    public let events: [T]
 
-    init(value: T) {
-        self.value = value
+    init(events: [T]) {
+        self.events = events
     }
 
     public static func register(to worldStorage: WorldStorageRef) {

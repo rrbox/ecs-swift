@@ -109,10 +109,12 @@ func removeChildIfDespawned(
     query: Query<Child>,
     parentQuery: Query<Parent>
 ) {
-    let entity = despawnEvent.value.despawnedEntity
-    guard let parent = query.components(forEntity: entity)?.parent else { return }
-    parentQuery.update(parent) { p in
-        p._children.remove(entity)
+    for event in despawnEvent.events {
+        let entity = event.despawnedEntity
+        guard let parent = query.components(forEntity: entity)?.parent else { continue }
+        parentQuery.update(parent) { p in
+            p._children.remove(entity)
+        }
     }
 }
 
@@ -137,7 +139,10 @@ func despawnChildIfParentDespawned(
     commands: Commands
 ) {
     // despawn した entity と自分の親が一致する子を despawn する.
-    despawnChildRecursive(despawnedEntity: despawnedEntityEvent.value.despawnedEntity,
-                          children: children,
-                          commands: commands)
+    for event in despawnedEntityEvent.events {
+        let despawnedEntity = event.despawnedEntity
+        despawnChildRecursive(despawnedEntity: despawnedEntity,
+                              children: children,
+                              commands: commands)
+    }
 }

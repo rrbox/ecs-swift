@@ -89,8 +89,10 @@ func _removeFromParentSystem(
 
 @MainActor
 func _removeNodeIfDespawned(despawn: EventReader<WillDespawnEvent>, nodes: Resource<Nodes>) {
-    let entity = despawn.value.despawnedEntity
-    nodes.resource.removeNode(forEntity: entity)
+    for event in despawn.events {
+        let despawnedEntity = event.despawnedEntity
+        nodes.resource.removeNode(forEntity: despawnedEntity)
+    }
 }
 
 // TODO: - Node 操作イベントのハンドリングは他のフェーズでも同様に行なわなくてもOK?
