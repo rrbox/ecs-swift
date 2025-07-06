@@ -8,25 +8,8 @@
 /**
  システムが実行されるタイミングを指定します.
 
- Eccentials
+ - ``EventSchedule/update``
 
- - ``Schedule/startUp``
- - ``Schedule/update``
-
- State associated schedules
-
- - ``EventSchedule/didEnter(_:)``
- - ``EventSchedule/willExit(_:)``
- - ``EventSchedule/onUpdate(_:)``
- - ``EventSchedule/onInactiveUpdate(_:)``
- - ``EventSchedule/onStackUpdate(_:)``
- - ``EventSchedule/onPause(_:)``
- - ``EventSchedule/onResume(_:)``
-
- Entity spawn / despawn
-
- - ``Schedule/didSpawn``
- - ``Schedule/willDespawn``
  */
 public struct EventSchedule: Hashable {
     let typeId: ObjectIdentifier
