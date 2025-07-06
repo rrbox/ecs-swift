@@ -5,13 +5,32 @@
 //  Created by rrbox on 2023/11/20.
 //
 
-class FirstFrameCommand: Command {
+final private class PreUpdateFirstFrameCommand: Command {
+    override func runCommand(in world: World) {
+        world.preUpdateSchedule = .preUpdate
+    }
+}
+
+final private class UpdateSystemFirstFrameCommand: Command {
     override func runCommand(in world: World) {
         world.updateSchedule = .update
     }
 }
 
-// Delta time resource の設定のため, 一番最初のフレームはスキップします.
-func firstFrameSystem(commands: Commands) {
-    commands.push(command: FirstFrameCommand())
+final private class PostUpdateFirstFrameCommand: Command {
+    override func runCommand(in world: World) {
+        world.postUpdateSchedule = .postUpdate
+    }
+}
+
+func preUpdateSystemFirstFrameSystem(commands: Commands) {
+    commands.push(command: PreUpdateFirstFrameCommand())
+}
+
+func updateSystemFirstFrameSystem(commands: Commands) {
+    commands.push(command: UpdateSystemFirstFrameCommand())
+}
+
+func postUpdateSystemFirstFrameSystem(commands: Commands) {
+    commands.push(command: PostUpdateFirstFrameCommand())
 }

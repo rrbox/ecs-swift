@@ -8,5 +8,5 @@
 import XCTest
 
 final class SystemParameterTests: XCTestCase {
-    
+
 }

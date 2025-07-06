@@ -5,23 +5,31 @@
 //  Created by rrbox on 2023/08/12.
 //
 
-final public class ResourceBuffer {
-    let buffer: WorldStorageRef
-    init(buffer: WorldStorageRef) {
-        self.buffer = buffer
+enum ResourceStorage: WorldStorageType {}
+
+protocol ResourceStorageElement: WorldStorageElement {}
+
+extension AnyMap where Mode == ResourceStorage {
+    mutating func push<T: ResourceStorageElement>(_ data: T) {
+        self.body[ObjectIdentifier(T.self)] = Box(body: data)
     }
-    
-    func addResource<T: ResourceProtocol>(_ resource: T) {
-        self.buffer.map.push(Resource<T>(resource))
+
+    mutating func pop<T: ResourceStorageElement>(_ type: T.Type) {
+        self.body.removeValue(forKey: ObjectIdentifier(T.self))
     }
-    
-    public func resource<T: ResourceProtocol>(ofType type: T.Type) -> Resource<T>? {
-        self.buffer.map.valueRef(ofType: Resource<T>.self)?.body
+
+    func valueRef<T: ResourceStorageElement>(ofType type: T.Type) -> Box<T>? {
+        guard let result = self.body[ObjectIdentifier(T.self)] else { return nil }
+        return (result as! Box<T>)
     }
 }
 
-public extension WorldStorageRef {
-    var resourceBuffer: ResourceBuffer {
-        ResourceBuffer(buffer: self)
+extension AnyMap<ResourceStorage> {
+    mutating func addResource<T: ResourceProtocol>(_ resource: T) {
+        push(Resource<T>(resource))
+    }
+
+    public func resource<T: ResourceProtocol>(ofType type: T.Type) -> Resource<T>? {
+        valueRef(ofType: Resource<T>.self)?.body
     }
 }

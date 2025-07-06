@@ -5,34 +5,63 @@
 //  Created by rrbox on 2023/08/11.
 //
 
-extension ChunkStorage {
-    func setUpChunkBuffer() {
-        self.buffer.map.push(ChunkEntityInterface())
-    }
+extension AnyMap<ChunkStorage> {
+
+}
+
+extension ChunkStorageRef {
+
+    // MARK: - public
     
+    /// World 内の特定の entity を更新します
+    /// - Parameter entityRecord: entity の components 構成クラス
+    public func pushUpdated(entityRecord: EntityRecordRef) {
+        storage.valueRef(ofType: ChunkEntityInterface.self)!
+            .body
+            .pushUpdated(entityRecord: entityRecord)
+    }
+
+    // MARK: - internal
+
+    func chunk<ChunkType: Chunk>(ofType type: ChunkType.Type) -> ChunkType? {
+        storage.valueRef(ofType: ChunkType.self)?.body
+    }
+
     func addChunk<ChunkType: Chunk>(_ chunk: ChunkType) {
-        self.buffer.map.push(chunk)
-        self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.add(chunk: chunk)
+        storage.push(chunk)
+        storage.valueRef(ofType: ChunkEntityInterface.self)!
+            .body
+            .add(chunk: chunk)
     }
-    
-    func pushSpawned(entity: Entity, entityRecord: EntityRecordRef) {
-        self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.pushSpawned(entity: entity, entityRecord: entityRecord)
+
+    func pushSpawned(entityRecord: EntityRecordRef) {
+        storage.valueRef(ofType: ChunkEntityInterface.self)!
+            .body
+            .pushSpawned(entityRecord: entityRecord)
     }
-    
+
+    // MARK: - life cycle
+
+    func setUpChunkBuffer() {
+        storage.push(ChunkEntityInterface())
+    }
+
     func applySpawnedEntityQueue() {
-        self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.applySpawnedEntityQueue()
+        storage.valueRef(ofType: ChunkEntityInterface.self)!
+            .body
+            .applySpawnedEntityQueue()
     }
-    
-    public func pushUpdated(entity: Entity, entityRecord: EntityRecordRef) {
-        self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.pushUpdated(entity: entity, entityRecord: entityRecord)
-    }
-    
+
     func applyUpdatedEntityQueue() {
-        self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.applyUpdatedEntityQueue()
+        storage.valueRef(ofType: ChunkEntityInterface.self)!
+            .body
+            .applyUpdatedEntityQueue()
     }
-    
+
     func despawn(entity: Entity) {
-        self.buffer.map.valueRef(ofType: ChunkEntityInterface.self)!.body.despawn(entity: entity)
+        storage.valueRef(ofType: ChunkEntityInterface.self)!
+            .body
+            .despawn(entity: entity)
     }
-    
+
 }

@@ -5,29 +5,29 @@
 //  Created by rrbox on 2023/08/29.
 //
 
-extension EventStorage {
-    func setUpCommandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) {
-        self.buffer.map.push(CommandsEventQueue<T>())
+extension AnyMap<EventStorage> {
+    func commandsEventReceiver<T: CommandsEventProtocol>(eventOfType type: T.Type) -> CommandsEventReceiver<T>? {
+        valueRef(ofType: CommandsEventReceiver<T>.self)?.body
     }
-    
-    func commandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) -> CommandsEventQueue<T>? {
-        self.buffer.map.valueRef(ofType: CommandsEventQueue<T>.self)?.body
+
+    mutating func registerCommandsEventReceiver<T: CommandsEventProtocol>(eventType: T.Type) {
+        push(CommandsEventReceiver<T>())
     }
-    
+
     func commandsEventWriter<T>(eventOfType type: T.Type) -> CommandsEventWriter<T>? {
-        self.buffer.map.valueRef(ofType: CommandsEventWriter<T>.self)?.body
+        valueRef(ofType: CommandsEventWriter<T>.self)?.body
     }
-    
-    func registerCommandsEventWriter<T: CommandsEventProtocol>(eventType: T.Type) {
-        let eventQueue = self.buffer.map.valueRef(ofType: CommandsEventQueue<T>.self)!.body
-        self.buffer.map.push(CommandsEventWriter<T>(eventQueue: eventQueue))
+
+    mutating func registerCommandsEventWriter<T: CommandsEventProtocol>(eventType: T.Type) {
+        let receiver = valueRef(ofType: CommandsEventReceiver<T>.self)!.body
+        push(CommandsEventWriter<T>(receiver: receiver))
     }
-    
+
     func commandsEventResponder<T: CommandsEventProtocol>(eventOfType type: T.Type) -> EventResponder<T>? {
-        self.buffer.map.valueRef(ofType: EventResponder<T>.self)?.body
+        valueRef(ofType: EventResponder<T>.self)?.body
     }
-    
-    func resisterCommandsEventResponder<T: CommandsEventProtocol>(eventType: T.Type) {
-        self.buffer.map.push(EventResponder<T>())
+
+    mutating func resisterCommandsEventResponder<T: CommandsEventProtocol>(eventType: T.Type) {
+        push(EventResponder<T>())
     }
 }

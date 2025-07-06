@@ -5,13 +5,13 @@
 //  Created by rrbox on 2023/08/12.
 //
 
-class AddResource<T: ResourceProtocol>: Command {
+final class AddResource<T: ResourceProtocol>: Command {
     let resrouce: T
-    
+
     init(resrouce: T) {
         self.resrouce = resrouce
     }
-    
+
     override func runCommand(in world: World) {
         world.addResource(self.resrouce)
     }

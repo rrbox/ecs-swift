@@ -10,13 +10,13 @@ extension World {
         for transaction in commands.entityTransactions {
             transaction.runCommand(in: self)
         }
-        commands.entityTransactions = []
+        commands.refreshEntityTransactions()
     }
-    
+
     func applyCommands(commands: Commands) {
         for command in commands.commandQueue {
             command.runCommand(in: self)
         }
-        commands.commandQueue = []
+        commands.refreshCommandQueue()
     }
 }

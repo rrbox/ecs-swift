@@ -7,6 +7,6 @@
 
 class EntityTransaction {
     func runCommand(in world: World) {
-        
+
     }
 }

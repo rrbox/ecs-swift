@@ -5,6 +5,8 @@
 //  Created by rrbox on 2023/08/05.
 //
 
+#if os(macOS)
+
 import ECS
 import AppKit
 
@@ -26,8 +28,10 @@ public extension World {
     func keyDown(with event: NSEvent) {
         self.sendEvent(KeyDownEvent(nsEvent: event))
     }
-    
+
     func keyUp(with event: NSEvent) {
         self.sendEvent(KeyUpEvent(nsEvent: event))
     }
 }
+
+#endif

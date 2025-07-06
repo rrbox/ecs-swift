@@ -24,7 +24,7 @@ final class UpdateSystemTests: XCTestCase {
         let world = World()
             .addSystem(.update, mySystem(commands:))
             .addSystem(.update, mySystem2(query:))
-        
+
         world.update(currentTime: 0)
         world.update(currentTime: 0)
     }

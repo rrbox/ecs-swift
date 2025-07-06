@@ -7,16 +7,16 @@ import CompilerPluginSupport
 struct Module {
     let name: String
     let path: String?
-    
+
     init(name: String, path: String? = nil) {
         self.name = name
         self.path = path
     }
-    
+
     var dependency: Target.Dependency {
         Target.Dependency(stringLiteral: self.name)
     }
-    
+
 }
 
 extension Module {
@@ -29,7 +29,8 @@ extension Module {
     static let objectLink = Module(name: "ECS_ObjectLink", path: "Sources/PlugIns/ObjectLink")
     static let scene = Module(name: "ECS_Scene", path: "Sources/PlugIns/Scene")
     static let scroll = Module(name: "ECS_Scroll", path: "Sources/PlugIns/Scroll")
-    
+    static let touch = Module(name: "ECS_Touch", path: "Sources/PlugIns/Touch")
+
     static let ecs_swiftTests = Module(name: "ecs-swiftTests")
     static let graphicPlugInTests = Module(name: "GraphicPlugInTests")
     static let keyBoardPlugInTests = Module(name: "KeyBoardPlugInTests")
@@ -37,6 +38,7 @@ extension Module {
     static let objectLinkPlugInTests = Module(name: "ObjectLinkPlugInTests")
     static let scenePlugInTests = Module(name: "ScenePlugInTests")
     static let scrollPlugInTests = Module(name: "ScrollPlugInTests")
+    static let touchPlugInTests = Module(name: "TouchPlugInTests")
 }
 
 extension Target {
@@ -46,7 +48,7 @@ extension Target {
             dependencies: dependencies.map { $0.dependency },
             path: module.path)
     }
-    
+
     static func testTarget(module: Module, dependencies: [Module]) -> Target {
         .testTarget(
             name: module.name,
@@ -54,7 +56,7 @@ extension Target {
             path: module.path
         )
     }
-    
+
     static func macro(module: Module, dependencies: [Module]) -> Target {
         .macro(
             name: module.name,
@@ -68,7 +70,7 @@ extension Target {
 
 let package = Package(
     name: "ECS_Swift",
-    platforms: [.macOS(.v10_15)],
+    platforms: [.macOS(.v10_15), .iOS(.v13)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
@@ -83,6 +85,7 @@ let package = Package(
                 Module.objectLink.name,
                 Module.scene.name,
                 Module.scroll.name,
+                Module.touch.name,
             ]),
     ],
     dependencies: [
@@ -118,6 +121,9 @@ let package = Package(
         .target(
             module: .scroll,
             dependencies: [.ecs]),
+        .target(
+            module: .touch,
+            dependencies: [.ecs]),
         .testTarget(
             module: .ecs_swiftTests,
             dependencies: [.ecs]),
@@ -139,5 +145,8 @@ let package = Package(
         .testTarget(
             module: .scrollPlugInTests,
             dependencies: [.scroll]),
+        .testTarget(
+            module: .touchPlugInTests,
+            dependencies: [.touch]),
     ]
 )

@@ -1,0 +1,57 @@
+version: 2.1
+
+jobs:
+  build:
+    macos:
+      xcode: 16.1.0
+    steps:
+      - checkout
+      # - run: apt-get update && apt-get install -y curl
+      - run:
+          name: Install dependencies
+          command: swift package resolve
+      - run:
+          name: Build project
+          command: swift build
+      - run:
+          name: Run tests
+          command: swift test
+      - run:
+          name: Discord Notify Success
+          command: |
+            curl -H "Content-Type: application/json" \
+            -d "{
+              \"avatar_url\": \"https://github.com/circleci.png\",
+              \"embeds\": [
+                {
+                  \"title\": \"$CIRCLE_PROJECT_REPONAME:$CIRCLE_BRANCH\",
+                  \"description\": \"✅ Build and tests completed successfully!\",
+                  \"url\": \"$CIRCLE_PULL_REQUEST\",
+                  \"color\": 2423811
+                }
+              ]
+            }" \
+            $DISCORD_NOTIFY_URL
+          when: on_success
+      - run:
+          name: Discord Notify Failure
+          command: |
+            curl -H "Content-Type: application/json" \
+            -d "{
+              \"avatar_url\": \"https://github.com/circleci.png\",
+              \"embeds\": [
+                {
+                  \"title\": \"$CIRCLE_PROJECT_REPONAME:$CIRCLE_BRANCH\",
+                  \"description\": \"⚠️ Build or tests failed. Please check the logs.\",
+                  \"url\": \"$CIRCLE_PULL_REQUEST\",
+                  \"color\": 16518915
+                }
+              ]
+            }" \
+            $DISCORD_NOTIFY_URL
+          when: on_fail
+
+workflows:
+  swiftpm_build:
+    jobs:
+      - build

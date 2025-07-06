@@ -22,25 +22,25 @@ func entitycreate2(commands: Commands) {
 
 func update(query: Query<Text>) {
     query.update { _ in
-        
+
     }
 }
 
 func update2(query: Query<Text>) {
     query.update { _ in
-        
+
     }
 }
 
 func update3(query: Query<Text>) {
     query.update { _ in
-        
+
     }
 }
 
 func update4(query: Query<Text>) {
     query.update { _ in
-        
+
     }
 }
 
@@ -54,14 +54,15 @@ final class ecs_swiftTests: XCTestCase {
             .addSystem(.startUp, entitycreate(commands:))
             .addSystem(.update, update(query:))
         world.setUpWorld()
-        
+        world.update(currentTime: -1)
+
         print(world.entities.data.count)
-        
+
         measure {
             world.update(currentTime: 0)
         }
     }
-    
+
     // entity: 20000
     // set up: 1
     // update: 4
@@ -74,9 +75,10 @@ final class ecs_swiftTests: XCTestCase {
             .addSystem(.update, update3(query:))
             .addSystem(.update, update4(query:))
         world.setUpWorld()
-        
+        world.update(currentTime: -1)
+
         print(world.entities.data.count)
-        
+
         measure {
             world.update(currentTime: 0)
         }

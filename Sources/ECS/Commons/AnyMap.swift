@@ -6,7 +6,7 @@
 //
 
 public class Item {
-    
+
 }
 
 public struct AnyMap<Mode> {

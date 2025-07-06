@@ -31,7 +31,7 @@ func _addChildNodeSystem(
         } else {
             scene.resource.scene.addChild(graphic.nodeRef)
         }
-        
+
         commands
             .entity(childEntity)
             .removeComponent(ofType: _AddChildNodeTransaction.self)
@@ -60,41 +60,57 @@ func _addChildNodeSystem(
         } else {
             fatalError("parent entity not found")
         }
-        
+
         commands
             .entity(childEntity)
             .removeComponent(ofType: _AddChildNodeTransaction.self)
     }
 }
 
-
+@MainActor
 func _removeFromParentSystem(
     query: Filtered<Query3<Entity, Graphic<SKNode>, Child>, With<_RemoveFromParentTransaction>>,
     parents: Query<Parent>,
+    nodes: Resource<Nodes>,
     commands: Commands
 ) {
     query.update { childEntity, childNode, child  in
         childNode.nodeRef.removeFromParent()
+        nodes.resource.removeNode(forEntity: childEntity)
         commands.entity(childEntity)
             .removeComponent(ofType: Child.self)
             .removeComponent(ofType: _RemoveFromParentTransaction.self)
-        
+
         parents.update(child.parent) { parent in
             parent._children.remove(childEntity)
         }
     }
-    
 }
 
+@MainActor
+func _removeNodeIfDespawned(despawn: EventReader<WillDespawnEvent>, nodes: Resource<Nodes>) {
+    for event in despawn.events {
+        let despawnedEntity = event.despawnedEntity
+        nodes.resource.removeNode(forEntity: despawnedEntity)
+    }
+}
+
+// TODO: - Node 操作イベントのハンドリングは他のフェーズでも同様に行なわなくてもOK?
+@MainActor
 public func graphicPlugIn(world: World) {
     world
-        .addSystem(.update, _addChildNodeSystem(query:graphics:scene:commands:))
-        .addSystem(.update, _addChildNodeSystem(query:graphics:commands:))
-        .addSystem(.update, _removeFromParentSystem(query:parents:commands:))
-    
+        .addResource(Nodes())
+        .addSystem(.postStartUp, _addChildNodeSystem(query:graphics:scene:commands:))
+        .addSystem(.postStartUp, _addChildNodeSystem(query:graphics:commands:))
+        .addSystem(.postStartUp, _removeFromParentSystem(query:parents:nodes:commands:))
+        .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:scene:commands:))
+        .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:commands:))
+        .addSystem(.postUpdate, _removeFromParentSystem(query:parents:nodes:commands:))
+
         .buildWillDespawnResponder { responder in
             responder
                 .addSystem(.update, removeChildIfDespawned(despawnEvent:query:parentQuery:))
                 .addSystem(.update, despawnChildIfParentDespawned(despawnedEntityEvent:children:commands:))
+                .addSystem(.update, _removeNodeIfDespawned(despawn:nodes:))
         }
 }

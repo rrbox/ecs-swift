@@ -5,24 +5,29 @@
 //  Created by rrbox on 2023/08/11.
 //
 
-extension Chunk: WorldStorageElement {
-    
+protocol ChunkStorageElement: WorldStorageElement {
+
 }
 
-/// Chunk を種類別で格納します
-final public class ChunkStorage {
-    let buffer: WorldStorageRef
-    init(buffer: WorldStorageRef) {
-        self.buffer = buffer
-    }
-    
-    public func chunk<ChunkType: Chunk>(ofType type: ChunkType.Type) -> ChunkType? {
-        self.buffer.map.valueRef(ofType: ChunkType.self)?.body
-    }
+enum ChunkStorage: WorldStorageType {
+
 }
 
-public extension WorldStorageRef {
-    var chunkStorage: ChunkStorage {
-        ChunkStorage(buffer: self)
+final public class ChunkStorageRef {
+    var storage = AnyMap<ChunkStorage>()
+}
+
+extension AnyMap where Mode == ChunkStorage {
+    mutating func push<T: ChunkStorageElement>(_ data: T) {
+        self.body[ObjectIdentifier(T.self)] = Box(body: data)
+    }
+
+    mutating func pop<T: ChunkStorageElement>(_ type: T.Type) {
+        self.body.removeValue(forKey: ObjectIdentifier(T.self))
+    }
+
+    func valueRef<T: ChunkStorageElement>(ofType type: T.Type) -> Box<T>? {
+        guard let result = self.body[ObjectIdentifier(T.self)] else { return nil }
+        return (result as! Box<T>)
     }
 }

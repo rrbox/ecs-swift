@@ -11,7 +11,7 @@
 - note: 詳細は <doc:Resources> を参照してください.
  */
 public protocol ResourceProtocol {
-    
+
 }
 
 /**
@@ -19,19 +19,19 @@ public protocol ResourceProtocol {
  
 - note: 詳細は <doc:Resources> を参照してください.
  */
-final public class Resource<T: ResourceProtocol>: WorldStorageElement, SystemParameter {
+final public class Resource<T: ResourceProtocol>: ResourceStorageElement, SystemParameter {
     public var resource: T
-    
+
     init(_ resource: T) {
         self.resource = resource
     }
-    
+
     public static func register(to worldStorage: WorldStorageRef) {
-        
+
     }
-    
+
     public static func getParameter(from worldStorage: WorldStorageRef) -> Resource<T>? {
-        worldStorage.resourceBuffer.resource(ofType: T.self)
+        worldStorage.resourceStorage.resource(ofType: T.self)
     }
-    
+
 }

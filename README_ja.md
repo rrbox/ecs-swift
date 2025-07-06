@@ -3,6 +3,8 @@
 [![GitHub issues](https://img.shields.io/github/issues/rrbox/ecs-swift)](https://github.com/rrbox/ecs-swift/issues)
 [![GitHub License](https://img.shields.io/github/license/rrbox/ecs-swift)](https://github.com/rrbox/ecs-swift/blob/main/LICENSE)
 [![Swift](https://github.com/rrbox/ecs-swift/actions/workflows/swift.yml/badge.svg?branch=release%2Flatest)](https://github.com/rrbox/ecs-swift/actions/workflows/swift.yml)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/rrbox/ecs-swift/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/rrbox/ecs-swift/tree/main)
+[![Discord](https://img.shields.io/discord/1292321583506915460?style=flat-square&logo=discord&logoColor=7885F2&label=discord)](https://discord.gg/pA6qkhJxYE)
 
 `ecs-swift` は、Swift で Entity Component System (ECS) を実装したライブラリです。SpriteKit や SceneKit などのフレームワークで ECS 設計のゲームを開発するために使用します。
 
@@ -23,12 +25,12 @@
 ### Requirements
 
 - Xcode 14.3 
-- Swift 5.8
+- Swift 5.9
 
 ### Swift Package Manager
 
 ```swift
-// swift-tools-version:5.8
+// swift-tools-version:5.9
 
 import PackageDescription
 

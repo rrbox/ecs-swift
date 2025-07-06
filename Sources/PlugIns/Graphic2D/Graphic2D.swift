@@ -15,18 +15,6 @@ public struct SceneResource: ResourceProtocol {
     }
 }
 
-class GraphicStrongRef: Component {
-    let node: SKNode
-    
-    init(node: SKNode) {
-        self.node = node
-    }
-    
-    deinit {
-        self.node.removeFromParent()
-    }
-}
-
 public struct Graphic<Node: SKNode>: Component {
     public unowned let nodeRef: Node
     init(node: Node) {
