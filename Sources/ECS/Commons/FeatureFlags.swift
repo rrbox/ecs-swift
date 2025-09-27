@@ -9,7 +9,7 @@ struct FeatureFlags: OptionSet {
     let rawValue: UInt8
     static let enabled: FeatureFlags = []
 
-    func isEnabled(_ flags: FeatureFlags) -> Bool {
+    static func isEnabled(_ flags: FeatureFlags) -> Bool {
         Self.enabled.contains(flags)
     }
 }
