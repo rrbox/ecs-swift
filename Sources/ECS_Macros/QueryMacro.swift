@@ -50,26 +50,44 @@ struct QueryMacro: DeclarationMacro {
             """
             final public class Query\(raw: n)<\(raw: genericArguments)>: Chunk, SystemParameter, QueryProtocol {
                 public var components = SparseSet<(\(raw: refTypes))>(sparse: [], dense: [], data: [])
+                public var contiguousComponents = ContiguousSparseSet<(\(raw: refTypes))>(sparse: [], dense: [], data: [])
 
                 public override init() {}
 
                 public func allocate() {
-                    self.components.allocate()
+                    if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+                        self.contiguousComponents.allocate()
+                    } else {
+                        self.components.allocate()
+                    }
                 }
 
                 public func insert(entityRecord: EntityRecordRef) {
                     guard \(raw: refDeclarationsFromRecord) else { return }
-                    self.components.insert((\(raw: refs)), withEntity: entityRecord.entity)
+                    if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+                        self.contiguousComponents.insert((\(raw: refs)), withEntity: entityRecord.entity)
+                    } else {
+                        self.components.insert((\(raw: refs)), withEntity: entityRecord.entity)
+                    }
                 }
 
                 public func remove(entity: Entity) {
-                    guard self.components.contains(entity) else { return }
-                    self.components.pop(entity: entity)
+                    if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+                        guard self.contiguousComponents.contains(entity) else { return }
+                        self.contiguousComponents.pop(entity: entity)
+                    } else {
+                        guard self.components.contains(entity) else { return }
+                        self.components.pop(entity: entity)
+                    }
                 }
 
                 public override func spawn(entityRecord: EntityRecordRef) {
                     if entityRecord.entity.generation == 0 {
-                        self.components.allocate()
+                        if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+                            self.contiguousComponents.allocate()
+                        } else {
+                            self.components.allocate()
+                        }
                     }
                     self.insert(entityRecord: entityRecord)
                 }
@@ -83,24 +101,45 @@ struct QueryMacro: DeclarationMacro {
                         self.despawn(entity: entityRecord.entity)
                         return
                     }
-                    guard !components.contains(entityRecord.entity) else { return }
-                    self.components.insert((\(raw: refs)), withEntity: entityRecord.entity)
+                    if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+                        guard !contiguousComponents.contains(entityRecord.entity) else { return }
+                        self.contiguousComponents.insert((\(raw: refs)), withEntity: entityRecord.entity)
+                    } else {
+                        guard !components.contains(entityRecord.entity) else { return }
+                        self.components.insert((\(raw: refs)), withEntity: entityRecord.entity)
+                    }
                 }
 
                 public func update(_ f: (\(raw: parameters)) -> ()) {
-                    self.components.data.forEach { components in
-                        f(\(raw: componentRefs))
+                    if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+                        self.contiguousComponents.data.forEach { components in
+                            f(\(raw: componentRefs))
+                        }
+                    } else {
+                        self.components.data.forEach { components in
+                            f(\(raw: componentRefs))
+                        }
                     }
                 }
 
                 public func update(_ entity: Entity, _ f: (\(raw: parameters)) -> ()) {
-                    guard let components = self.components.value(forEntity: entity) else { return }
-                    f(\(raw: componentRefs))
+                    if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+                        guard let components = self.contiguousComponents.value(forEntity: entity) else { return }
+                        f(\(raw: componentRefs))
+                    } else {
+                        guard let components = self.components.value(forEntity: entity) else { return }
+                        f(\(raw: componentRefs))
+                    }
                 }
 
                 public func components(forEntity entity: Entity) -> (\(raw: valueTypes))? {
-                    guard let components = components.value(forEntity: entity) else { return nil }
-                    return (\(raw: componentValuess))
+                    if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+                        guard let components = contiguousComponents.value(forEntity: entity) else { return nil }
+                        return (\(raw: componentValuess))
+                    } else {
+                        guard let components = components.value(forEntity: entity) else { return nil }
+                        return (\(raw: componentValuess))
+                    }
                 }
 
                 public static func register(to worldStorage: WorldStorageRef) {

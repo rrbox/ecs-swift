@@ -25,7 +25,11 @@ extension World {
     /// entity へのコンポーネントの登録などは, push の後に行われます.
     func push(entityRecord: EntityRecordRef) {
         if entityRecord.entity.generation == 0 {
-            self.entities.allocate()
+            if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+                self.contiguousEntities.allocate()
+            } else {
+                self.defaultEntities.allocate()
+            }
         }
 
         self.insert(entityRecord: entityRecord)
