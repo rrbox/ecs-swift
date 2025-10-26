@@ -8,19 +8,9 @@
 import SpriteKit
 import ECS
 
-public struct Child: Component {
-    var _parent: Entity
-    public var parent: Entity {
-        self._parent
-    }
-}
+public struct Child: Component {}
 
-public struct Parent: Component {
-    var _children: Set<Entity>
-    public var children: Set<Entity> {
-        self._children
-    }
-}
+public struct Parent: Component {}
 
 struct _RemoveFromParentTransaction: Component {
 
