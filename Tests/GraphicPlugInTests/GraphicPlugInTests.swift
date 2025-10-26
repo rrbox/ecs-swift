@@ -93,6 +93,7 @@ final class GraphicPlugInTests: XCTestCase {
                 parents: Query3<Entity, Parent, Graphic<SKNode>>,
                 currentTime: Resource<CurrentTime>,
                 commands: Commands,
+                hierarchy: Resource<Hierarchy>,
                 nodes: Resource<Nodes>
             ) in
                 switch currentTime.resource.value {
@@ -101,12 +102,16 @@ final class GraphicPlugInTests: XCTestCase {
                     XCTAssertEqual(parents.components.data.count, 0)
                     XCTAssertEqual(parentNode.children.count, 0)
                     XCTAssertEqual(children.components.data.count, 0)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 0)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 0)
                     XCTAssertEqual(nodes.resource.store.count, 2)
                     flags[0] += 1
                 case 1:
-                    XCTAssertEqual(parents.components.data.count, 2)
+                    XCTAssertEqual(parents.components.data.count, 1)
                     XCTAssertEqual(parentNode.children.count, 1)
                     XCTAssertEqual(children.components.data.count, 1)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 1)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 1)
                     XCTAssertEqual(nodes.resource.store.count, 2)
                     flags[1] += 1
                 default: return
@@ -147,11 +152,14 @@ final class GraphicPlugInTests: XCTestCase {
             .addSystem(.update) { (
                 children: Query<Child>,
                 parents: Query2<Entity, Parent>,
+                hierarchy: Resource<Hierarchy>,
                 nodes: Resource<Nodes>
             ) in
                 flags[0] += 1
-                XCTAssertEqual(parents.components.data.count, 2)
+                XCTAssertEqual(parents.components.data.count, 0)
                 XCTAssertEqual(children.components.data.count, 0)
+                XCTAssertEqual(hierarchy.resource.childrenMap.count, 0)
+                XCTAssertEqual(hierarchy.resource.parentMap.count, 0)
                 XCTAssertEqual(nodes.resource.store.count, 2)
             }
 
@@ -182,14 +190,21 @@ final class GraphicPlugInTests: XCTestCase {
                     .setGraphic(nodes.resource.create(node: parentNode))
                     .addChild(child)
             }
-            .addSystem(.update) { (children: Query<Child>, parents: Query2<Entity, Parent>, currentTime: Resource<CurrentTime>) in
+            .addSystem(.update) { (
+                children: Query<Child>,
+                parents: Query2<Entity, Parent>,
+                hierarchy: Resource<Hierarchy>,
+                currentTime: Resource<CurrentTime>
+            ) in
                 // add child 関数が機能しているのかをチェック
-                XCTAssertEqual(parents.components.data.count, 2)
                 switch currentTime.resource.value {
                 case -1: fatalError() // ここは通過しない.
                 case 0:
                     flags[0] += 1
+                    XCTAssertEqual(parents.components.data.count, 1)
                     XCTAssertEqual(parentNode.children.count, 1)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 1)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 1)
                     XCTAssertEqual(children.components.data.count, 1)
                 default: return
                 }
@@ -200,10 +215,10 @@ final class GraphicPlugInTests: XCTestCase {
                 parents: Query<Parent>,
                 commands: Commands,
                 currentTime: Resource<CurrentTime>,
+                hierarchy: Resource<Hierarchy>,
                 nodes: Resource<Nodes>
             ) in
                 // remove from parent 関数の効果をチェック
-                XCTAssertEqual(parents.components.data.count, 2)
                 switch currentTime.resource.value {
                 case 1:
                     flags[1] += 1
@@ -213,8 +228,11 @@ final class GraphicPlugInTests: XCTestCase {
                     }
                 case 2:
                     flags[1] += 1
+                    XCTAssertEqual(parents.components.data.count, 0)
                     XCTAssertEqual(children.query.components.data.count, 0)
                     XCTAssertEqual(parentNode.children.count, 0)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 0)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 0)
                     XCTAssertEqual(nodes.resource.store.count, 1)
                 default: break
                 }
@@ -257,35 +275,42 @@ final class GraphicPlugInTests: XCTestCase {
                 currentTime: Resource<CurrentTime>,
                 commands: Commands,
                 children: Query<Child>,
-                parents: Query2<Entity, Parent>,
+                parents: Filtered<Query<Entity>, With<Parent>>,
                 totalEntities: Query<Entity>,
+                hierarchy: Resource<Hierarchy>,
                 nodes: Resource<Nodes>
             ) in
                 switch currentTime.resource.value {
                 case -1: fatalError() // ここは通過しません.
                 case 0:
                     flags[0] += 1
-                    XCTAssertEqual(parents.components.data.count, 3)
+                    XCTAssertEqual(parents.query.components.data.count, 2)
                     XCTAssertEqual(children.components.data.count, 2)
                     XCTAssertEqual(totalEntities.components.data.count, 3)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 2)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 2)
                     XCTAssertEqual(nodes.resource.store.count, 3)
                 case 1:
                     flags[1] += 1
-                    parents.update { entity, parent in
-                        if parent.children.count == 1 {
+                    parents.update { entity in
+                        if hierarchy.resource.children(of: entity)?.count == 1 {
                             commands.despawn(entity: entity)
                         }
                     }
 
-                    XCTAssertEqual(parents.components.data.count, 3)
+                    XCTAssertEqual(parents.query.components.data.count, 2)
                     XCTAssertEqual(children.components.data.count, 2)
                     XCTAssertEqual(totalEntities.components.data.count, 3)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 2)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 2)
                     XCTAssertEqual(nodes.resource.store.count, 3)
                 case 2:
                     flags[2] += 1
-                    XCTAssertEqual(parents.components.data.count, 0)
+                    XCTAssertEqual(parents.query.components.data.count, 0)
                     XCTAssertEqual(children.components.data.count, 0)
                     XCTAssertEqual(totalEntities.components.data.count, 0)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 0)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 0)
                     XCTAssertEqual(nodes.resource.store.count, 0)
                 default:
                     fatalError()
@@ -318,27 +343,40 @@ final class GraphicPlugInTests: XCTestCase {
                     .setGraphic(nodes.resource.create(node: parentNode))
                     .addChild(child)
             }
-            .addSystem(.update) { (currentTime: Resource<CurrentTime>, commands: Commands, children: Filtered<Query<Entity>, With<Child>>, parents: Query2<Entity, Parent>, totalEntities: Query<Entity>) in
+            .addSystem(.update) { (
+                currentTime: Resource<CurrentTime>,
+                commands: Commands,
+                children: Filtered<Query<Entity>, With<Child>>,
+                parents: Query2<Entity, Parent>,
+                hierarchy: Resource<Hierarchy>,
+                totalEntities: Query<Entity>
+            ) in
                 switch currentTime.resource.value {
                 case -1: fatalError() // ここは通過しません.
                 case 0:
                     XCTAssertStepOrder(currentStep: 0, steps: &flags)
-                    XCTAssertEqual(parents.components.data.count, 2)
+                    XCTAssertEqual(parents.components.data.count, 1)
                     XCTAssertEqual(children.query.components.data.count, 1)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 1)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 1)
                     XCTAssertEqual(totalEntities.components.data.count, 2)
                 case 1:
                     XCTAssertStepOrder(currentStep: 1, steps: &flags)
                     children.update { entity in
                         commands.despawn(entity: entity)
                     }
-                    
-                    XCTAssertEqual(parents.components.data.count, 2)
+
+                    XCTAssertEqual(parents.components.data.count, 1)
                     XCTAssertEqual(children.query.components.data.count, 1)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 1)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 1)
                     XCTAssertEqual(totalEntities.components.data.count, 2)
                 case 2:
                     XCTAssertStepOrder(currentStep: 2, steps: &flags)
-                    XCTAssertEqual(parents.components.data.count, 1)
+                    XCTAssertEqual(parents.components.data.count, 0)
                     XCTAssertEqual(children.query.components.data.count, 0)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 0)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 0)
                     XCTAssertEqual(totalEntities.components.data.count, 1)
                 default:
                     fatalError() // ここは通過しません.
