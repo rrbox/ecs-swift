@@ -22,6 +22,8 @@ public final class Nodes: ResourceProtocol {
 
     var store = [Entity: SKNode]()
 
+    // MARK: - public
+
     /// node hierarchy に存在しない SKNode を entity に紐付けます.
     public func create<Node: SKNode>(node: Node) -> NodeCreate<Node> {
         return .init(
@@ -70,11 +72,13 @@ public final class Nodes: ResourceProtocol {
         )
     }
 
+    // MARK: - internal
+
     func regiester<Node: SKNode>(entity: Entity, node: Node) {
         store[entity] = node
     }
 
-    func removeNode(forEntity entity: Entity) {
+    @discardableResult func removeNode(forEntity entity: Entity) -> SKNode? {
         store.removeValue(forKey: entity)
     }
 }

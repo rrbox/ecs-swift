@@ -70,6 +70,65 @@ final class GraphicPlugInTests: XCTestCase {
         XCTAssertEqual(flags, [1])
     }
 
+    // entity hierarchy から取り外す処理のテスト
+    func testDespawn() {
+        let scene = SKScene()
+        let node = SKNode()
+        var flags = [0, 0, 0]
+        let world = World()
+            .addResource(SceneResource(scene))
+            .addPlugIn(graphicPlugIn(world:))
+            .addSystem(.startUp) { (commands: Commands, nodes: Resource<Nodes>) in
+                commands.spawn()
+                    .setGraphic(nodes.resource.create(node: node))
+            }
+            .addSystem(.update) { (
+                currentTime: Resource<CurrentTime>,
+                entities: Query<Entity>
+            ) in
+                // add child 関数が機能しているのかをチェック
+                switch currentTime.resource.value {
+                case -1: fatalError() // ここは通過しない.
+                case 0:
+                    flags[0] += 1
+                    XCTAssertEqual(scene.children.count, 1)
+                    XCTAssertEqual(entities.components.data.count, 1)
+                default: return
+                }
+            }
+            .addSystem(.update) { (
+                entities: Query<Entity>,
+                parents: Query<Parent>,
+                commands: Commands,
+                currentTime: Resource<CurrentTime>,
+                hierarchy: Resource<Hierarchy>,
+                nodes: Resource<Nodes>
+            ) in
+                // remove from parent 関数の効果をチェック
+                switch currentTime.resource.value {
+                case 1:
+                    flags[1] += 1
+                    entities.update { entity in
+                        commands.despawn(entity: entity)
+                    }
+                case 2:
+                    flags[2] += 1
+                    XCTAssertEqual(scene.children.count, 0)
+                    XCTAssertEqual(entities.components.data.count, 0)
+                    XCTAssertEqual(nodes.resource.store.count, 0)
+                default: break
+                }
+            }
+
+        world.setUpWorld()
+        world.update(currentTime: -1)
+        world.update(currentTime: 0)
+        world.update(currentTime: 1) // この一番最後で _remove from parent tarnsaction 追加
+        world.update(currentTime: 2) // remove from parent system 実行, 一番最後に component に変更反映 | ここで結果が出る
+
+        XCTAssertEqual(flags, [1, 1, 1])
+    }
+
     func testAddChildOnUpdate() {
         let scene = SKScene()
         let parentNode = SKNode()
@@ -170,6 +229,80 @@ final class GraphicPlugInTests: XCTestCase {
 
         XCTAssertEqual(flags, [2])
 
+    }
+
+    // entity hierarchy から取り外す処理のテスト
+    func testDespawnChild() {
+        let scene = SKScene()
+        let parentNode = SKNode()
+        var flags = [0, 0]
+        let world = World()
+            .addResource(SceneResource(scene))
+            .addPlugIn(graphicPlugIn(world:))
+            .addSystem(.startUp) { (commands: Commands, nodes: Resource<Nodes>) in
+                let childNode = SKNode()
+
+                let child = commands.spawn()
+                    .setGraphic(nodes.resource.create(node: childNode))
+                    .id()
+                commands.spawn()
+                    .setGraphic(nodes.resource.create(node: parentNode))
+                    .addChild(child)
+            }
+            .addSystem(.update) { (
+                children: Query<Child>,
+                parents: Query2<Entity, Parent>,
+                hierarchy: Resource<Hierarchy>,
+                currentTime: Resource<CurrentTime>
+            ) in
+                // add child 関数が機能しているのかをチェック
+                switch currentTime.resource.value {
+                case -1: fatalError() // ここは通過しない.
+                case 0:
+                    flags[0] += 1
+                    XCTAssertEqual(parents.components.data.count, 1)
+                    XCTAssertEqual(parentNode.children.count, 1)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 1)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 1)
+                    XCTAssertEqual(children.components.data.count, 1)
+                default: return
+                }
+            }
+            .addSystem(.update) { (
+                children: Filtered<Query<Entity>,
+                With<Child>>,
+                parents: Query<Parent>,
+                commands: Commands,
+                currentTime: Resource<CurrentTime>,
+                hierarchy: Resource<Hierarchy>,
+                nodes: Resource<Nodes>
+            ) in
+                // remove from parent 関数の効果をチェック
+                switch currentTime.resource.value {
+                case 1:
+                    flags[1] += 1
+                    children.update { entity in
+                        commands.despawn(entity: entity)
+                    }
+                case 2:
+                    flags[1] += 1
+                    XCTAssertEqual(parents.components.data.count, 0)
+                    XCTAssertEqual(children.query.components.data.count, 0)
+                    XCTAssertEqual(parentNode.children.count, 0)
+                    XCTAssertEqual(hierarchy.resource.childrenMap.count, 0)
+                    XCTAssertEqual(hierarchy.resource.parentMap.count, 0)
+                    XCTAssertEqual(nodes.resource.store.count, 1)
+                default: break
+                }
+            }
+
+        world.setUpWorld()
+        world.update(currentTime: -1)
+        world.update(currentTime: 0)
+        world.update(currentTime: 1) // この一番最後で _remove from parent tarnsaction 追加
+        world.update(currentTime: 2) // remove from parent system 実行, 一番最後に component に変更反映 | ここで結果が出る
+
+        XCTAssertEqual(flags, [1, 2])
     }
 
     // entity hierarchy から取り外す処理のテスト
