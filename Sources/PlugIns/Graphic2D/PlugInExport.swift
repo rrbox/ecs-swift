@@ -104,10 +104,15 @@ func _removeFromParentSystem(
 }
 
 @MainActor
-func _removeNodeIfDespawned(despawn: EventReader<WillDespawnEvent>, nodes: Resource<Nodes>) {
+func _removeNodeIfDespawned(
+    despawn: EventReader<WillDespawnEvent>,
+    nodes: Resource<Nodes>
+) {
     for event in despawn.events {
         let despawnedEntity = event.despawnedEntity
-        nodes.resource.removeNode(forEntity: despawnedEntity)
+        nodes.resource
+            .removeNode(forEntity: despawnedEntity)?
+            .removeFromParent()
     }
 }
 
