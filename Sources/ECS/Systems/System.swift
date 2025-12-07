@@ -25,6 +25,7 @@ public extension World {
     }
 }
 
+@available(*, deprecated)
 public extension EventResponderBuilder {
     @discardableResult func addSystem<P: SystemParameter>(_ schedule: EventSchedule, _ system: @escaping (P) -> ()) -> EventResponderBuilder {
         if !self.systems.keys.contains(schedule) {

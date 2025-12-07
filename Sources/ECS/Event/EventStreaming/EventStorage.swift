@@ -29,18 +29,22 @@ extension AnyMap where Mode == EventStorage {
 // world buffer にプロパティをつけておく
 
 extension AnyMap<EventStorage> {
+    @available(*, deprecated)
     func eventReceivers() -> EventReceivers? {
         valueRef(ofType: EventReceivers.self)?.body
     }
 
+    @available(*, deprecated)
     mutating func registerEventReceivers() {
         push(EventReceivers())
     }
 
+    @available(*, deprecated)
     func eventReceiver<T>(eventOfType type: T.Type) -> EventReceiver<T>? {
         valueRef(ofType: EventReceiver<T>.self)?.body
     }
 
+    @available(*, deprecated)
     mutating func registerEventReceiver<T: EventProtocol>(eventType: T.Type) {
         let eventReceiver = EventReceiver<T>()
         let eventReceivers = eventReceivers()
@@ -48,19 +52,23 @@ extension AnyMap<EventStorage> {
         push(eventReceiver)
     }
 
+    @available(*, deprecated)
     func eventWriter<T>(eventOfType type: T.Type) -> EventWriter<T>? {
         valueRef(ofType: EventWriter<T>.self)?.body
     }
 
+    @available(*, deprecated)
     mutating func registerEventWriter<T: EventProtocol>(eventType: T.Type) {
         let receiver = valueRef(ofType: EventReceiver<T>.self)!.body
         push(EventWriter<T>(receiver: receiver))
     }
 
+    @available(*, deprecated)
     func eventResponder<T: EventProtocol>(eventOfType type: T.Type) -> EventResponder<T>? {
         valueRef(ofType: EventResponder<T>.self)?.body
     }
 
+    @available(*, deprecated)
     mutating func registerEventResponder<T: EventProtocol>(eventType: T.Type) {
         push(EventResponder<T>())
     }

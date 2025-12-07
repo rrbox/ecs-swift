@@ -11,6 +11,7 @@ macro System(_ n: Int) = #externalMacro(module: "ECS_Macros", type: "SystemMacro
 @freestanding(declaration, names: named(addSystem(_:_:)))
 macro addSystemForWorld(_ n: Int) = #externalMacro(module: "ECS_Macros", type: "AddSystemMacroForWorld")
 
+@available(*, deprecated)
 @freestanding(declaration, names: named(addSystem(_:_:)))
 macro addSystemMacroForEventResponderBuilder(_ n: Int) = #externalMacro(module: "ECS_Macros", type: "AddSystemMacroForEventResponderBuilder")
 
@@ -35,6 +36,7 @@ public extension World {
     #addSystemForWorld(15)
 }
 
+@available(*, deprecated)
 public extension EventResponderBuilder {
     #addSystemMacroForEventResponderBuilder(15)
 }

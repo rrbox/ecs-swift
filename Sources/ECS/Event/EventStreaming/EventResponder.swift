@@ -7,6 +7,7 @@
 
 import Foundation
 
+@available(*, deprecated)
 final public class EventResponderBuilder {
     unowned let worldStorage: WorldStorageRef
     var systems: [EventSchedule: [SystemExecute]] = [:]
@@ -16,11 +17,13 @@ final public class EventResponderBuilder {
     }
 }
 
+@available(*, deprecated)
 final public class EventResponder<T>: EventStorageElement {
     var systems: [EventSchedule: [SystemExecute]] = [:]
 }
 
 public extension World {
+    @available(*, deprecated)
     @discardableResult func buildEventResponder<T: EventProtocol>(_ eventType: T.Type, _ build: (EventResponderBuilder) -> ()) -> World {
         let builder = EventResponderBuilder(worldStorage: self.worldStorage)
         build(builder)
@@ -34,6 +37,7 @@ public extension World {
         return self
     }
 
+    @available(*, deprecated)
     private func buildCommandsEventResponder<T: CommandsEventProtocol>(_ eventType: T.Type, _ build: (EventResponderBuilder) -> ()) {
         let builder = EventResponderBuilder(worldStorage: self.worldStorage)
         build(builder)
@@ -45,11 +49,13 @@ public extension World {
             }
     }
 
+    @available(*, deprecated)
     @discardableResult func buildDidSpawnResponder(_ build: (EventResponderBuilder) -> ()) -> World {
         self.buildCommandsEventResponder(DidSpawnEvent.self, build)
         return self
     }
 
+    @available(*, deprecated)
     @discardableResult func buildWillDespawnResponder(_ build: (EventResponderBuilder) -> ()) -> World {
         self.buildCommandsEventResponder(WillDespawnEvent.self, build)
         return self

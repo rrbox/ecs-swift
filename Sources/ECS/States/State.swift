@@ -54,15 +54,25 @@ final class StateTransitionQueue: StateStorageElement {
     private(set) var onInactiveUpdateNewStateQueue = [Schedule]()
     private(set) var onInactiveUpdatePreviousStateQueue = [Schedule]()
 
+    @available(*, deprecated)
     private(set) var didEnterEventQueue = [EventSchedule]()
+    @available(*, deprecated)
     private(set) var willExitEventQueue = [EventSchedule]()
+    @available(*, deprecated)
     private(set) var onResumeEventQueue = [EventSchedule]()
+    @available(*, deprecated)
     private(set) var onPauseEventQueue = [EventSchedule]()
+    @available(*, deprecated)
     private(set) var onUpdateNewStateEventQueue = [EventSchedule]()
+    @available(*, deprecated)
     private(set) var onUpdatePreviousStateEventQueue = [EventSchedule]()
+    @available(*, deprecated)
     private(set) var onStackUpdateNewStateEventQueue = [EventSchedule]()
+    @available(*, deprecated)
     private(set) var onStackUpdatePreviousStateEventQueue = [EventSchedule]()
+    @available(*, deprecated)
     private(set) var onInactiveUpdateNewStateEventQueue = [EventSchedule]()
+    @available(*, deprecated)
     private(set) var onInactiveUpdatePreviousStateEventQueue = [EventSchedule]()
 
     // enter
@@ -173,6 +183,7 @@ extension AnyMap<StateStorage> {
         valueRef(ofType: StateAssociatedSchedules.self)!.body.schedules
     }
 
+    @available(*, deprecated)
     func currentEventSchedulesWhichAssociatedStates() -> Set<EventSchedule> {
         valueRef(ofType: StateAssociatedSchedules.self)!.body.eventSchedules
     }

@@ -5,6 +5,7 @@
 //  Created by rrbox on 2023/08/29.
 //
 
+@available(*, deprecated)
 final class CommandsEventWriter<T: CommandsEventProtocol>: SystemParameter, EventStorageElement {
     unowned let receiver: CommandsEventReceiver<T>
 

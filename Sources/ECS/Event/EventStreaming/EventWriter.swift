@@ -6,6 +6,7 @@
 //
 
 // Commands と基本的な仕組みは同じ.
+@available(*, deprecated)
 final public class EventWriter<T: EventProtocol>: SystemParameter, EventStorageElement {
     unowned let receiver: EventReceiver<T>
 

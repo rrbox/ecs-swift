@@ -18,6 +18,7 @@ public extension World {
 }
 
 extension World {
+    @available(*, deprecated)
     func addCommandsEventStreamer<T: CommandsEventProtocol>(eventType: T.Type) {
         worldStorage.systemStorage.insertSchedule(.onCommandsEvent(ofType: T.self))
         worldStorage.eventStorage.registerCommandsEventReceiver(eventType: T.self)
@@ -34,6 +35,7 @@ extension World {
         }
     }
 
+    @available(*, deprecated)
     func applyCommandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) {
         let eventStorage = self.worldStorage.eventStorage
         let receiver = eventStorage.commandsEventReceiver(eventOfType: T.self)!

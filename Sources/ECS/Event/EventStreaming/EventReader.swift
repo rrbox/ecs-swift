@@ -5,6 +5,7 @@
 //  Created by rrbox on 2023/08/14.
 //
 
+@available(*, deprecated)
 final public class EventReader<T>: SystemParameter, EventStorageElement {
     public let events: [T]
 

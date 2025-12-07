@@ -5,6 +5,7 @@
 //  Created by rrbox on 2025/07/06.
 //
 
+@available(*, deprecated)
 final class CommandsEventReceiver<T: CommandsEventProtocol>: AnyEventReceiver, EventStorageElement {
     var eventBuffer = [T]()
 

@@ -5,6 +5,7 @@
 //  Created by rrbox on 2025/06/15.
 //
 
+@available(*, deprecated)
 public extension EventSchedule {
     /// `state` が active の間の ``World/update(currentTime:)`` 実行時にイベントを受信します.
     static func onUpdate<T: StateProtocol>(_ state: T) -> EventSchedule {

@@ -5,16 +5,20 @@
 //  Created by rrbox on 2023/08/10.
 //
 
+@available(*, deprecated)
 public struct DidSpawnEvent: CommandsEventProtocol {
     public let spawnedEntity: Entity
 }
 
+@available(*, deprecated)
 public struct WillDespawnEvent: CommandsEventProtocol {
     public let despawnedEntity: Entity
 }
 
 public extension Schedule {
+    @available(*, deprecated)
     static let didSpawn: Schedule = .onCommandsEvent(ofType: DidSpawnEvent.self)
+    @available(*, deprecated)
     static let willDespawn: Schedule = .onCommandsEvent(ofType: WillDespawnEvent.self)
 }
 
