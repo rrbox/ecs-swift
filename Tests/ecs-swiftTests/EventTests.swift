@@ -19,8 +19,8 @@ enum EventTestState: StateProtocol {
 }
 
 func testEvent(
-    events: EventReaderV2<TestEvent>,
-    eventWriter: EventWriterV2<TestEvent>,
+    events: EventReader<TestEvent>,
+    eventWriter: EventWriter<TestEvent>,
     commands: Commands,
     currentTime: Resource<CurrentTime>
 ) {
@@ -37,7 +37,7 @@ func testEvent(
     }
 }
 
-func setUp(eventWriter: EventWriterV2<TestEvent>) {
+func setUp(eventWriter: EventWriter<TestEvent>) {
     print("---set up---")
     print("-> event send:", "\"test event\"")
     eventWriter.send(TestEvent(name: "test event"))
@@ -46,7 +46,7 @@ func setUp(eventWriter: EventWriterV2<TestEvent>) {
 }
 
 func spawnedEntitySystem(
-    events: EventReaderV2<Spawned>,
+    events: EventReader<Spawned>,
     commands: Commands,
     currentTime: Resource<CurrentTime>
 ) {
@@ -100,11 +100,11 @@ final class EventTests: XCTestCase {
 
         let world = World()
             .addEventStreamer(eventType: TestEvent.self)
-            .addSystem(.startUp) { (eventWriter: EventWriterV2<TestEvent>) in
+            .addSystem(.startUp) { (eventWriter: EventWriter<TestEvent>) in
                 eventWriter.send(.init(name: "test event"))
                 ECSTAssertStepOrder(currentStep: 0, steps: &flags)
             }
-            .addSystem(.update) { (event: EventReaderV2<TestEvent>, commands: Commands) in
+            .addSystem(.update) { (event: EventReader<TestEvent>, commands: Commands) in
                 event.forEach { event in
                     ECSTAssertStepOrder(currentStep: 1, steps: &flags)
                     commands.spawn().addComponent(TestComponent(content: event.name))
@@ -113,7 +113,7 @@ final class EventTests: XCTestCase {
             .addSystem(.removed) { (removed: Removed, query: Query<TestComponent>) in
                 ECSTAssertStepOrder(currentStep: 3, steps: &flags)
             }
-            .addSystem(.update) { (events: EventReaderV2<Spawned>, commands: Commands) in
+            .addSystem(.update) { (events: EventReader<Spawned>, commands: Commands) in
                 events.forEach { spawned in
                     ECSTAssertStepOrder(currentStep: 2, steps: &flags)
                     commands.despawn(entity: spawned.spawnedEntity)
@@ -134,16 +134,16 @@ final class EventTests: XCTestCase {
 
         let world = World()
             .addEventStreamer(eventType: TestEvent.self)
-            .addSystem(.startUp, { (eventWriter: EventWriterV2<TestEvent>) in
+            .addSystem(.startUp, { (eventWriter: EventWriter<TestEvent>) in
                 eventWriter.send(.init(name: "event 1"))
                 eventWriter.send(.init(name: "event 2"))
                 ECSTAssertStepOrder(currentStep: 0, steps: &flags)
             })
-            .addSystem(.postStartUp, { (events: EventReaderV2<TestEvent>) in
+            .addSystem(.postStartUp, { (events: EventReader<TestEvent>) in
                 receivedEventCounts[0] += events.count
                 ECSTAssertStepOrder(currentStep: 1, steps: &flags)
             })
-            .addSystem(.update) { (events: EventReaderV2<TestEvent>) in
+            .addSystem(.update) { (events: EventReader<TestEvent>) in
                 receivedEventCounts[1] += events.count
                 if !events.isEmpty {
                     ECSTAssertStepOrder(currentStep: 2, steps: &flags)
@@ -164,11 +164,11 @@ final class EventTests: XCTestCase {
 
         let world = World()
             .addEventStreamer(eventType: TestEvent.self)
-            .addSystem(.startUp) { (eventWriter: EventWriterV2<TestEvent>) in
+            .addSystem(.startUp) { (eventWriter: EventWriter<TestEvent>) in
                 eventWriter.send(.init(name: "event 1"))
                 eventWriter.send(.init(name: "event 2"))
             }
-            .addSystem(.update) { (events: EventReaderV2<TestEvent>) in
+            .addSystem(.update) { (events: EventReader<TestEvent>) in
                 if !events.isEmpty {
                     executionCount += 1
                 }
@@ -192,7 +192,7 @@ final class EventTests: XCTestCase {
                 commands.spawn()
                 state.enter(.stateA)
             }
-            .addSystem(.update) { (spawned: EventReaderV2<Spawned>, commands: Commands) in
+            .addSystem(.update) { (spawned: EventReader<Spawned>, commands: Commands) in
                 spawned.forEach { event in
                     commands.despawn(entity: event.spawnedEntity)
                 }
@@ -228,7 +228,7 @@ final class EventTests: XCTestCase {
             .addSystem(.startUp) { (commands: Commands, state: State<EventTestState>) in
                 commands.spawn()
             }
-            .addSystem(.update) { (spawned: EventReaderV2<Spawned>, commands: Commands) in
+            .addSystem(.update) { (spawned: EventReader<Spawned>, commands: Commands) in
                 spawned.forEach { event in
                     commands.despawn(entity: event.spawnedEntity)
                 }
@@ -269,7 +269,7 @@ final class EventTests: XCTestCase {
                 commands.spawn()
                 state.enter(.stateA)
             }
-            .addSystem(.update) { (spawned: EventReaderV2<Spawned>, commands: Commands) in
+            .addSystem(.update) { (spawned: EventReader<Spawned>, commands: Commands) in
                 spawned.forEach { event in
                     commands.despawn(entity: event.spawnedEntity)
                 }

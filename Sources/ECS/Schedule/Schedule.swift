@@ -41,6 +41,7 @@ enum DefaultSchedule {
     case preUpdate
     case update
     case postUpdate
+    case removed
 }
 
 public extension Schedule {
@@ -94,6 +95,7 @@ public extension Schedule {
      */
     static let update: Schedule = Schedule(id: DefaultSchedule.update)
     static let postUpdate: Schedule = .init(id: DefaultSchedule.postUpdate)
+    static let removed: Schedule = .init(id: DefaultSchedule.removed)
 
     static func customSchedule<T: Hashable>(_ value: T) -> Schedule {
         Schedule(id: value)

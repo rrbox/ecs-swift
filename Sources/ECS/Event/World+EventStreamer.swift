@@ -10,36 +10,29 @@ public extension World {
     ///
     /// `Event<T>` をイベントシステムで扱う前に, World に EventStreamer を追加する必要があります.
     @discardableResult func addEventStreamer<T: EventProtocol>(eventType: T.Type) -> World {
-        worldStorage.eventStorage.registerEventReceiver(eventType: T.self)
-        worldStorage.eventStorage.registerEventWriter(eventType: T.self)
-        worldStorage.eventStorage.registerEventResponder(eventType: T.self)
+        worldStorage.eventStorage.registerEventStreamer(eventType: T.self)
         return self
     }
 }
 
 extension World {
-    @available(*, deprecated)
-    func addCommandsEventStreamer<T: CommandsEventProtocol>(eventType: T.Type) {
-        worldStorage.systemStorage.insertSchedule(.onCommandsEvent(ofType: T.self))
-        worldStorage.eventStorage.registerCommandsEventReceiver(eventType: T.self)
-        worldStorage.eventStorage.registerCommandsEventWriter(eventType: T.self)
-        worldStorage.eventStorage.resisterCommandsEventResponder(eventType: T.self)
+    func addRemovedEventStreamer() {
+        worldStorage.eventStorage.registerRemovedEventStreamer()
     }
 }
 
 extension World {
     func applyEventQueue() {
-        let receivers = self.worldStorage.eventStorage.eventReceivers()!
-        for receiver in receivers.eventReceivers {
-            receiver.receive(worldStorage: worldStorage)
+        let queues = worldStorage.eventStorage.eventQueues()!
+        for queue in queues.body {
+            queue.applyEventsWritingBuffer()
         }
     }
 
-    @available(*, deprecated)
-    func applyCommandsEventQueue<T: CommandsEventProtocol>(eventOfType: T.Type) {
+    func applyRemovedEventQueue() {
         let eventStorage = self.worldStorage.eventStorage
-        let receiver = eventStorage.commandsEventReceiver(eventOfType: T.self)!
-        receiver.receive(worldStorage: worldStorage)
+        let receiver = eventStorage.removedEventReceiver()
+        receiver?.receive(worldStorage: worldStorage)
     }
 }
 
@@ -50,6 +43,6 @@ public extension World {
      System 内で Event を発信する場合は ``EventWriter`` を参照してください.
      */
     func sendEvent<T: EventProtocol>(_ value: T) {
-        self.worldStorage.eventStorage.eventWriter(eventOfType: T.self)?.send(value: value)
+        self.worldStorage.eventStorage.eventWriter(typeOf: T.self)?.send(value)
     }
 }

@@ -5,26 +5,36 @@
 //  Created by rrbox on 2025/07/06.
 //
 
-@available(*, deprecated)
-final class EventReceiver<T: EventProtocol>: AnyEventReceiver, EventStorageElement {
-    var eventBuffer = [T]()
+final class EventQueues: EventStorageElement {
+    var body = [any AnyEventQueue]()
+}
 
-    override func receive(worldStorage: WorldStorageRef) {
-        let events = eventBuffer
-        eventBuffer = []
-        guard !events.isEmpty else { return }
-        worldStorage.eventStorage.push(EventReader(events: events))
-        if let systems = worldStorage.eventStorage.eventResponder(eventOfType: T.self)!.systems[.update] {
-            for system in systems {
-                system.execute(worldStorage)
-            }
+protocol AnyEventQueue {
+    func applyEventsWritingBuffer()
+}
+
+final class EventQueue<T: EventProtocol>: AnyEventQueue, EventStorageElement {
+    var eventWritingBuffer = [T]()
+    // 3フェーズ分の event buffer を1フレームの間キャッシュする
+    var eventBufferQueue: [[T]] = [[], [], []]
+
+    var countOfEvents: Int {
+        eventBufferQueue.reduce(0) { $0 + $1.count }
+    }
+
+    func write(event: T) {
+        eventWritingBuffer.append(event)
+    }
+
+    func applyEventsWritingBuffer() {
+        eventBufferQueue.removeFirst()
+        eventBufferQueue.append(eventWritingBuffer)
+        eventWritingBuffer.removeAll()
+    }
+
+    func forEach(_ body: (T) -> ()) {
+        eventBufferQueue.forEach { eventsBuffer in
+            eventsBuffer.forEach(body)
         }
-        for schedule in worldStorage.stateStorage.currentEventSchedulesWhichAssociatedStates() {
-            guard let systems = worldStorage.eventStorage.eventResponder(eventOfType: T.self)!.systems[schedule] else { continue }
-            for system in systems {
-                system.execute(worldStorage)
-            }
-        }
-        worldStorage.eventStorage.pop(EventReader<T>.self)
     }
 }

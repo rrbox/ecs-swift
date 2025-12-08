@@ -33,6 +33,19 @@ struct OnResume<T: StateProtocol>: Hashable {
     let value: T
 }
 
+struct RemovedOn<T: StateProtocol>: Hashable {
+    let value: T
+}
+
+struct RemovedOnStack<T: StateProtocol>: Hashable {
+    let value: T
+}
+
+struct RemovedOnInactive<T: StateProtocol>: Hashable {
+    let value: T
+}
+
+
 public extension Schedule {
     /// `state` が active の間の ``World/update(currentTime:)`` 実行時にシステムを実行します.
     static func onUpdate<T: StateProtocol>(_ state: T) -> Schedule {
@@ -65,5 +78,21 @@ public extension Schedule {
 
     static func onResume<T: StateProtocol>(_ state: T) -> Schedule {
         Schedule(id: OnResume(value: state))
+    }
+}
+
+// MARK: - removed
+
+public extension Schedule {
+    static func removedOn<T: StateProtocol>(_ state: T) -> Schedule {
+        Schedule(id: RemovedOn(value: state))
+    }
+
+    static func removedOnStack<T: StateProtocol>(_ state: T) -> Schedule {
+        Schedule(id: RemovedOnStack(value: state))
+    }
+
+    static func removedOnInactive<T: StateProtocol>(_ state: T) -> Schedule {
+        Schedule(id: RemovedOnInactive(value: state))
     }
 }

@@ -94,16 +94,17 @@ public extension EntityCommands {
     }
 }
 
+// TODO: - Rerouce<Node> を使用する(WillDespawnEvent を廃止したい)
+
 func removeChildIfDespawned(
-    despawnEvent: EventReader<WillDespawnEvent>,
+    removed: Removed,
     hierarchy: Resource<Hierarchy>,
     commands: Commands
 ) {
     let hierarchy = hierarchy.resource
-    for event in despawnEvent.events {
-        let entity = event.despawnedEntity
-        let parent = hierarchy.parent(of: entity)
-        hierarchy.removeFromParent(entity)
+    for despawnedEntity in removed.entities {
+        let parent = hierarchy.parent(of: despawnedEntity)
+        hierarchy.removeFromParent(despawnedEntity)
         guard let parent, hierarchy.childrenIsEmpty(for: parent) else { continue }
         commands.entity(parent)
             .removeComponent(ofType: Parent.self)
@@ -127,12 +128,11 @@ func despawnChildRecursive(
 }
 
 func despawnChildIfParentDespawned(
-    despawnedEntityEvent: EventReader<WillDespawnEvent>,
+    removed: Removed,
     hierarchy: Resource<Hierarchy>,
     commands: Commands
 ) {
-    for event in despawnedEntityEvent.events {
-        let despawnedEntity = event.despawnedEntity
+    removed.forEach { despawnedEntity in
         despawnChildRecursive(
             despawnedEntity: despawnedEntity,
             hierarchy: hierarchy,
@@ -142,9 +142,7 @@ func despawnChildIfParentDespawned(
     }
 }
 
-// TODO: child を despawn するかどうか検討する
-// - despawn する場合: post update で状態を反映させる方法を検討する
-// - despawn しない場合: child から Child component を外す
+/// - hirarchy から削除された child は despawn しません
 func removeAllChildren(
     targetNodes: Filtered<Query2<Entity, Graphic<SKNode>>, And<With<Parent>, With<_RemoveAllChildrenTransaction>>>,
     hierarchy: Resource<Hierarchy>,
@@ -166,6 +164,8 @@ func removeAllChildren(
     }
 }
 
+// FIXME: - post update で despawn が呼ばれた場合、Nodes の紐付けを削除できない(Removed 実装後)
+// - Nodes の仕組み上2重で削除しても問題ないので、防衛的にこのシステムで切り離してもいいかも
 @MainActor
 func despawnAllChildren(
     targetNodes: Filtered<Query2<Entity, Graphic<SKNode>>, And<With<Parent>, With<_DespawnAllChildrenTransaction>>>,
