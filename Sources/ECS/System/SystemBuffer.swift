@@ -33,7 +33,6 @@ extension AnyMap where Mode == SystemStorage {
     }
 }
 
-
 extension AnyMap<SystemStorage> {
 
     public func systems(_ schedule: Schedule) -> [SystemExecute] {

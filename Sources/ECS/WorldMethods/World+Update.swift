@@ -64,6 +64,12 @@ extension World {
         let onStackUpdateNewStateQueue = stateStorage.onStackUpdateNewStateQueue()
         let onInactiveUpdatePreviousStateQueue = stateStorage.onInactivePreviousStateQueue()
         let onInactiveUpdateNewStateQueue = stateStorage.onInactiveNewStateQueue()
+        let removedOnNewStateQueue = stateStorage.removedOnNewStateQueue()
+        let removedOnPreviousStateQueue = stateStorage.removedOnPreviousStateQueue()
+        let removedOnStackNewStateQueue = stateStorage.removedOnStackNewStateQueue()
+        let removedOnStackPreviousStateQueue = stateStorage.removedOnStackPreviousStateQueue()
+        let removedOnInactiveNewStateQueue = stateStorage.removedOnInactiveNewStateQueue()
+        let removedOnInavtivePreviousStateQueue = stateStorage.removedOnInactivePreviousStateQueue()
 
         stateStorage.clearQueue()
 
@@ -84,6 +90,18 @@ extension World {
 
         for previousState in onInactiveUpdatePreviousStateQueue {
             stateSchedulesManager.schedules.remove(previousState)
+        }
+
+        for previousState in removedOnPreviousStateQueue {
+            stateSchedulesManager.removedSchedules.remove(previousState)
+        }
+
+        for previousState in removedOnStackPreviousStateQueue {
+            stateSchedulesManager.removedSchedules.remove(previousState)
+        }
+
+        for previousState in removedOnStackPreviousStateQueue {
+            stateSchedulesManager.removedSchedules.remove(previousState)
         }
 
         for willExit in willExitQueue {
@@ -122,16 +140,31 @@ extension World {
             stateSchedulesManager.schedules.insert(newState)
         }
 
+        for newState in removedOnNewStateQueue {
+            stateSchedulesManager.removedSchedules.insert(newState)
+        }
+
+        for newState in removedOnStackNewStateQueue {
+            stateSchedulesManager.removedSchedules.insert(newState)
+        }
+
+        for newState in removedOnInactiveNewStateQueue {
+            stateSchedulesManager.removedSchedules.insert(newState)
+        }
+
         self.applyEventQueue()
     }
 
     func updatePhase() {
-        for system in self.worldStorage.systemStorage.systems(self.updateSchedule) {
+        let systemStorage = worldStorage.systemStorage
+        let stateStorage = worldStorage.stateStorage
+
+        for system in systemStorage.systems(self.updateSchedule) {
             system.execute(self.worldStorage)
         }
 
         // activate な state を shcedule によって紐づけられた system を実行します.
-        for schedule in self.worldStorage.stateStorage.currentSchedulesWhichAssociatedStates() {
+        for schedule in stateStorage.currentSchedulesWhichAssociatedStates() {
             for system in self.worldStorage.systemStorage.systems(schedule) {
                 system.execute(self.worldStorage)
             }
@@ -151,8 +184,8 @@ extension World {
 
     // 各システムが動いた後に実行される
     func applyCommandsPhase(_ commands: Commands) {
-        // will despawn event を配信します.
-        self.applyCommandsEventQueue(eventOfType: WillDespawnEvent.self)
+        // removed event を配信します.
+        self.applyRemovedEventQueue()
 
         // これから spawn する entity を chunk storage 内で enqueue
         // despawn 登録された entity を削除
@@ -162,9 +195,6 @@ extension World {
 
         // apply commands の際に push された entity を chunk に割り振ります(spawn).
         self.worldStorage.chunkStorageRef.applySpawnedEntityQueue()
-
-        // Did Spawn event を event system に発信します.
-        self.applyCommandsEventQueue(eventOfType: DidSpawnEvent.self)
 
         self.applyCommands(commands: commands)
 

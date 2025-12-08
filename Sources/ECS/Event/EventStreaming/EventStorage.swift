@@ -29,39 +29,28 @@ extension AnyMap where Mode == EventStorage {
 // world buffer にプロパティをつけておく
 
 extension AnyMap<EventStorage> {
-    func eventReceivers() -> EventReceivers? {
-        valueRef(ofType: EventReceivers.self)?.body
+    mutating func registerEventQueues() {
+        push(EventQueues())
     }
 
-    mutating func registerEventReceivers() {
-        push(EventReceivers())
+    mutating func registerEventStreamer<T: EventProtocol>(eventType: T.Type) {
+        let queues = eventQueues()
+        let queue = EventQueue<T>()
+        queues?.body.append(queue)
+        push(queue)
+        push(EventWriter(queue: queue))
+        push(EventReader(queue: queue))
     }
 
-    func eventReceiver<T>(eventOfType type: T.Type) -> EventReceiver<T>? {
-        valueRef(ofType: EventReceiver<T>.self)?.body
+    func eventQueues() -> EventQueues? {
+        valueRef(ofType: EventQueues.self)?.body
     }
 
-    mutating func registerEventReceiver<T: EventProtocol>(eventType: T.Type) {
-        let eventReceiver = EventReceiver<T>()
-        let eventReceivers = eventReceivers()
-        eventReceivers?.eventReceivers.append(eventReceiver)
-        push(eventReceiver)
-    }
-
-    func eventWriter<T>(eventOfType type: T.Type) -> EventWriter<T>? {
+    func eventWriter<T: EventProtocol>(typeOf type: T.Type) -> EventWriter<T>? {
         valueRef(ofType: EventWriter<T>.self)?.body
     }
 
-    mutating func registerEventWriter<T: EventProtocol>(eventType: T.Type) {
-        let receiver = valueRef(ofType: EventReceiver<T>.self)!.body
-        push(EventWriter<T>(receiver: receiver))
-    }
-
-    func eventResponder<T: EventProtocol>(eventOfType type: T.Type) -> EventResponder<T>? {
-        valueRef(ofType: EventResponder<T>.self)?.body
-    }
-
-    mutating func registerEventResponder<T: EventProtocol>(eventType: T.Type) {
-        push(EventResponder<T>())
+    func eventQueue<T: EventProtocol>(typeOf type: T.Type) -> EventQueue<T>? {
+        valueRef(ofType: EventQueue<T>.self)?.body
     }
 }

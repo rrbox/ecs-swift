@@ -11,9 +11,6 @@ macro System(_ n: Int) = #externalMacro(module: "ECS_Macros", type: "SystemMacro
 @freestanding(declaration, names: named(addSystem(_:_:)))
 macro addSystemForWorld(_ n: Int) = #externalMacro(module: "ECS_Macros", type: "AddSystemMacroForWorld")
 
-@freestanding(declaration, names: named(addSystem(_:_:)))
-macro addSystemMacroForEventResponderBuilder(_ n: Int) = #externalMacro(module: "ECS_Macros", type: "AddSystemMacroForEventResponderBuilder")
-
 enum Systems {
     #System(2)
     #System(3)
@@ -33,8 +30,4 @@ enum Systems {
 
 public extension World {
     #addSystemForWorld(15)
-}
-
-public extension EventResponderBuilder {
-    #addSystemMacroForEventResponderBuilder(15)
 }

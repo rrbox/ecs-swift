@@ -16,6 +16,5 @@ struct ECSMacros: CompilerPlugin {
         QueryMacro.self,
         SystemMacro.self,
         AddSystemMacroForWorld.self,
-        AddSystemMacroForEventResponderBuilder.self,
     ]
 }

@@ -39,7 +39,7 @@ extension AnyMap where Mode == StateStorage {
 
 final class StateAssociatedSchedules: StateStorageElement {
     var schedules = Set<Schedule>()
-    var eventSchedules = Set<EventSchedule>()
+    var removedSchedules = Set<Schedule>()
 }
 
 final class StateTransitionQueue: StateStorageElement {
@@ -53,76 +53,65 @@ final class StateTransitionQueue: StateStorageElement {
     private(set) var onStackUpdatePreviousStateQueue = [Schedule]()
     private(set) var onInactiveUpdateNewStateQueue = [Schedule]()
     private(set) var onInactiveUpdatePreviousStateQueue = [Schedule]()
-
-    private(set) var didEnterEventQueue = [EventSchedule]()
-    private(set) var willExitEventQueue = [EventSchedule]()
-    private(set) var onResumeEventQueue = [EventSchedule]()
-    private(set) var onPauseEventQueue = [EventSchedule]()
-    private(set) var onUpdateNewStateEventQueue = [EventSchedule]()
-    private(set) var onUpdatePreviousStateEventQueue = [EventSchedule]()
-    private(set) var onStackUpdateNewStateEventQueue = [EventSchedule]()
-    private(set) var onStackUpdatePreviousStateEventQueue = [EventSchedule]()
-    private(set) var onInactiveUpdateNewStateEventQueue = [EventSchedule]()
-    private(set) var onInactiveUpdatePreviousStateEventQueue = [EventSchedule]()
+    private(set) var removedOnNewStateQueue = [Schedule]()
+    private(set) var removedOnPreviousStateQueue = [Schedule]()
+    private(set) var removedOnStackNewStateQueue = [Schedule]()
+    private(set) var removedOnStackPreviousStateQueue = [Schedule]()
+    private(set) var removedOnInactiveNewStateQueue = [Schedule]()
+    private(set) var removedOnInactivePreviousStateQueue = [Schedule]()
 
     // enter
 
     func enqueueEntered<T: StateProtocol>(state: T) {
         didEnterQueue.append(.didEnter(state))
-        didEnterEventQueue.append(.didEnter(state))
         onUpdateNewStateQueue.append(.onUpdate(state))
-        onUpdateNewStateEventQueue.append(.onUpdate(state))
         onStackUpdateNewStateQueue.append(.onStackUpdate(state))
-        onStackUpdateNewStateEventQueue.append(.onStackUpdate(state))
+        removedOnNewStateQueue.append(.removedOn(state))
+        removedOnStackNewStateQueue.append(.removedOnStack(state))
     }
 
     func enqueueExited<T: StateProtocol>(state: T) {
         willExitQueue.append(.willExit(state))
-        willExitEventQueue.append(.willExit(state))
         onUpdatePreviousStateQueue.append(.onUpdate(state))
-        onUpdatePreviousStateEventQueue.append(.onUpdate(state))
         onStackUpdatePreviousStateQueue.append(.onStackUpdate(state))
-        onStackUpdatePreviousStateEventQueue.append(.onStackUpdate(state))
+        removedOnPreviousStateQueue.append(.removedOn(state))
+        removedOnStackPreviousStateQueue.append(.removedOnStack(state))
     }
 
     // push
 
     func enqueuePushed<T: StateProtocol>(state: T) {
         didEnterQueue.append(.didEnter(state))
-        didEnterEventQueue.append(.didEnter(state))
         onUpdateNewStateQueue.append(.onUpdate(state))
-        onUpdateNewStateEventQueue.append(.onUpdate(state))
         onStackUpdateNewStateQueue.append(.onStackUpdate(state))
-        onStackUpdateNewStateEventQueue.append(.onStackUpdate(state))
+        removedOnNewStateQueue.append(.removedOn(state))
+        removedOnStackNewStateQueue.append(.removedOnStack(state))
     }
 
     func enqueuePaused<T: StateProtocol>(state: T) {
         onPauseQueue.append(.onPause(state))
-        onPauseEventQueue.append(.onPause(state))
         onUpdatePreviousStateQueue.append(.onUpdate(state))
-        onUpdatePreviousStateEventQueue.append(.onUpdate(state))
         onInactiveUpdateNewStateQueue.append(.onInactiveUpdate(state))
-        onInactiveUpdateNewStateEventQueue.append(.onInactiveUpdate(state))
+        removedOnPreviousStateQueue.append(.removedOn(state))
+        removedOnInactiveNewStateQueue.append(.removedOnInactive(state))
     }
 
     // pop
 
     func enqueuePopped<T: StateProtocol>(state: T) {
         onUpdatePreviousStateQueue.append(.onUpdate(state))
-        onUpdatePreviousStateEventQueue.append(.onUpdate(state))
         onStackUpdatePreviousStateQueue.append(.onStackUpdate(state))
-        onStackUpdatePreviousStateEventQueue.append(.onStackUpdate(state))
         willExitQueue.append(.willExit(state))
-        willExitEventQueue.append(.willExit(state))
+        removedOnPreviousStateQueue.append(.removedOn(state))
+        removedOnStackPreviousStateQueue.append(.removedOnStack(state))
     }
 
     func enqueueResumed<T: StateProtocol>(state: T) {
         onResumeQueue.append(.onResume(state))
-        onResumeEventQueue.append(.onResume(state))
         onUpdateNewStateQueue.append(.onUpdate(state))
-        onUpdateNewStateEventQueue.append(.onUpdate(state))
         onInactiveUpdatePreviousStateQueue.append(.onInactiveUpdate(state))
-        onInactiveUpdatePreviousStateEventQueue.append(.onInactiveUpdate(state))
+        removedOnNewStateQueue.append(.removedOn(state))
+        removedOnInactivePreviousStateQueue.append(.removedOnInactive(state))
     }
 
     // clear
@@ -138,17 +127,12 @@ final class StateTransitionQueue: StateStorageElement {
         onStackUpdateNewStateQueue = []
         onInactiveUpdatePreviousStateQueue = []
         onInactiveUpdateNewStateQueue = []
-
-        didEnterEventQueue = []
-        willExitEventQueue = []
-        onResumeEventQueue = []
-        onPauseEventQueue = []
-        onUpdateNewStateEventQueue = []
-        onUpdatePreviousStateEventQueue = []
-        onStackUpdateNewStateEventQueue = []
-        onStackUpdatePreviousStateEventQueue = []
-        onInactiveUpdateNewStateEventQueue = []
-        onInactiveUpdatePreviousStateEventQueue = []
+        removedOnNewStateQueue = []
+        removedOnPreviousStateQueue = []
+        removedOnStackNewStateQueue = []
+        removedOnStackPreviousStateQueue = []
+        removedOnInactiveNewStateQueue = []
+        removedOnInactivePreviousStateQueue = []
     }
 }
 
@@ -173,8 +157,8 @@ extension AnyMap<StateStorage> {
         valueRef(ofType: StateAssociatedSchedules.self)!.body.schedules
     }
 
-    func currentEventSchedulesWhichAssociatedStates() -> Set<EventSchedule> {
-        valueRef(ofType: StateAssociatedSchedules.self)!.body.eventSchedules
+    func currentRemovedSchedulesWhichAssociatedStates() -> Set<Schedule> {
+        valueRef(ofType: StateAssociatedSchedules.self)!.body.removedSchedules
     }
 
     // MARK: - queue
@@ -237,6 +221,42 @@ extension AnyMap<StateStorage> {
         valueRef(ofType: StateTransitionQueue.self)!
             .body
             .onInactiveUpdatePreviousStateQueue
+    }
+
+    func removedOnNewStateQueue() -> [Schedule] {
+        valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .removedOnNewStateQueue
+    }
+
+    func removedOnPreviousStateQueue() -> [Schedule] {
+        valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .removedOnPreviousStateQueue
+    }
+
+    func removedOnStackNewStateQueue() -> [Schedule] {
+        valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .removedOnStackNewStateQueue
+    }
+
+    func removedOnStackPreviousStateQueue() -> [Schedule] {
+        valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .removedOnStackPreviousStateQueue
+    }
+
+    func removedOnInactiveNewStateQueue() -> [Schedule] {
+        valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .removedOnInactiveNewStateQueue
+    }
+
+    func removedOnInactivePreviousStateQueue() -> [Schedule] {
+        valueRef(ofType: StateTransitionQueue.self)!
+            .body
+            .removedOnInactivePreviousStateQueue
     }
 
     func clearQueue() {
@@ -309,6 +329,9 @@ public extension World {
             self.worldStorage.systemStorage.insertSchedule(.willExit(state))
             self.worldStorage.systemStorage.insertSchedule(.onPause(state))
             self.worldStorage.systemStorage.insertSchedule(.onResume(state))
+            self.worldStorage.systemStorage.insertSchedule(.removedOn(state))
+            self.worldStorage.systemStorage.insertSchedule(.removedOnStack(state))
+            self.worldStorage.systemStorage.insertSchedule(.removedOnInactive(state))
         }
 
         return self

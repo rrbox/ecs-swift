@@ -105,11 +105,10 @@ func _removeFromParentSystem(
 
 @MainActor
 func _removeNodeIfDespawned(
-    despawn: EventReader<WillDespawnEvent>,
+    removed: Removed,
     nodes: Resource<Nodes>
 ) {
-    for event in despawn.events {
-        let despawnedEntity = event.despawnedEntity
+    removed.forEach { despawnedEntity in
         nodes.resource
             .removeNode(forEntity: despawnedEntity)?
             .removeFromParent()
@@ -128,11 +127,7 @@ public func graphicPlugIn(world: World) {
         .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:hierarchy:commands:))
         .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:scene:hierarchy:commands:))
         .addSystem(.postUpdate, _removeFromParentSystem(query:nodes:hierarchy:commands:))
-
-        .buildWillDespawnResponder { responder in
-            responder
-                .addSystem(.update, removeChildIfDespawned(despawnEvent:hierarchy:commands:))
-                .addSystem(.update, despawnChildIfParentDespawned(despawnedEntityEvent:hierarchy:commands:))
-                .addSystem(.update, _removeNodeIfDespawned(despawn:nodes:))
-        }
+        .addSystem(.removed, removeChildIfDespawned(removed:hierarchy:commands:))
+        .addSystem(.removed, despawnChildIfParentDespawned(removed:hierarchy:commands:))
+        .addSystem(.removed, _removeNodeIfDespawned(removed:nodes:))
 }

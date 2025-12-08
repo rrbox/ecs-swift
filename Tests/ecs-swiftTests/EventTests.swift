@@ -12,15 +12,26 @@ struct TestEvent: EventProtocol {
     let name: String
 }
 
-func testEvent(event: EventReader<TestEvent>, eventWriter: EventWriter<TestEvent>, commands: Commands, currentTime: Resource<CurrentTime>) {
-    for event in event.events {
+enum EventTestState: StateProtocol {
+    case stateA
+    case stateB
+    case stateC
+}
+
+func testEvent(
+    events: EventReader<TestEvent>,
+    eventWriter: EventWriter<TestEvent>,
+    commands: Commands,
+    currentTime: Resource<CurrentTime>
+) {
+    events.forEach { event in
         print("---test event read---")
         print("frame:", currentTime.resource.value)
         print("<- read event:", event.name)
         let spawned = commands.spawn().addComponent(TestComponent(content: event.name)).id()
         print("-> spawn:", spawned)
         print("-> event send:", "\"link\"")
-        eventWriter.send(value: TestEvent(name: "[\(currentTime.resource.value)]: link"))
+        eventWriter.send(TestEvent(name: "[\(currentTime.resource.value)]: link"))
         print("---")
         print()
     }
@@ -29,13 +40,17 @@ func testEvent(event: EventReader<TestEvent>, eventWriter: EventWriter<TestEvent
 func setUp(eventWriter: EventWriter<TestEvent>) {
     print("---set up---")
     print("-> event send:", "\"test event\"")
-    eventWriter.send(value: TestEvent(name: "test event"))
+    eventWriter.send(TestEvent(name: "test event"))
     print("---")
     print()
 }
 
-func spawnedEntitySystem(eventReader: EventReader<DidSpawnEvent>, commands: Commands, currentTime: Resource<CurrentTime>) {
-    for event in eventReader.events {
+func spawnedEntitySystem(
+    events: EventReader<Spawned>,
+    commands: Commands,
+    currentTime: Resource<CurrentTime>
+) {
+    events.forEach { event in
         print("---spawned entity event read---")
         print("frame:", currentTime.resource.value)
         print("<- spawned(receive):", event.spawnedEntity)
@@ -46,11 +61,15 @@ func spawnedEntitySystem(eventReader: EventReader<DidSpawnEvent>, commands: Comm
     }
 }
 
-func despanedEntitySystem(eventReader: EventReader<WillDespawnEvent>, commands: Commands, currentTime: Resource<CurrentTime>) {
-    for event in eventReader.events {
+func despanedEntitySystem(
+    removed: Removed,
+    commands: Commands,
+    currentTime: Resource<CurrentTime>
+) {
+    removed.forEach { removedEntity in
         print("---despawned entity event read---")
         print("frame:", currentTime.resource.value)
-        print("<- despawned(receive):", event.despawnedEntity)
+        print("<- despawned(receive):", removedEntity)
         print("---")
         print()
     }
@@ -62,12 +81,10 @@ final class EventTests: XCTestCase {
 
         let world = World()
             .addEventStreamer(eventType: TestEvent.self)
-            .buildEventResponder(TestEvent.self, { responder in
-                responder.addSystem(.update, testEvent(event:eventWriter:commands:currentTime:))
-            })
+            .addSystem(.update, testEvent(events:eventWriter:commands:currentTime:))
             .addSystem(.startUp, setUp(eventWriter:))
-            .addSystem(.didSpawn, spawnedEntitySystem(eventReader:commands:currentTime:))
-            .addSystem(.willDespawn, despanedEntitySystem(eventReader:commands:currentTime:))
+            .addSystem(.update, spawnedEntitySystem(events:commands:currentTime:))
+            .addSystem(.removed, despanedEntitySystem(removed:commands:currentTime:))
 
         world.setUpWorld()
         world.update(currentTime: -1)
@@ -83,60 +100,63 @@ final class EventTests: XCTestCase {
 
         let world = World()
             .addEventStreamer(eventType: TestEvent.self)
-            .addSystem(.startUp, { (eventWriter: EventWriter<TestEvent>) in
-                eventWriter.send(value: .init(name: "test event"))
+            .addSystem(.startUp) { (eventWriter: EventWriter<TestEvent>) in
+                eventWriter.send(.init(name: "test event"))
                 ECSTAssertStepOrder(currentStep: 0, steps: &flags)
-            })
-            .buildEventResponder(TestEvent.self) { responder in
-                responder.addSystem(.update) { (event: EventReader<TestEvent>, commands: Commands) in
-                    for event in event.events {
-                        ECSTAssertStepOrder(currentStep: 1, steps: &flags)
-                        commands.spawn().addComponent(TestComponent(content: event.name))
-                    }
+            }
+            .addSystem(.update) { (event: EventReader<TestEvent>, commands: Commands) in
+                event.forEach { event in
+                    ECSTAssertStepOrder(currentStep: 1, steps: &flags)
+                    commands.spawn().addComponent(TestComponent(content: event.name))
                 }
             }
-            .buildDidSpawnResponder { responder in
-                responder
-                    .addSystem(.update) { (event: EventReader<DidSpawnEvent>, commands: Commands) in
-                        for event in event.events {
-                            ECSTAssertStepOrder(currentStep: 2, steps: &flags)
-                            commands.despawn(entity: event.spawnedEntity)
-                        }
-                    }
+            .addSystem(.removed) { (removed: Removed, query: Query<TestComponent>) in
+                ECSTAssertStepOrder(currentStep: 3, steps: &flags)
             }
-            .buildWillDespawnResponder { responder in
-                responder
-                    .addSystem(.update) { (event: EventReader<WillDespawnEvent>) in
-                        ECSTAssertStepOrder(currentStep: 3, steps: &flags)
-                    }
+            .addSystem(.update) { (events: EventReader<Spawned>, commands: Commands) in
+                events.forEach { spawned in
+                    ECSTAssertStepOrder(currentStep: 2, steps: &flags)
+                    commands.despawn(entity: spawned.spawnedEntity)
+                }
             }
 
         world.setUpWorld()
         world.update(currentTime: -1)
         world.update(currentTime: 0)
+        world.update(currentTime: 1)
 
         XCTAssertEqual(flags, [1, 1, 1, 1])
     }
 
     func testSendTwoEventsInOneUpdate() {
-        var count = 0
+        var receivedEventCounts = [0, 0]
+        var flags = [0, 0, 0]
 
         let world = World()
             .addEventStreamer(eventType: TestEvent.self)
             .addSystem(.startUp, { (eventWriter: EventWriter<TestEvent>) in
-                eventWriter.send(value: .init(name: "event 1"))
-                eventWriter.send(value: .init(name: "event 2"))
+                eventWriter.send(.init(name: "event 1"))
+                eventWriter.send(.init(name: "event 2"))
+                ECSTAssertStepOrder(currentStep: 0, steps: &flags)
             })
-            .buildEventResponder(TestEvent.self) { responder in
-                responder.addSystem(.update) { (event: EventReader<TestEvent>) in
-                    count += event.events.count
+            .addSystem(.postStartUp, { (events: EventReader<TestEvent>) in
+                receivedEventCounts[0] += events.count
+                ECSTAssertStepOrder(currentStep: 1, steps: &flags)
+            })
+            .addSystem(.update) { (events: EventReader<TestEvent>) in
+                receivedEventCounts[1] += events.count
+                if !events.isEmpty {
+                    ECSTAssertStepOrder(currentStep: 2, steps: &flags)
                 }
             }
 
         world.setUpWorld()
+        world.update(currentTime: -1)
         world.update(currentTime: 0)
+        world.update(currentTime: 1)
 
-        XCTAssertEqual(count, 2)
+        XCTAssertEqual(receivedEventCounts, [2, 2])
+        XCTAssertEqual(flags, [1, 1, 1])
     }
 
     func testSystemExecutesOnceWithTwoEvents() {
@@ -144,19 +164,127 @@ final class EventTests: XCTestCase {
 
         let world = World()
             .addEventStreamer(eventType: TestEvent.self)
-            .addSystem(.startUp, { (eventWriter: EventWriter<TestEvent>) in
-                eventWriter.send(value: .init(name: "event 1"))
-                eventWriter.send(value: .init(name: "event 2"))
-            })
-            .buildEventResponder(TestEvent.self) { responder in
-                responder.addSystem(.update) { (_: EventReader<TestEvent>) in
+            .addSystem(.startUp) { (eventWriter: EventWriter<TestEvent>) in
+                eventWriter.send(.init(name: "event 1"))
+                eventWriter.send(.init(name: "event 2"))
+            }
+            .addSystem(.update) { (events: EventReader<TestEvent>) in
+                if !events.isEmpty {
                     executionCount += 1
                 }
             }
 
         world.setUpWorld()
+        world.update(currentTime: -1)
         world.update(currentTime: 0)
 
         XCTAssertEqual(executionCount, 1)
+    }
+
+    func testRemovedOnEvent() {
+        var flags = [0, 0, 0]
+        let world = World()
+            .addEventStreamer(eventType: TestEvent.self)
+            .addState(initialState: EventTestState.stateA, states: [
+                .stateA, .stateB, .stateC
+            ])
+            .addSystem(.startUp) { (commands: Commands, state: State<EventTestState>) in
+                commands.spawn()
+                state.enter(.stateA)
+            }
+            .addSystem(.update) { (spawned: EventReader<Spawned>, commands: Commands) in
+                spawned.forEach { event in
+                    commands.despawn(entity: event.spawnedEntity)
+                }
+            }
+            .addSystem(.removedOn(EventTestState.stateA)) { (removed: Removed, commands: Commands, state: State<EventTestState>) in
+                ECSTAssertStepOrder(currentStep: 0, steps: &flags)
+                state.enter(.stateB)
+                commands.spawn()
+            }
+            .addSystem(.removedOn(EventTestState.stateB)) { (removed: Removed, commands: Commands, state: State<EventTestState>) in
+                ECSTAssertStepOrder(currentStep: 1, steps: &flags)
+                state.push(.stateC)
+                commands.spawn()
+            }
+            .addSystem(.removedOn(EventTestState.stateC)) { (removed: Removed) in
+                ECSTAssertStepOrder(currentStep: 2, steps: &flags)
+            }
+        world.update(currentTime: -1)
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+        world.update(currentTime: 2)
+        XCTAssertEqual(flags, [1, 1, 1])
+    }
+
+    func testRemovedOnStackEvent() {
+        var flagsA = [0, 0]
+        var flagsB = [0, 0]
+        let world = World()
+            .addEventStreamer(eventType: TestEvent.self)
+            .addState(initialState: EventTestState.stateA, states: [
+                .stateA, .stateB
+            ])
+            .addSystem(.startUp) { (commands: Commands, state: State<EventTestState>) in
+                commands.spawn()
+            }
+            .addSystem(.update) { (spawned: EventReader<Spawned>, commands: Commands) in
+                spawned.forEach { event in
+                    commands.despawn(entity: event.spawnedEntity)
+                }
+            }
+            .addSystem(.removedOnStack(EventTestState.stateA)) { (removed: Removed, commands: Commands, state: State<EventTestState>, currentTime: Resource<CurrentTime>) in
+                switch currentTime.resource.value {
+                case -1: XCTFail()
+                case 0:
+                    ECSTAssertStepOrder(currentStep: 0, steps: &flagsA)
+                    ECSTAssertStepOrder(currentStep: 0, steps: &flagsB)
+                    state.push(.stateB)
+                    commands.spawn()
+                case 1:
+                    ECSTAssertStepOrder(currentStep: 1, steps: &flagsA)
+                default:
+                    XCTFail()
+                }
+            }
+            .addSystem(.removedOnStack(EventTestState.stateB)) { (removed: Removed, commands: Commands, state: State<EventTestState>) in
+                ECSTAssertStepOrder(currentStep: 1, steps: &flagsB)
+                commands.spawn()
+            }
+        world.update(currentTime: -1)
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+        XCTAssertEqual(flagsA, [1, 1])
+        XCTAssertEqual(flagsB, [1, 1])
+    }
+
+    func testRemovedOnInactiveEvent() {
+        var flags = [0, 0]
+        let world = World()
+            .addEventStreamer(eventType: TestEvent.self)
+            .addState(initialState: EventTestState.stateA, states: [
+                .stateA, .stateB
+            ])
+            .addSystem(.startUp) { (commands: Commands, state: State<EventTestState>) in
+                commands.spawn()
+                state.enter(.stateA)
+            }
+            .addSystem(.update) { (spawned: EventReader<Spawned>, commands: Commands) in
+                spawned.forEach { event in
+                    commands.despawn(entity: event.spawnedEntity)
+                }
+            }
+            .addSystem(.removedOn(EventTestState.stateA)) { (removed: Removed, commands: Commands, state: State<EventTestState>) in
+                ECSTAssertStepOrder(currentStep: 0, steps: &flags)
+                state.push(.stateB)
+                commands.spawn()
+            }
+            .addSystem(.removedOnInactive(EventTestState.stateA), { (removed: Removed) in
+                ECSTAssertStepOrder(currentStep: 1, steps: &flags)
+            })
+        world.update(currentTime: -1)
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+        XCTAssertEqual(flags, [1, 1])
     }
 }

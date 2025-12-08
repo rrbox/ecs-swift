@@ -5,17 +5,8 @@
 //  Created by rrbox on 2023/08/10.
 //
 
-public struct DidSpawnEvent: CommandsEventProtocol {
+public struct Spawned: EventProtocol {
     public let spawnedEntity: Entity
-}
-
-public struct WillDespawnEvent: CommandsEventProtocol {
-    public let despawnedEntity: Entity
-}
-
-public extension Schedule {
-    static let didSpawn: Schedule = .onCommandsEvent(ofType: DidSpawnEvent.self)
-    static let willDespawn: Schedule = .onCommandsEvent(ofType: WillDespawnEvent.self)
 }
 
 extension World {
@@ -32,10 +23,7 @@ extension World {
         self.worldStorage
             .chunkStorageRef
             .pushSpawned(entityRecord: entityRecord)
-        self.worldStorage
-            .eventStorage
-            .commandsEventWriter(eventOfType: DidSpawnEvent.self)!
-            .send(value: DidSpawnEvent(spawnedEntity: entityRecord.entity))
+        self.sendEvent(Spawned(spawnedEntity: entityRecord.entity))
     }
 
     /// Entity を削除します.
@@ -48,7 +36,7 @@ extension World {
             .despawn(entity: entity)
         self.worldStorage
             .eventStorage
-            .commandsEventWriter(eventOfType: WillDespawnEvent.self)!
-            .send(value: WillDespawnEvent(despawnedEntity: entity))
+            .removedEventReceiver()?
+            .pushDespawned(entity)
     }
 }
