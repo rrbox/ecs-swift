@@ -43,7 +43,7 @@ final class CommandsTests: XCTestCase {
         world.applyCommands(commands: commands)
 
         XCTAssertEqual(commands.commandQueue.count, 0)
-        XCTAssertEqual(world.entities.data.count, 3)
+        XCTAssertEqual(world.defaultEntities.data.count, 3)
 
         for testEntity in testEntities {
             commands.push(command: TestCommand_Despawn(entity: testEntity))
@@ -53,6 +53,6 @@ final class CommandsTests: XCTestCase {
         world.applyCommands(commands: commands)
 
         XCTAssertEqual(commands.commandQueue.count, 0)
-        XCTAssertEqual(world.entities.data.count, 0)
+        XCTAssertEqual(world.defaultEntities.data.count, 0)
     }
 }

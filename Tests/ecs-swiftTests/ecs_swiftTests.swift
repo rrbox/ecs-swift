@@ -6,14 +6,14 @@ struct Text: Component {
 }
 
 func entitycreate(commands: Commands) {
-    for i in 1...20000 {
+    for i in 1...100000 {
         commands.spawn()
             .addComponent(Text(v: "\(i)"))
     }
 }
 
 func entitycreate2(commands: Commands) {
-    for i in 1...20000 {
+    for i in 1...100000 {
         commands.spawn()
             .addComponent(Text(v: "\(i)"))
     }
@@ -49,14 +49,30 @@ final class ecs_swiftTests: XCTestCase {
     // set up: 1
     // update: 1
     // 0.00478 s
-    func testPerformance() {
+    func testPerformanceDefaultStorage() {
+        FeatureFlags.enabled.remove(.contiguousArrayStorage)
         let world = World()
             .addSystem(.startUp, entitycreate(commands:))
             .addSystem(.update, update(query:))
         world.setUpWorld()
         world.update(currentTime: -1)
 
-        print(world.entities.data.count)
+        print(world.defaultEntities.data.count)
+
+        measure {
+            world.update(currentTime: 0)
+        }
+    }
+
+    func testPerformanceContiguousStorage() {
+        FeatureFlags.enabled.insert(.contiguousArrayStorage)
+        let world = World()
+            .addSystem(.startUp, entitycreate(commands:))
+            .addSystem(.update, update(query:))
+        world.setUpWorld()
+        world.update(currentTime: -1)
+
+        print(world.contiguousEntities.data.count)
 
         measure {
             world.update(currentTime: 0)
@@ -67,7 +83,8 @@ final class ecs_swiftTests: XCTestCase {
     // set up: 1
     // update: 4
     // 0.0158 s -> およそ 4 倍
-    func testUpdate4Performance() {
+    func testUpdate4PerformanceDefaultStorage() {
+        FeatureFlags.enabled.remove(.contiguousArrayStorage)
         let world = World()
             .addSystem(.startUp, entitycreate(commands:))
             .addSystem(.update, update(query:))
@@ -77,7 +94,25 @@ final class ecs_swiftTests: XCTestCase {
         world.setUpWorld()
         world.update(currentTime: -1)
 
-        print(world.entities.data.count)
+        print(world.defaultEntities.data.count)
+
+        measure {
+            world.update(currentTime: 0)
+        }
+    }
+
+    func testUpdate4PerformanceContiguousStorage() {
+        FeatureFlags.enabled.insert(.contiguousArrayStorage)
+        let world = World()
+            .addSystem(.startUp, entitycreate(commands:))
+            .addSystem(.update, update(query:))
+            .addSystem(.update, update2(query:))
+            .addSystem(.update, update3(query:))
+            .addSystem(.update, update4(query:))
+        world.setUpWorld()
+        world.update(currentTime: -1)
+
+        print(world.contiguousEntities.data.count)
 
         measure {
             world.update(currentTime: 0)

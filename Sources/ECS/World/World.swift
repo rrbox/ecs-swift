@@ -43,14 +43,16 @@
 
  */
 final public class World {
-    var entities: SparseSet<EntityRecordRef>
+    var defaultEntities: SparseSet<EntityRecordRef>
+    var contiguousEntities: ContiguousSparseSet<EntityRecordRef>
     var preUpdateSchedule: Schedule
     var updateSchedule: Schedule
     var postUpdateSchedule: Schedule
     public let worldStorage: WorldStorageRef
 
     init(worldStorage: WorldStorageRef) {
-        self.entities = SparseSet(sparse: [], dense: [], data: [])
+        self.defaultEntities = SparseSet(sparse: [], dense: [], data: [])
+        self.contiguousEntities = ContiguousSparseSet(sparse: [], dense: [], data: [])
         self.preUpdateSchedule = .preStartUp
         self.updateSchedule = .startUp
         self.postUpdateSchedule = .postStartUp

@@ -7,26 +7,44 @@
 
 final public class Query<C: QueryTarget>: Chunk, SystemParameter {
     var components = SparseSet<Ref<C>>(sparse: [], dense: [], data: [])
+    var contiguousComponents = ContiguousSparseSet<Ref<C>>(sparse: [], dense: [], data: [])
 
     public override init() {}
 
     public func allocate() {
-        self.components.allocate()
+        if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+            self.contiguousComponents.allocate()
+        } else {
+            self.components.allocate()
+        }
     }
 
     public func insert(entityRecord: EntityRecordRef) {
         guard let componentRef = entityRecord.ref(C.self) else { return }
-        self.components.insert(componentRef, withEntity: entityRecord.entity)
+        if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+            self.contiguousComponents.insert(componentRef, withEntity: entityRecord.entity)
+        } else {
+            self.components.insert(componentRef, withEntity: entityRecord.entity)
+        }
     }
 
     public func remove(entity: Entity) {
-        guard self.components.contains(entity) else { return }
-        self.components.pop(entity: entity)
+        if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+            guard self.contiguousComponents.contains(entity) else { return }
+            self.contiguousComponents.pop(entity: entity)
+        } else {
+            guard self.components.contains(entity) else { return }
+            self.components.pop(entity: entity)
+        }
     }
 
     override func spawn(entityRecord: EntityRecordRef) {
         if entityRecord.entity.generation == 0 {
-            self.components.allocate()
+            if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+                self.contiguousComponents.allocate()
+            } else {
+                self.components.allocate()
+            }
         }
         self.insert(entityRecord: entityRecord)
     }
@@ -40,27 +58,50 @@ final public class Query<C: QueryTarget>: Chunk, SystemParameter {
             self.despawn(entity: entityRecord.entity)
             return
         }
-        guard !components.contains(entityRecord.entity) else { return }
-        self.components.insert(
-            componentRef,
-            withEntity: entityRecord.entity
-        )
+        if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+            guard !contiguousComponents.contains(entityRecord.entity) else { return }
+            self.contiguousComponents.insert(
+                componentRef,
+                withEntity: entityRecord.entity
+            )
+        } else {
+            guard !components.contains(entityRecord.entity) else { return }
+            self.components.insert(
+                componentRef,
+                withEntity: entityRecord.entity
+            )
+        }
     }
 
     /// Query で指定した Component を持つ entity を world から取得し, イテレーションします.
     public func update(_ f: (inout C) -> ()) {
-        for ref in self.components.data {
-            f(&ref.value)
+        if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+            for ref in self.contiguousComponents.data {
+                f(&ref.value)
+            }
+        } else {
+            for ref in self.components.data {
+                f(&ref.value)
+            }
         }
     }
 
     public func update(_ entity: Entity, _ f: (inout C) -> ()) {
-        guard let ref = self.components.value(forEntity: entity) else { return }
-        f(&ref.value)
+        if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+            guard let ref = self.contiguousComponents.value(forEntity: entity) else { return }
+            f(&ref.value)
+        } else {
+            guard let ref = self.components.value(forEntity: entity) else { return }
+            f(&ref.value)
+        }
     }
 
     public func components(forEntity entity: Entity) -> C? {
-        self.components.value(forEntity: entity)?.value
+        if FeatureFlags.isEnabled(.contiguousArrayStorage) {
+            self.contiguousComponents.value(forEntity: entity)?.value
+        } else {
+            self.components.value(forEntity: entity)?.value
+        }
     }
 
     public static func register(to worldStorage: WorldStorageRef) {
