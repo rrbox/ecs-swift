@@ -5,26 +5,6 @@
 //  Created by rrbox on 2023/08/14.
 //
 
-final public class Removed: SystemParameter, EventStorageElement {
-    public let entities: [Entity]
-
-    init(entities: [Entity]) {
-        self.entities = entities
-    }
-
-    public func forEach(_ body: (Entity) -> ()) {
-        entities.forEach(body)
-    }
-
-    public static func register(to worldStorage: WorldStorageRef) {
-
-    }
-
-    public static func getParameter(from worldStorage: WorldStorageRef) -> Removed? {
-        worldStorage.eventStorage.valueRef(ofType: Removed.self)?.body
-    }
-}
-
 final public class EventReader<T: EventProtocol>: SystemParameter, EventStorageElement {
     unowned let queue: EventQueue<T>
 
