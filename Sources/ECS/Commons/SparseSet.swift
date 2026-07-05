@@ -30,11 +30,10 @@ public struct SparseSet<T> {
         }
     }
 
-    public mutating func allocate() {
-        self.sparse.append(nil)
-    }
-
     public mutating func insert(_ value: T, withEntity entity: Entity) {
+        while self.sparse.count <= entity.slot {
+            self.sparse.append(nil)
+        }
         let denseIndex = self.dense.count
         self.sparse[entity.slot] = denseIndex
         self.dense.append(entity)

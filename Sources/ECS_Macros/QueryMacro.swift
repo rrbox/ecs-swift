@@ -53,10 +53,6 @@ struct QueryMacro: DeclarationMacro {
 
                 public override init() {}
 
-                public func allocate() {
-                    self.components.allocate()
-                }
-
                 public func insert(entityRecord: EntityRecordRef) {
                     guard \(raw: refDeclarationsFromRecord) else { return }
                     self.components.insert((\(raw: refs)), withEntity: entityRecord.entity)
@@ -68,9 +64,6 @@ struct QueryMacro: DeclarationMacro {
                 }
 
                 public override func spawn(entityRecord: EntityRecordRef) {
-                    if entityRecord.entity.generation == 0 {
-                        self.components.allocate()
-                    }
                     self.insert(entityRecord: entityRecord)
                 }
 
@@ -106,7 +99,7 @@ struct QueryMacro: DeclarationMacro {
                 public static func register(to worldStorage: WorldStorageRef) {
                     guard worldStorage.chunkStorageRef.chunk(ofType: Self.self) == nil else { return }
                     let queryRegistory = Self()
-                    worldStorage.chunkStorageRef.addChunk(queryRegistory)
+                    worldStorage.addChunk(queryRegistory)
                 }
 
                 public static func getParameter(from worldStorage: WorldStorageRef) -> Self? {
