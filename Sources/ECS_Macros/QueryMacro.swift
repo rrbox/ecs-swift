@@ -99,7 +99,7 @@ struct QueryMacro: DeclarationMacro {
                 public static func register(to worldStorage: WorldStorageRef) {
                     guard worldStorage.chunkStorageRef.chunk(ofType: Self.self) == nil else { return }
                     let queryRegistory = Self()
-                    worldStorage.addChunk(queryRegistory)
+                    worldStorage.chunkStorageRef.addChunk(queryRegistory, backfilling: worldStorage.entities.data)
                 }
 
                 public static func getParameter(from worldStorage: WorldStorageRef) -> Self? {

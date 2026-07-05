@@ -34,6 +34,17 @@ extension ChunkStorageRef {
             .add(chunk: chunk)
     }
 
+    /// Chunk を登録し, すでに生存している entity をその Chunk にバックフィルします.
+    ///
+    /// 最初の spawn より後に登録された Query でも既存 entity を認識できるようにするための経路です.
+    /// `entityRecords` には登録時点で生存している全 entity の record を渡します.
+    func addChunk<ChunkType: Chunk>(_ chunk: ChunkType, backfilling entityRecords: [EntityRecordRef]) {
+        self.addChunk(chunk)
+        for entityRecord in entityRecords {
+            chunk.applyCurrentState(entityRecord)
+        }
+    }
+
     func pushSpawned(entityRecord: EntityRecordRef) {
         storage.valueRef(ofType: ChunkEntityInterface.self)!
             .body

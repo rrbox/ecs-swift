@@ -63,7 +63,7 @@ final public class Query<C: QueryTarget>: Chunk, SystemParameter {
 
         let queryRegistory = Self()
 
-        worldStorage.addChunk(queryRegistory)
+        worldStorage.chunkStorageRef.addChunk(queryRegistory, backfilling: worldStorage.entities.data)
 
     }
 

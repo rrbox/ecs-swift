@@ -34,7 +34,7 @@ final public class Filtered<Q: QueryProtocol, F: Filter>: Chunk, SystemParameter
             return
         }
 
-        worldStorage.addChunk(Filtered<Q, F>())
+        worldStorage.chunkStorageRef.addChunk(Filtered<Q, F>(), backfilling: worldStorage.entities.data)
     }
 
     override func applyCurrentState(_ entityRecord: EntityRecordRef) {
