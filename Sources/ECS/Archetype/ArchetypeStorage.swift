@@ -119,4 +119,23 @@ final class ArchetypeStorageRef {
         guard self.location(of: entity) != nil else { return }
         self.entityIndex.pop(entity: entity)
     }
+
+    /// entity の行を所属 Archetype から swap-remove し、所在情報を整合させます。
+    ///
+    /// 手順: 所在の取得 → despawn 対象の所在削除 → `swapRemoveRow` → filler
+    /// (穴を埋めた entity)の行番号補正。filler は必ず despawn 対象と別 slot の
+    /// 生存 entity であるため、この順序で entityIndex が互いを上書きすることは
+    /// ありません。filler の補正には `SparseSet.update(forEntity:)` を使用します
+    /// (`insert` は dedupe せず stale エントリが残るため)。
+    ///
+    /// 未登録・世代不一致の entity は no-op です(要件 1-4)。
+    /// - Parameter entity: 削除する entity。
+    func despawn(entity: Entity) {
+        guard let location = self.location(of: entity) else { return }
+        self.removeLocation(of: entity)
+        guard let filler = location.archetype.swapRemoveRow(location.row) else { return }
+        self.entityIndex.update(forEntity: filler) { fillerLocation in
+            fillerLocation.row = location.row
+        }
+    }
 }
