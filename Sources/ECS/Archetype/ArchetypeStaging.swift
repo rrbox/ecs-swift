@@ -53,3 +53,43 @@ extension EntityRecordRef {
         self.map.body.values.compactMap { $0 as? ArchetypeInsertable }
     }
 }
+
+extension ArchetypeStorageRef {
+    /// staging record(`EntityRecordRef`)の内容を Archetype へ 1 行として挿入し、
+    /// entity の所在を `entityIndex` に登録します(設計: スポーン変換の挿入手順)。
+    ///
+    /// record の map の列挙順は Dictionary 依存で不定なため、insertable を解決済みの
+    /// `ComponentTypeID` でソートしてから prototypes / 値の追加を行います。
+    /// これにより `ArchetypeKey.ids`(ソート済み)とカラムの並びが常に整列します。
+    /// - Parameter record: 挿入する staging record。
+    func insert(record: EntityRecordRef) {
+        let sortedInsertables = record.archetypeInsertables()
+            .map { (id: self.typeID(for: $0.componentTypeKey), insertable: $0) }
+            .sorted { $0.id < $1.id }
+        let key = ArchetypeKey(sorting: sortedInsertables.map { $0.id })
+        let archetype = self.findOrCreate(
+            key: key,
+            prototypes: sortedInsertables.map { $0.insertable.makeColumnPrototype() }
+        )
+        archetype.appendRow(entity: record.entity) { columns in
+            // columns は key.ids と並行 = sortedInsertables と同順です。
+            for (index, element) in sortedInsertables.enumerated() {
+                element.insertable.appendValue(to: columns[index])
+            }
+        }
+        self.setLocation(
+            EntityLocation(archetype: archetype, row: archetype.entities.count - 1),
+            forEntity: record.entity
+        )
+    }
+
+    /// `spawnStagingQueue` の全 record を挿入し、キューをクリアします。
+    ///
+    /// spawn 適用フェーズ(World 側)から呼ばれる想定です。
+    func applySpawnStaging() {
+        for record in self.spawnStagingQueue {
+            self.insert(record: record)
+        }
+        self.spawnStagingQueue.removeAll()
+    }
+}
