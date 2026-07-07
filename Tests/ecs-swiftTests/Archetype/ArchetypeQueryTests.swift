@@ -1,0 +1,274 @@
+//
+//  ArchetypeQueryTests.swift
+//
+//
+//  Created by rrbox on 2026/07/07.
+//
+
+@testable import ECS
+import Testing
+
+/// `Query<C>`(1型)デュアルバックエンドの archetype storage ON 経路のテストです(タスク 5.2)。
+///
+/// `world.update(currentTime:)` のフレームを実際に回し、system parameter として
+/// 解決された `Query<C>` が Archetype バックエンドで動作することを検証します
+/// (要件 2-1, 2-2, 2-4, 2-6, 2-7)。公開 API(`update` / `components(forEntity:)`)は
+/// OFF 経路と同一です。
+struct ArchetypeQueryTests {
+
+    struct ComponentA: Component, Equatable {
+        var value: Int
+    }
+
+    struct ComponentB: Component, Equatable {
+        var text: String
+    }
+
+    // MARK: - 部分集合マッチ (要件 2-1, 2-2)
+
+    /// ON: `Query<ComponentA>` が「A のみ」「A + B」両方の entity をイテレーションする
+    /// ことを確認します(要求型集合 ⊆ archetype 型集合の部分集合マッチ)。
+    @Test func queryIteratesEntitiesWithSubsetMatching() throws {
+        let world = World(experimentalOptions: [.archetypeStorage])
+        let commands = world.worldStorage.commands
+
+        commands.spawn()
+            .addComponent(ComponentA(value: 1))
+        commands.spawn()
+            .addComponent(ComponentA(value: 2))
+            .addComponent(ComponentB(text: "x"))
+
+        var observed = [Int]()
+        world.addSystem(.update) { (query: Query<ComponentA>) in
+            guard observed.isEmpty else { return }
+            query.update { component in
+                observed.append(component.value)
+            }
+        }
+
+        // 最初のフレームは準備用フレームのため, .update システムは 2 フレーム目から実行されます.
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+
+        #expect(observed.sorted() == [1, 2])
+    }
+
+    // MARK: - 変更の永続化 (要件 2-4, 2-7)
+
+    /// ON: `update(_:)` での変更が次フレームまで永続化され、`components(forEntity:)`
+    /// からも見えることを確認します。
+    @Test func mutationPersistsAcrossFramesAndIsVisibleViaComponentsForEntity() throws {
+        let world = World(experimentalOptions: [.archetypeStorage])
+        let commands = world.worldStorage.commands
+
+        let entity = commands.spawn()
+            .addComponent(ComponentA(value: 0))
+            .id()
+
+        var readBack = [Int?]()
+        world.addSystem(.update) { (query: Query<ComponentA>) in
+            readBack.append(query.components(forEntity: entity)?.value)
+            query.update { component in
+                component.value += 1
+            }
+        }
+
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+        world.update(currentTime: 2)
+
+        // フレーム 1 で 0 を読み +1、フレーム 2 で永続化された 1 を読みます。
+        #expect(readBack == [0, 1])
+    }
+
+    // MARK: - Entity ターゲット (要件 2-6)
+
+    /// ON: `Query<Entity>` が(コンポーネントを持たない entity も含め)全 entity の
+    /// ID をイテレーションすることを確認します。
+    @Test func entityTargetQueryIteratesAllEntityIDs() throws {
+        let world = World(experimentalOptions: [.archetypeStorage])
+        let commands = world.worldStorage.commands
+
+        let entityA = commands.spawn()
+            .addComponent(ComponentA(value: 1))
+            .id()
+        let entityB = commands.spawn()
+            .addComponent(ComponentB(text: "x"))
+            .id()
+        let bareEntity = commands.spawn().id()
+
+        var observed = Set<Entity>()
+        world.addSystem(.update) { (query: Query<Entity>) in
+            query.update { entity in
+                observed.insert(entity)
+            }
+        }
+
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+
+        #expect(observed == [entityA, entityB, bareEntity])
+    }
+
+    // MARK: - entity 指定アクセス (要件 2-7)
+
+    /// ON: `update(_:_:)` による対象 entity のみの読み書きが動作し、他の entity に
+    /// 影響しないことを確認します。
+    @Test func targetedUpdateReadsAndWritesSingleEntity() throws {
+        let world = World(experimentalOptions: [.archetypeStorage])
+        let commands = world.worldStorage.commands
+
+        let target = commands.spawn()
+            .addComponent(ComponentA(value: 1))
+            .id()
+        let other = commands.spawn()
+            .addComponent(ComponentA(value: 2))
+            .id()
+
+        var didWrite = false
+        var results: [Int?]?
+        world.addSystem(.update) { (query: Query<ComponentA>) in
+            if !didWrite {
+                didWrite = true
+                query.update(target) { component in
+                    component.value = 10
+                }
+            } else if results == nil {
+                results = [
+                    query.components(forEntity: target)?.value,
+                    query.components(forEntity: other)?.value,
+                ]
+            }
+        }
+
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+        world.update(currentTime: 2)
+
+        #expect(results == [10, 2])
+    }
+
+    // MARK: - register 後に生成された Archetype の観測 (observer 経路)
+
+    /// ON: Query の register 時点で Archetype が存在せず、後続フレーム中の spawn で
+    /// 生成された Archetype がオブザーバ通知経由でマッチに追加されることを確認します。
+    @Test func archetypeCreatedAfterRegisterIsObserved() throws {
+        let world = World(experimentalOptions: [.archetypeStorage])
+
+        var spawned = false
+        var perFrame = [[Int]]()
+        world
+            .addSystem(.update) { (commands: Commands) in
+                guard !spawned else { return }
+                spawned = true
+                commands.spawn()
+                    .addComponent(ComponentA(value: 5))
+            }
+            .addSystem(.update) { (query: Query<ComponentA>) in
+                var values = [Int]()
+                query.update { component in
+                    values.append(component.value)
+                }
+                perFrame.append(values)
+            }
+
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+        world.update(currentTime: 2)
+
+        // フレーム 1 では spawn は遅延適用のため空、フレーム 2 で見えます。
+        #expect(perFrame == [[], [5]])
+    }
+
+    // MARK: - 既存 Archetype への遡及マッチ (retro-match 経路)
+
+    /// ON: Query の register より前に生成済みの Archetype が、register 時の
+    /// 遡及マッチで `archetypeMatches` に追加されることを確認します
+    /// (addSystem を最初のフレーム後に呼ぶことで register を遅らせます)。
+    @Test func registerRetroactivelyMatchesExistingArchetypes() throws {
+        let world = World(experimentalOptions: [.archetypeStorage])
+        let commands = world.worldStorage.commands
+
+        commands.spawn()
+            .addComponent(ComponentA(value: 3))
+
+        // Query 未登録のままフレームを回し、Archetype を先に生成します。
+        world.update(currentTime: 0)
+
+        var observed = [Int]()
+        world.addSystem(.update) { (query: Query<ComponentA>) in
+            guard observed.isEmpty else { return }
+            query.update { component in
+                observed.append(component.value)
+            }
+        }
+
+        // register 時の遡及マッチで既存 Archetype が見えています。
+        let query = try #require(Query<ComponentA>.getParameter(from: world.worldStorage))
+        #expect(query.archetypeMatches.count == 1)
+
+        world.update(currentTime: 1)
+
+        #expect(observed == [3])
+    }
+
+    // MARK: - despawn の反映 (要件 1-2 の Query ビュー)
+
+    /// ON: despawn された entity が以降のイテレーションと `components(forEntity:)` から
+    /// 除外されることを確認します。
+    @Test func despawnedEntityIsNoLongerIterated() throws {
+        let world = World(experimentalOptions: [.archetypeStorage])
+        let commands = world.worldStorage.commands
+
+        let entity = commands.spawn()
+            .addComponent(ComponentA(value: 1))
+            .id()
+
+        var perFrame = [[Int]]()
+        world.addSystem(.update) { (query: Query<ComponentA>) in
+            var values = [Int]()
+            query.update { component in
+                values.append(component.value)
+            }
+            perFrame.append(values)
+        }
+
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+
+        commands.despawn(entity: entity)
+        world.update(currentTime: 2)
+
+        #expect(perFrame == [[1], []])
+
+        let query = try #require(Query<ComponentA>.getParameter(from: world.worldStorage))
+        #expect(query.components(forEntity: entity) == nil)
+    }
+
+    // MARK: - OFF 経路の維持 (要件 4-1)
+
+    /// OFF: 従来の Query の挙動(イテレーション・変更の永続化・entity 指定取得)が
+    /// 影響を受けないことを確認します(完全な保証は既存テストスイート全体の通過によります)。
+    @Test func offWorldQueryKeepsCurrentBehavior() throws {
+        let world = World()
+        let commands = world.worldStorage.commands
+
+        let entity = commands.spawn()
+            .addComponent(ComponentA(value: 1))
+            .id()
+
+        var readBack = [Int?]()
+        world.addSystem(.update) { (query: Query<ComponentA>) in
+            readBack.append(query.components(forEntity: entity)?.value)
+            query.update { component in
+                component.value += 1
+            }
+        }
+
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+        world.update(currentTime: 2)
+
+        #expect(readBack == [1, 2])
+    }
+}
