@@ -7,7 +7,16 @@
 
 public extension Commands {
     /// Entity を取得して変更を加えます
+    ///
+    /// archetype storage が ON の World では、変更は record への `EntityCommand` 適用の
+    /// 代わりに差分(`ComponentDiff`)として蓄積され、flush 時に Archetype 移動として
+    /// 適用されます(折衷方針の searched 側)。公開 API はどちらの経路でも同一です(要件 3-2)。
     func entity(_ entity: Entity) -> SearchedEntityCommands {
+        if self.worldStorage?.archetypeStorageRef != nil {
+            let queue = SearchedEntityDiffQueue(entity: entity)
+            self.entityTransactions.append(queue)
+            return SearchedEntityCommands(entity: entity, commandsQueue: queue)
+        }
         let queue = SearchedEntityCommandQueue(entity: entity)
         self.entityTransactions.append(queue)
         return SearchedEntityCommands(entity: entity, commandsQueue: queue)

@@ -26,6 +26,15 @@ protocol ArchetypeInsertable {
     /// 保持している現在値を `column` の末尾へ追加します(行の挿入)。
     /// - Parameter column: 追加先のカラム。`Column<T>` である必要があります。
     func appendValue(to column: AnyColumn)
+
+    /// 保持している現在値を `column` の指定行へ上書きします(既存行の値更新)。
+    ///
+    /// searched entity 経路で「既に持っている型への add 差分」を Archetype 移動なしの
+    /// 値上書きとして適用するために使用します(タスク 6.3)。
+    /// - Parameters:
+    ///   - row: 上書きする行のインデックス。
+    ///   - column: 上書き先のカラム。`Column<T>` である必要があります。
+    func writeValue(at row: Int, in column: AnyColumn)
 }
 
 extension ComponentRef: ArchetypeInsertable {
@@ -42,6 +51,12 @@ extension ComponentRef: ArchetypeInsertable {
         // Column.moveRow; `column` must be created via makeColumnPrototype()
         // for the same component type.
         (column as! Column<T>).append(self._value)
+    }
+
+    func writeValue(at row: Int, in column: AnyColumn) {
+        // Same casting rule as appendValue(to:): `column` must be a Column<T>
+        // for the same component type.
+        (column as! Column<T>).data[row] = self._value
     }
 }
 

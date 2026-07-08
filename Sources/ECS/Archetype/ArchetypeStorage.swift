@@ -50,6 +50,12 @@ final class ArchetypeStorageRef {
     /// spawn 待ちの entity record キューです(旧 prespawnedEntityQueue 相当)。
     var spawnStagingQueue = [EntityRecordRef]()
 
+    /// searched entity への変更差分キューです(旧 updatedEntityQueue 相当)。
+    ///
+    /// applyEnityTransactions で蓄積され、applyCommandsPhase 末尾の diff 適用
+    /// (タスク 6.3)で消費・クリアされます。
+    var diffQueues = [SearchedEntityDiffQueue]()
+
     /// `ObjectIdentifier` → `ComponentTypeID` の採番レジストリです。
     private let typeRegistry = ComponentTypeRegistry()
 

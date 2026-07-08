@@ -27,6 +27,10 @@ final public class WorldStorageRef {
         self.archetypeStorageRef = experimentalOptions.contains(.archetypeStorage)
             ? ArchetypeStorageRef()
             : nil
+
+        // Commands.entity(_) がオプションを参照して queue 実装を選択できるよう
+        // 逆参照(weak)を設定します(design.md World 分岐点)。
+        self.commands.worldStorage = self
     }
 
     // MARK: - public

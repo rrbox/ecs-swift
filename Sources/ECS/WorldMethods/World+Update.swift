@@ -205,9 +205,10 @@ extension World {
 
             self.applyCommands(commands: commands)
 
-            // TODO(タスク 6.3): diffQueues の適用(updated/diff 適用)をここに結線します.
+            // searched entity への変更差分を Archetype 移動として適用します(updated/diff 適用).
             // OFF 経路の applyUpdatedEntityQueue と同じ位置(commands の後)で実行することで
             // 適用順序を現行踏襲とします(要件 1-5).
+            archetypeStorage.applyDiffQueues()
         } else {
             // apply commands の際に push された entity を chunk に割り振ります(spawn).
             self.worldStorage.chunkStorageRef.applySpawnedEntityQueue()

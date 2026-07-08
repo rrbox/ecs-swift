@@ -101,7 +101,10 @@ final class Archetype {
     }
 
     /// `entities.count == columns[i].count`(全 i)の不変条件をデバッグビルドで検証します。
-    private func assertInvariant() {
+    ///
+    /// 行操作を Archetype 外(searched entity 経路の行移動など)で行った場合にも
+    /// 検証できるよう internal にしています。
+    func assertInvariant() {
         assert(
             self.columns.allSatisfy { $0.count == self.entities.count },
             "Archetype row count invariant violated."
