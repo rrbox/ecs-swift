@@ -32,6 +32,7 @@ extension Module {
     static let touch = Module(name: "ECS_Touch", path: "Sources/PlugIns/Touch")
 
     static let ecs_swiftTests = Module(name: "ecs-swiftTests")
+    static let benchmarks = Module(name: "Benchmarks")
     static let graphicPlugInTests = Module(name: "GraphicPlugInTests")
     static let keyBoardPlugInTests = Module(name: "KeyBoardPlugInTests")
     static let mousePlugInTests = Module(name: "MousePlugInTests")
@@ -126,6 +127,9 @@ let package = Package(
             dependencies: [.ecs]),
         .testTarget(
             module: .ecs_swiftTests,
+            dependencies: [.ecs]),
+        .testTarget(
+            module: .benchmarks,
             dependencies: [.ecs]),
         .testTarget(
             module: .graphicPlugInTests,
