@@ -271,4 +271,157 @@ struct ArchetypeQueryTests {
 
         #expect(readBack == [1, 2])
     }
+
+    // MARK: - 新旧パラメタライズ統合テスト (タスク 7.1)
+
+    /// 両バックエンド: 要求型集合の部分集合マッチが一致します(要件 2-1, 2-2)。
+    /// `Query<A>` は「A のみ」「A + B」の両方を、`Query2<A, B>` は「A + B」のみを対象とします。
+    @Test(arguments: WorldBackend.allCases)
+    func queryMembershipMatchesRequiredTypeSet(backend: WorldBackend) {
+        let world = backend.makeWorld()
+        let commands = world.worldStorage.commands
+
+        commands.spawn()
+            .addComponent(ComponentA(value: 1))
+        commands.spawn()
+            .addComponent(ComponentA(value: 2))
+            .addComponent(ComponentB(text: "both"))
+        commands.spawn()
+            .addComponent(ComponentB(text: "onlyB"))
+
+        var observedA = [Int]()
+        var observedAB = [Int]()
+        world
+            .addSystem(.update) { (query: Query<ComponentA>) in
+                guard observedA.isEmpty else { return }
+                query.update { component in
+                    observedA.append(component.value)
+                }
+            }
+            .addSystem(.update) { (query: Query2<ComponentA, ComponentB>) in
+                guard observedAB.isEmpty else { return }
+                query.update { a, _ in
+                    observedAB.append(a.value)
+                }
+            }
+
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+
+        #expect(observedA.sorted() == [1, 2])
+        #expect(observedAB == [2])
+    }
+
+    /// 両バックエンド: 型パラメータの記述順が異なる `Query2<A, B>` / `Query2<B, A>` が
+    /// 同一の entity 集合を対象とします(要件 2-3)。
+    @Test(arguments: WorldBackend.allCases)
+    func typeOrderDoesNotChangeMatchedEntitySet(backend: WorldBackend) {
+        let world = backend.makeWorld()
+        let commands = world.worldStorage.commands
+
+        commands.spawn()
+            .addComponent(ComponentA(value: 1))
+            .addComponent(ComponentB(text: "p"))
+        commands.spawn()
+            .addComponent(ComponentA(value: 2))
+            .addComponent(ComponentB(text: "q"))
+        commands.spawn()
+            .addComponent(ComponentA(value: 3))
+
+        var observedAB = Set<Int>()
+        var observedBA = Set<Int>()
+        world
+            .addSystem(.update) { (query: Query2<ComponentA, ComponentB>) in
+                query.update { a, _ in
+                    observedAB.insert(a.value)
+                }
+            }
+            .addSystem(.update) { (query: Query2<ComponentB, ComponentA>) in
+                query.update { _, a in
+                    observedBA.insert(a.value)
+                }
+            }
+
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+
+        #expect(observedAB == [1, 2])
+        #expect(observedBA == observedAB)
+    }
+
+    /// 両バックエンド: `update(_:)` での変更が同一フレーム内の別 Query と
+    /// `components(forEntity:)` の両方から見えます(要件 2-4)。
+    @Test(arguments: WorldBackend.allCases)
+    func mutationIsVisibleToOtherQueryAndComponentsForEntity(backend: WorldBackend) throws {
+        let world = backend.makeWorld()
+        let commands = world.worldStorage.commands
+
+        let entity = commands.spawn()
+            .addComponent(ComponentA(value: 1))
+            .addComponent(ComponentB(text: "b"))
+            .id()
+
+        var observedByOtherQuery = [Int]()
+        world
+            .addSystem(.update) { (query: Query<ComponentA>) in
+                query.update { component in
+                    component.value += 10
+                }
+            }
+            .addSystem(.update) { (query: Query2<ComponentA, ComponentB>) in
+                query.update { a, _ in
+                    observedByOtherQuery.append(a.value)
+                }
+            }
+
+        world.update(currentTime: 0)
+        world.update(currentTime: 1)
+
+        // 先行システムの変更が同一フレームの後続システム(別 Query)から見えます。
+        #expect(observedByOtherQuery == [11])
+
+        // `components(forEntity:)` からも変更後の値が見えます。
+        let query = try #require(Query<ComponentA>.getParameter(from: world.worldStorage))
+        #expect(query.components(forEntity: entity) == ComponentA(value: 11))
+    }
+
+    /// 両バックエンド: `update(_:_:)` は対象 entity のみを更新し、対象型を持たない
+    /// entity への `components(forEntity:)` / `update(_:_:)` は何も返しません
+    /// (要件 2-7 の両バックエンド回帰)。
+    @Test(arguments: WorldBackend.allCases)
+    func targetedUpdateAndComponentsForEntityNonMatch(backend: WorldBackend) throws {
+        let world = backend.makeWorld()
+        let commands = world.worldStorage.commands
+
+        let target = commands.spawn()
+            .addComponent(ComponentA(value: 1))
+            .id()
+        let other = commands.spawn()
+            .addComponent(ComponentA(value: 2))
+            .id()
+        let onlyB = commands.spawn()
+            .addComponent(ComponentB(text: "b"))
+            .id()
+
+        // Query を register するためのシステムです(内容は使いません)。
+        world.addSystem(.update) { (_: Query<ComponentA>) in }
+        world.update(currentTime: 0)
+
+        let query = try #require(Query<ComponentA>.getParameter(from: world.worldStorage))
+
+        // 対象 entity のみが更新され、他の entity は影響を受けません。
+        query.update(target) { component in
+            component.value = 10
+        }
+        #expect(query.components(forEntity: target) == ComponentA(value: 10))
+        #expect(query.components(forEntity: other) == ComponentA(value: 2))
+
+        // 対象型を持たない entity は nil / no-op です。
+        #expect(query.components(forEntity: onlyB) == nil)
+        var nonMatchTouched = false
+        query.update(onlyB) { _ in
+            nonMatchTouched = true
+        }
+        #expect(!nonMatchTouched)
+    }
 }

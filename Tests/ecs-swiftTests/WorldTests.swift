@@ -9,7 +9,10 @@ import XCTest
 import ECS
 
 final class WorldTests: XCTestCase {
+    // タスク 7.2: 新旧両バックエンドで実行されます。
     func testWorld() {
-        _ = World()
+        for backend in WorldBackend.allCases {
+            _ = backend.makeWorld()
+        }
     }
 }

@@ -75,11 +75,18 @@ func despanedEntitySystem(
     }
 }
 
+// タスク 7.2: 各テストは新旧両バックエンド(WorldBackend.allCases)で実行されます。
 final class EventTests: XCTestCase {
     func testEvent() {
+        for backend in WorldBackend.allCases {
+            self.runEvent(backend: backend)
+        }
+    }
+
+    private func runEvent(backend: WorldBackend) {
         print()
 
-        let world = World()
+        let world = backend.makeWorld()
             .addEventStreamer(eventType: TestEvent.self)
             .addSystem(.update, testEvent(events:eventWriter:commands:currentTime:))
             .addSystem(.startUp, setUp(eventWriter:))
@@ -96,9 +103,15 @@ final class EventTests: XCTestCase {
     }
 
     func testEventStream() {
+        for backend in WorldBackend.allCases {
+            self.runEventStream(backend: backend)
+        }
+    }
+
+    private func runEventStream(backend: WorldBackend) {
         var flags = [0, 0, 0, 0]
 
-        let world = World()
+        let world = backend.makeWorld()
             .addEventStreamer(eventType: TestEvent.self)
             .addSystem(.startUp) { (eventWriter: EventWriter<TestEvent>) in
                 eventWriter.send(.init(name: "test event"))
@@ -129,10 +142,16 @@ final class EventTests: XCTestCase {
     }
 
     func testSendTwoEventsInOneUpdate() {
+        for backend in WorldBackend.allCases {
+            self.runSendTwoEventsInOneUpdate(backend: backend)
+        }
+    }
+
+    private func runSendTwoEventsInOneUpdate(backend: WorldBackend) {
         var receivedEventCounts = [0, 0]
         var flags = [0, 0, 0]
 
-        let world = World()
+        let world = backend.makeWorld()
             .addEventStreamer(eventType: TestEvent.self)
             .addSystem(.startUp, { (eventWriter: EventWriter<TestEvent>) in
                 eventWriter.send(.init(name: "event 1"))
@@ -160,9 +179,15 @@ final class EventTests: XCTestCase {
     }
 
     func testSystemExecutesOnceWithTwoEvents() {
+        for backend in WorldBackend.allCases {
+            self.runSystemExecutesOnceWithTwoEvents(backend: backend)
+        }
+    }
+
+    private func runSystemExecutesOnceWithTwoEvents(backend: WorldBackend) {
         var executionCount = 0
 
-        let world = World()
+        let world = backend.makeWorld()
             .addEventStreamer(eventType: TestEvent.self)
             .addSystem(.startUp) { (eventWriter: EventWriter<TestEvent>) in
                 eventWriter.send(.init(name: "event 1"))
@@ -182,8 +207,14 @@ final class EventTests: XCTestCase {
     }
 
     func testRemovedOnEvent() {
+        for backend in WorldBackend.allCases {
+            self.runRemovedOnEvent(backend: backend)
+        }
+    }
+
+    private func runRemovedOnEvent(backend: WorldBackend) {
         var flags = [0, 0, 0]
-        let world = World()
+        let world = backend.makeWorld()
             .addEventStreamer(eventType: TestEvent.self)
             .addState(initialState: EventTestState.stateA, states: [
                 .stateA, .stateB, .stateC
@@ -218,9 +249,15 @@ final class EventTests: XCTestCase {
     }
 
     func testRemovedOnStackEvent() {
+        for backend in WorldBackend.allCases {
+            self.runRemovedOnStackEvent(backend: backend)
+        }
+    }
+
+    private func runRemovedOnStackEvent(backend: WorldBackend) {
         var flagsA = [0, 0]
         var flagsB = [0, 0]
-        let world = World()
+        let world = backend.makeWorld()
             .addEventStreamer(eventType: TestEvent.self)
             .addState(initialState: EventTestState.stateA, states: [
                 .stateA, .stateB
@@ -259,8 +296,14 @@ final class EventTests: XCTestCase {
     }
 
     func testRemovedOnInactiveEvent() {
+        for backend in WorldBackend.allCases {
+            self.runRemovedOnInactiveEvent(backend: backend)
+        }
+    }
+
+    private func runRemovedOnInactiveEvent(backend: WorldBackend) {
         var flags = [0, 0]
-        let world = World()
+        let world = backend.makeWorld()
             .addEventStreamer(eventType: TestEvent.self)
             .addState(initialState: EventTestState.stateA, states: [
                 .stateA, .stateB

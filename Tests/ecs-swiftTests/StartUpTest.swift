@@ -14,10 +14,12 @@ struct Test {
         case inGame
     }
 
+    // タスク 7.2: 各テストは新旧両バックエンド(WorldBackend.allCases)で実行されます。
     @MainActor
-    @Test func startUpSystems() async throws {
+    @Test(arguments: WorldBackend.allCases)
+    func startUpSystems(backend: WorldBackend) async throws {
         var flags = [0, 0, 0, 0, 0, 0]
-        let world = World()
+        let world = backend.makeWorld()
             .addSystem(.preStartUp) { (_: Commands) in // 1
                 flags[0] += 1
                 #expect(flags == [1, 0, 0, 0, 0, 0])
@@ -52,9 +54,10 @@ struct Test {
     }
 
     @MainActor
-    @Test func stateDidEnter() async throws {
+    @Test(arguments: WorldBackend.allCases)
+    func stateDidEnter(backend: WorldBackend) async throws {
         var flags = [0, 0, 0, 0]
-        let world = World()
+        let world = backend.makeWorld()
             .addState(initialState: StateCase.title, states: [.title, .inGame])
             .addSystem(.didEnter(StateCase.title), { (_ :Commands) in // 2
                 flags[1] += 1

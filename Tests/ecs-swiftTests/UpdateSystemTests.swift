@@ -20,12 +20,15 @@ func mySystem2(query: Query<TestComponent>) {
 }
 
 final class UpdateSystemTests: XCTestCase {
+    // タスク 7.2: 新旧両バックエンドで実行されます。
     func testUpdate() {
-        let world = World()
-            .addSystem(.update, mySystem(commands:))
-            .addSystem(.update, mySystem2(query:))
+        for backend in WorldBackend.allCases {
+            let world = backend.makeWorld()
+                .addSystem(.update, mySystem(commands:))
+                .addSystem(.update, mySystem2(query:))
 
-        world.update(currentTime: 0)
-        world.update(currentTime: 0)
+            world.update(currentTime: 0)
+            world.update(currentTime: 0)
+        }
     }
 }
