@@ -54,6 +54,7 @@ struct ArchetypeLifecycleTests {
             }
 
         // 最初のフレームは準備用フレームのため, .update システムは 2 フレーム目から実行されます.
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)
@@ -87,6 +88,7 @@ struct ArchetypeLifecycleTests {
             perFrame.append(values.sorted())
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -122,6 +124,7 @@ struct ArchetypeLifecycleTests {
             perFrame.append(values)
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -156,6 +159,7 @@ struct ArchetypeLifecycleTests {
             // 残存側の確認用に Query<ComponentA> を register しておきます。
             .addSystem(.update) { (_: Query<ComponentA>) in }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -184,6 +188,7 @@ struct ArchetypeLifecycleTests {
         let old = commands.spawn()
             .addComponent(ComponentA(value: 1))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         commands.despawn(entity: old)
@@ -230,6 +235,7 @@ struct ArchetypeLifecycleTests {
         let entity = commands.spawn()
             .addComponent(ComponentA(value: 1))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -255,6 +261,7 @@ struct ArchetypeLifecycleTests {
         let entity = commands.spawn()
             .addComponent(ComponentA(value: 1))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         commands.despawn(entity: entity)

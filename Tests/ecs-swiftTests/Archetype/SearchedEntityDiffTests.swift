@@ -252,6 +252,7 @@ struct SearchedEntityDiffTests {
             observedPerFrame.append(values)
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -290,6 +291,7 @@ struct SearchedEntityDiffTests {
             observedPerFrame.append(values)
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -315,6 +317,7 @@ struct SearchedEntityDiffTests {
         let entity = commands.spawn()
             .addComponent(ComponentA(value: 1))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         let before = try #require(storage.location(of: entity))
@@ -340,6 +343,7 @@ struct SearchedEntityDiffTests {
         let entity = commands.spawn()
             .addComponent(ComponentA(value: 1))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         let before = try #require(storage.location(of: entity))
@@ -363,6 +367,7 @@ struct SearchedEntityDiffTests {
         let entity = commands.spawn()
             .addComponent(ComponentA(value: 1))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         let before = try #require(storage.location(of: entity))
@@ -388,6 +393,7 @@ struct SearchedEntityDiffTests {
         let entity = commands.spawn()
             .addComponent(ComponentA(value: 1))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         let before = try #require(storage.location(of: entity))
@@ -413,6 +419,7 @@ struct SearchedEntityDiffTests {
         let entity = commands.spawn()
             .addComponent(ComponentA(value: 1))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         commands.entity(entity).addComponent(ComponentB(text: "b"))
@@ -443,6 +450,7 @@ struct SearchedEntityDiffTests {
             queryValueForSecond = query.components(forEntity: second)?.value
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         // 2 entity が同一 Archetype の行 0, 1 に入っていることを前提として確認します。
@@ -484,6 +492,7 @@ struct SearchedEntityDiffTests {
         let second = commands.spawn()
             .addComponent(ComponentA(value: 2))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         let source = try #require(storage.location(of: first)).archetype
@@ -515,6 +524,7 @@ struct SearchedEntityDiffTests {
             .addComponent(ComponentA(value: 1))
             .addComponent(ComponentB(text: "keep"))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         commands.entity(entity)

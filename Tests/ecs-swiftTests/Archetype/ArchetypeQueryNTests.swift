@@ -50,6 +50,7 @@ struct ArchetypeQueryNTests {
         }
 
         // 最初のフレームは準備用フレームのため, .update システムは 2 フレーム目から実行されます.
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -80,6 +81,7 @@ struct ArchetypeQueryNTests {
             readBack.append(values)
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)
@@ -119,6 +121,7 @@ struct ArchetypeQueryNTests {
                 }
             }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -148,6 +151,7 @@ struct ArchetypeQueryNTests {
             }
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -177,6 +181,7 @@ struct ArchetypeQueryNTests {
             readBack.append(values)
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)
@@ -220,6 +225,7 @@ struct ArchetypeQueryNTests {
             }
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)
@@ -246,6 +252,7 @@ struct ArchetypeQueryNTests {
             result = query.components(forEntity: onlyA)
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -275,6 +282,7 @@ struct ArchetypeQueryNTests {
             perFrame.append(values)
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -314,6 +322,7 @@ struct ArchetypeQueryNTests {
                 perFrame.append(values)
             }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)
@@ -343,6 +352,7 @@ struct ArchetypeQueryNTests {
             }
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)

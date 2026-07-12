@@ -317,6 +317,7 @@ struct ArchetypeBenchmarks {
         }
 
         // 準備フレーム: system は実行されず、spawn の flush のみ行われます(計測区間外)。
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         // 計測対象: 100 フレームの update ループ。
@@ -366,6 +367,7 @@ struct ArchetypeBenchmarks {
         let commands = world.worldStorage.commands
 
         // 準備フレーム(計測区間外)。
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         return measureMilliseconds {
@@ -423,6 +425,7 @@ struct ArchetypeBenchmarks {
         }
 
         // 準備フレーム: spawn の flush(計測区間外)。
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         return measureMilliseconds {

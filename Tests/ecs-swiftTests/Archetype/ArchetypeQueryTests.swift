@@ -47,6 +47,7 @@ struct ArchetypeQueryTests {
         }
 
         // 最初のフレームは準備用フレームのため, .update システムは 2 フレーム目から実行されます.
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -73,6 +74,7 @@ struct ArchetypeQueryTests {
             }
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)
@@ -104,6 +106,7 @@ struct ArchetypeQueryTests {
             }
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -141,6 +144,7 @@ struct ArchetypeQueryTests {
             }
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)
@@ -172,6 +176,7 @@ struct ArchetypeQueryTests {
                 perFrame.append(values)
             }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)
@@ -193,6 +198,7 @@ struct ArchetypeQueryTests {
             .addComponent(ComponentA(value: 3))
 
         // Query 未登録のままフレームを回し、Archetype を先に生成します。
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         var observed = [Int]()
@@ -233,6 +239,7 @@ struct ArchetypeQueryTests {
             perFrame.append(values)
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -265,6 +272,7 @@ struct ArchetypeQueryTests {
             }
         }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
         world.update(currentTime: 2)
@@ -305,6 +313,7 @@ struct ArchetypeQueryTests {
                 }
             }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -342,6 +351,7 @@ struct ArchetypeQueryTests {
                 }
             }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -374,6 +384,7 @@ struct ArchetypeQueryTests {
                 }
             }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -405,6 +416,7 @@ struct ArchetypeQueryTests {
 
         // Query を register するためのシステムです(内容は使いません)。
         world.addSystem(.update) { (_: Query<ComponentA>) in }
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         let query = try #require(Query<ComponentA>.getParameter(from: world.worldStorage))

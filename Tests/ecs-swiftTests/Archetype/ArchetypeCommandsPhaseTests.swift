@@ -48,6 +48,7 @@ struct ArchetypeCommandsPhaseTests {
             .addComponent(ComponentB(text: "x"))
             .id()
 
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         // 適用後は entityIndex から所在を引けます。
@@ -92,6 +93,7 @@ struct ArchetypeCommandsPhaseTests {
             }
 
         // 最初のフレームは準備用フレームのため, システムは 2 フレーム目から実行されます.
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -119,6 +121,7 @@ struct ArchetypeCommandsPhaseTests {
         let entity = commands.spawn()
             .addComponent(ComponentA(value: 1))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
         let archetype = try #require(storage.location(of: entity)).archetype
 
@@ -151,6 +154,7 @@ struct ArchetypeCommandsPhaseTests {
                 events.forEach { received.append($0.spawnedEntity) }
             }
 
+        world.setUpWorld()
         world.update(currentTime: 0)
         world.update(currentTime: 1)
 
@@ -169,6 +173,7 @@ struct ArchetypeCommandsPhaseTests {
         let entity = commands.spawn()
             .addComponent(ComponentA(value: 1))
             .id()
+        world.setUpWorld()
         world.update(currentTime: 0)
 
         let record = try #require(world.entityRecord(forEntity: entity))
