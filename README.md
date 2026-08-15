@@ -93,6 +93,8 @@ let world = World()
     .addSystem(.update, presentPositionSystem(query:))
 ```
 
+All systems must be registered before the world is set up. `addSystem` is not supported after `setUpWorld()`.
+
 ### Run World (SpriteKit)
 
 ```swift

@@ -91,6 +91,8 @@ let world = World()
     .addSystem(.update, printPositionSystem(query:))
 ```
 
+システムの登録は World のセットアップまでに完了させてください。`setUpWorld()` 以降の `addSystem` はサポートしていません。
+
 ### Run World (SpriteKit)
 
 ```swift

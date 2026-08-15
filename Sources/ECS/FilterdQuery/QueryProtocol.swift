@@ -9,7 +9,6 @@ public protocol QueryProtocol: Chunk {
     associatedtype Update
     func insert(entityRecord: EntityRecordRef)
     func remove(entity: Entity)
-    func allocate()
     func update( _ f: Update)
     func update(_ entity: Entity, _ f: Update)
     init()

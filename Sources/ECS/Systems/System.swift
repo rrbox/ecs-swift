@@ -19,6 +19,7 @@ class System<P: SystemParameter>: SystemExecute {
 
 public extension World {
     @discardableResult func addSystem<P: SystemParameter>(_ schedule: Schedule, _ system: @escaping (P) -> ()) -> World {
+        self.preconditionSystemRegistrationIsAvailable()
         self.worldStorage.systemStorage.addSystem(schedule, System<P>(system))
         P.register(to: self.worldStorage)
         return self

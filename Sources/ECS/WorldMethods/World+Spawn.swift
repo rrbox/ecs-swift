@@ -15,10 +15,6 @@ extension World {
     /// ``Commands/spawn()`` が実行された後, フレームが終了するタイミングでこの関数が実行されます.
     /// entity へのコンポーネントの登録などは, push の後に行われます.
     func push(entityRecord: EntityRecordRef) {
-        if entityRecord.entity.generation == 0 {
-            self.entities.allocate()
-        }
-
         self.insert(entityRecord: entityRecord)
         self.worldStorage
             .chunkStorageRef
