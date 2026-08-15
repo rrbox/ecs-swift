@@ -22,7 +22,7 @@ public struct SparseSet<T> {
     public mutating func update(forEntity entity: Entity, _ execute: (inout T) -> ()) {
         guard self.sparse.indices.contains(entity.slot) else { return }
         guard let i = self.sparse[entity.slot] else { return }
-        guard self.dense[i].generation == entity.generation else { return }
+        guard self.dense[i] == entity else { return }
         execute(&self.data[i])
     }
 
@@ -44,7 +44,10 @@ public struct SparseSet<T> {
     }
 
     public mutating func pop(entity: Entity) {
-        assert(entity.generation == self.dense[self.sparse[entity.slot]!].generation)
+        guard self.contains(entity) else {
+            assertionFailure("Attempted to remove a stale entity handle: \(entity). The entity has already been despawned or its slot has been reused.")
+            return
+        }
         let denseIndexLast = self.dense.count-1
         let removeIndex = self.sparse[entity.slot]!
 
@@ -59,6 +62,7 @@ public struct SparseSet<T> {
     public func contains(_ entity: Entity) -> Bool {
         guard self.sparse.indices.contains(entity.slot) else { return false }
         guard let i = self.sparse[entity.slot] else { return false }
-        return self.dense.indices.contains(i)
+        guard self.dense.indices.contains(i) else { return false }
+        return self.dense[i] == entity
     }
 }
