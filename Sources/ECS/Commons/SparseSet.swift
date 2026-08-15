@@ -13,12 +13,14 @@ public struct SparseSet<T> {
     var data: [T]
 
     public func value(forEntity entity: Entity) -> T? {
+        guard self.sparse.indices.contains(entity.slot) else { return nil }
         guard let i = self.sparse[entity.slot] else { return nil }
         guard self.dense[i] == entity else { return nil }
         return self.data[i]
     }
 
     public mutating func update(forEntity entity: Entity, _ execute: (inout T) -> ()) {
+        guard self.sparse.indices.contains(entity.slot) else { return }
         guard let i = self.sparse[entity.slot] else { return }
         guard self.dense[i].generation == entity.generation else { return }
         execute(&self.data[i])
@@ -30,11 +32,11 @@ public struct SparseSet<T> {
         }
     }
 
-    public mutating func allocate() {
-        self.sparse.append(nil)
-    }
-
     public mutating func insert(_ value: T, withEntity entity: Entity) {
+        while self.sparse.count <= entity.slot {
+            self.sparse.append(nil)
+        }
+
         let denseIndex = self.dense.count
         self.sparse[entity.slot] = denseIndex
         self.dense.append(entity)
