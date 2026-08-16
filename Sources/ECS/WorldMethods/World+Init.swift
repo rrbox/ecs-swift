@@ -7,7 +7,19 @@
 
 public extension World {
     convenience init() {
-        self.init(worldStorage: WorldStorageRef())
+        self.init(experimentalOptions: [])
+    }
+}
+
+extension World {
+    /// 検証用オプションを指定して World を初期化します。
+    ///
+    /// オプションは ``WorldStorageRef/experimentalOptions`` に `let` として保持され、
+    /// 初期化後に変更できません(要件 4-4)。`archetypeStorage` が ON の場合も
+    /// `setUpChunkBuffer` は実行され、chunk buffer はパラメータレジストリとして
+    /// 維持されます(design.md 分岐点1)。
+    convenience init(experimentalOptions: ExperimentalWorldOptions) {
+        self.init(worldStorage: WorldStorageRef(experimentalOptions: experimentalOptions))
 
         // chunk buffer に chunk entity interface を追加します.
         worldStorage.chunkStorageRef.setUpChunkBuffer()

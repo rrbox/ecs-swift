@@ -35,6 +35,14 @@ final public class Commands: SystemParameter {
     var generator = EntityGenerator()
     var entityTransactions = [EntityTransaction]()
 
+    /// この Commands を保持する `WorldStorageRef` への逆参照です。
+    ///
+    /// `entity(_)` が archetype storage の ON/OFF(`experimentalOptions`)を参照して
+    /// queue 実装を選択するために使用します(design.md World 分岐点)。
+    /// `WorldStorageRef` が Commands を強参照するため、循環を避けて weak で保持します。
+    /// `WorldStorageRef.init` で設定されます。
+    weak var worldStorage: WorldStorageRef?
+
     /// Commands では, World への登録時には何もしません.
     public static func register(to worldStorage: WorldStorageRef) {
 

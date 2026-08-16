@@ -183,23 +183,41 @@ extension World {
     }
 
     // 各システムが動いた後に実行される
+    //
+    // archetype storage の ON/OFF で spawn/updated queue の適用先が分岐します
+    // (design.md World 分岐点4)。適用順序(spawn 適用 → commands → updated/diff 適用)は
+    // 新旧共通で現行を踏襲します(要件 1-5)。
     func applyCommandsPhase(_ commands: Commands) {
         // removed event を配信します.
         self.applyRemovedEventQueue()
 
-        // これから spawn する entity を chunk storage 内で enqueue
+        // これから spawn する entity を storage 内で enqueue
         // despawn 登録された entity を削除
         // これから spawn する record に addComponent などのコマンドを実行
-        // セットアップされた record を chunk storage 内で enqueue
+        // (ON: staging record への適用 / OFF: セットアップされた record を chunk storage 内で enqueue)
         self.applyEnityTransactions(commands: commands)
 
-        // apply commands の際に push された entity を chunk に割り振ります(spawn).
-        self.worldStorage.chunkStorageRef.applySpawnedEntityQueue()
+        if let archetypeStorage = self.worldStorage.archetypeStorageRef {
+            // ON: staging record を Archetype へ挿入し, entityIndex に所在を登録します(spawn 適用).
+            // record へのコマンド適用は直前の applyEnityTransactions で完了しているため,
+            // 挿入時点で spawn コマンドのコンポーネントはすべて揃っています.
+            archetypeStorage.applySpawnStaging()
 
-        self.applyCommands(commands: commands)
+            self.applyCommands(commands: commands)
 
-        // world 内の entity のコンポーネントの追加/削除.
-        // 同じフレーム内で entity の変更を world 全体に適用するために一番最後に再度実行.
-        self.worldStorage.chunkStorageRef.applyUpdatedEntityQueue()
+            // searched entity への変更差分を Archetype 移動として適用します(updated/diff 適用).
+            // OFF 経路の applyUpdatedEntityQueue と同じ位置(commands の後)で実行することで
+            // 適用順序を現行踏襲とします(要件 1-5).
+            archetypeStorage.applyDiffQueues()
+        } else {
+            // apply commands の際に push された entity を chunk に割り振ります(spawn).
+            self.worldStorage.chunkStorageRef.applySpawnedEntityQueue()
+
+            self.applyCommands(commands: commands)
+
+            // world 内の entity のコンポーネントの追加/削除.
+            // 同じフレーム内で entity の変更を world 全体に適用するために一番最後に再度実行.
+            self.worldStorage.chunkStorageRef.applyUpdatedEntityQueue()
+        }
     }
 }

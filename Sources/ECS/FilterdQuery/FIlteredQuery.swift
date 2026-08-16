@@ -29,7 +29,16 @@ final public class Filtered<Q: QueryProtocol, F: Filter>: Chunk, SystemParameter
         worldStorage.chunkStorageRef.chunk(ofType: Filtered<Q, F>.self)
     }
 
+    /// `Filtered` を system parameter として登録します。
+    ///
+    /// 制限: `archetypeStorage` オプションが ON の World では `Filtered` は
+    /// 未サポートです(register 時に debug assertion が発火します)。
     public static func register(to worldStorage: WorldStorageRef) {
+        assert(
+            !worldStorage.experimentalOptions.contains(.archetypeStorage),
+            "Filtered queries are not supported with archetype storage yet."
+        )
+
         guard worldStorage.chunkStorageRef.chunk(ofType: Self.self) == nil else {
             return
         }

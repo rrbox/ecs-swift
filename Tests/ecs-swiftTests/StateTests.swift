@@ -16,10 +16,12 @@ struct StateTests {
         case pause
     }
 
-    @Test func transitionState() async throws {
+    // タスク 7.2: 各テストは新旧両バックエンド(WorldBackend.allCases)で実行されます。
+    @Test(arguments: WorldBackend.allCases)
+    func transitionState(backend: WorldBackend) async throws {
         var flags: [Int] = .init(repeating: 0, count: 6)
 
-        let world = World()
+        let world = backend.makeWorld()
             .addState(initialState: StateCase.title, states: [.title, .inGame, .pause])
             .addSystem(.didEnter(StateCase.title)) { (currentTime: Resource<CurrentTime>) in
                 flags[0] += 1
@@ -63,10 +65,11 @@ struct StateTests {
     }
 
     // case 1: `push` in start up
-    @Test func pushStateInStartUp() async throws {
+    @Test(arguments: WorldBackend.allCases)
+    func pushStateInStartUp(backend: WorldBackend) async throws {
         var flags = [Int](repeating: 0, count: 6)
 
-        let world = World()
+        let world = backend.makeWorld()
             .addState(initialState: StateCase.inGame, states: [.inGame, .pause])
             .addSystem(.onStackUpdate(StateCase.inGame)) { (currentTime: Resource<CurrentTime>) in
                 flags[0] += 1
@@ -113,10 +116,11 @@ struct StateTests {
     }
 
     // case 2: push in `update`
-    @Test func pushStateInUpdate() async throws {
+    @Test(arguments: WorldBackend.allCases)
+    func pushStateInUpdate(backend: WorldBackend) async throws {
         var flags = [Int](repeating: 0, count: 6)
 
-        let world = World()
+        let world = backend.makeWorld()
             .addState(initialState: StateCase.inGame, states: [.inGame, .pause])
             .addSystem(.onStackUpdate(StateCase.inGame)) { (currentTime: Resource<CurrentTime>) in
                 flags[0] += 1
@@ -165,10 +169,11 @@ struct StateTests {
     // case 3: pop in `update`
     //
     // - start up で pop するケースは存在しない.
-    @Test func popStateInUpdate() async throws {
+    @Test(arguments: WorldBackend.allCases)
+    func popStateInUpdate(backend: WorldBackend) async throws {
         var flags = [Int](repeating: 0, count: 2)
 
-        let world = World()
+        let world = backend.makeWorld()
             .addState(initialState: StateCase.inGame, states: [.inGame, .pause])
             .addSystem(.startUp, { (state: State<StateCase>,
                                     currentTime: Resource<CurrentTime>) in

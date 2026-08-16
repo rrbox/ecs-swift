@@ -45,12 +45,11 @@ func update4(query: Query<Text>) {
 }
 
 final class ecs_swiftTests: XCTestCase {
-    // entity: 20000
-    // set up: 1
-    // update: 1
-    // 0.00478 s
-    func testPerformance() {
-        let world = World()
+    // タスク 7.2: `measure` はテストメソッドごとに 1 回しか呼べないため、
+    // ループではなくバックエンドごとのテストメソッドで新旧両方を実行します。
+
+    private func runPerformance(backend: WorldBackend) {
+        let world = backend.makeWorld()
             .addSystem(.startUp, entitycreate(commands:))
             .addSystem(.update, update(query:))
         world.setUpWorld()
@@ -63,12 +62,8 @@ final class ecs_swiftTests: XCTestCase {
         }
     }
 
-    // entity: 20000
-    // set up: 1
-    // update: 4
-    // 0.0158 s -> およそ 4 倍
-    func testUpdate4Performance() {
-        let world = World()
+    private func runUpdate4Performance(backend: WorldBackend) {
+        let world = backend.makeWorld()
             .addSystem(.startUp, entitycreate(commands:))
             .addSystem(.update, update(query:))
             .addSystem(.update, update2(query:))
@@ -82,5 +77,29 @@ final class ecs_swiftTests: XCTestCase {
         measure {
             world.update(currentTime: 0)
         }
+    }
+
+    // entity: 20000
+    // set up: 1
+    // update: 1
+    // 0.00478 s
+    func testPerformance() {
+        self.runPerformance(backend: .legacy)
+    }
+
+    func testPerformanceArchetype() {
+        self.runPerformance(backend: .archetype)
+    }
+
+    // entity: 20000
+    // set up: 1
+    // update: 4
+    // 0.0158 s -> およそ 4 倍
+    func testUpdate4Performance() {
+        self.runUpdate4Performance(backend: .legacy)
+    }
+
+    func testUpdate4PerformanceArchetype() {
+        self.runUpdate4Performance(backend: .archetype)
     }
 }

@@ -66,5 +66,27 @@ struct SamePhaseSpawnDespawnTests {
         let standardError = String(decoding: result?.standardErrorContent ?? [], as: UTF8.self)
         #expect(standardError.contains("Despawning an entity in the same phase it was spawned"))
     }
+
+    /// archetype storage ON でも同一 phase 内の spawn → despawn は同じ assertion で
+    /// 検出されます(`ArchetypeStorageRef.despawn` の検出。legacy 側と対称)。
+    ///
+    /// exit test の子プロセスは値のキャプチャに制約があるため、`WorldBackend` による
+    /// パラメタライズではなく ON 専用のテストとして併設しています。
+    @Test func spawnAndDespawnInSamePhaseTrapsOnArchetypeStorage() async {
+        let result = await #expect(processExitsWith: .failure, observing: [\.standardErrorContent]) {
+            let world = World(experimentalOptions: [.archetypeStorage])
+                .addSystem(.startUp) { (commands: Commands) in
+                    let handle = commands.spawn()
+                        .addComponent(TestComponent(content: "same phase"))
+                        .id()
+                    commands.despawn(entity: handle)
+                }
+            world.setUpWorld()
+            world.update(currentTime: 0)
+        }
+
+        let standardError = String(decoding: result?.standardErrorContent ?? [], as: UTF8.self)
+        #expect(standardError.contains("Despawning an entity in the same phase it was spawned"))
+    }
 #endif
 }
