@@ -41,10 +41,6 @@ final public class Query<C: QueryTarget>: Chunk, SystemParameter {
 
     public override init() {}
 
-    public func allocate() {
-        self.components.allocate()
-    }
-
     public func insert(entityRecord: EntityRecordRef) {
         guard let componentRef = entityRecord.ref(C.self) else { return }
         self.components.insert(componentRef, withEntity: entityRecord.entity)
@@ -56,9 +52,6 @@ final public class Query<C: QueryTarget>: Chunk, SystemParameter {
     }
 
     override func spawn(entityRecord: EntityRecordRef) {
-        if entityRecord.entity.generation == 0 {
-            self.components.allocate()
-        }
         self.insert(entityRecord: entityRecord)
     }
 

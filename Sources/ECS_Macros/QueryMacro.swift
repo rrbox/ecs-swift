@@ -125,10 +125,6 @@ struct QueryMacro: DeclarationMacro {
 
                 public override init() {}
 
-                public func allocate() {
-                    self.components.allocate()
-                }
-
                 public func insert(entityRecord: EntityRecordRef) {
                     guard \(raw: refDeclarationsFromRecord) else { return }
                     self.components.insert((\(raw: refs)), withEntity: entityRecord.entity)
@@ -140,9 +136,6 @@ struct QueryMacro: DeclarationMacro {
                 }
 
                 public override func spawn(entityRecord: EntityRecordRef) {
-                    if entityRecord.entity.generation == 0 {
-                        self.components.allocate()
-                    }
                     self.insert(entityRecord: entityRecord)
                 }
 

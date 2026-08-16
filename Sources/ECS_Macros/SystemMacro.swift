@@ -63,6 +63,7 @@ struct AddSystemMacroForWorld: DeclarationMacro {
 
         let result: DeclSyntax = """
         @discardableResult func addSystem<\(raw: genericArguments)>(_ schedule: Schedule, _ system: @escaping (\(raw: valueTypes)) -> ()) -> World {
+            self.preconditionSystemRegistrationIsAvailable()
             self.worldStorage.systemStorage.addSystem(schedule, Systems.System\(raw: n)<\(raw: valueTypes)>(system))
             \(raw: registerExpressions)
             return self

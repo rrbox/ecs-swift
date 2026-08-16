@@ -40,10 +40,19 @@ class ChunkEntityInterface: ChunkStorageElement {
         self.prespawnedEntityQueue = []
     }
 
+    /// spawn が chunk に反映される前の entity かどうかを返します.
+    func isPrespawned(entity: Entity) -> Bool {
+        self.prespawnedEntityQueue.contains { $0.entity == entity }
+    }
+
     /// World から entity が削除される時に実行します.
     ///
-    /// フレームの終わりに全ての chunk から entity を削除します. ← これ嘘では
+    /// entity transaction の適用時に, 全ての chunk から entity を即座に削除します.
     func despawn(entity: Entity) {
+        assert(
+            !self.isPrespawned(entity: entity),
+            "Despawning an entity in the same phase it was spawned is not supported: \(entity). The entity is never visible to any system."
+        )
         for chunk in self.chunks {
             chunk.despawn(entity: entity)
         }

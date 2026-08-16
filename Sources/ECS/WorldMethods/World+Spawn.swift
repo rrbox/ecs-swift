@@ -19,10 +19,6 @@ extension World {
     /// 実際の挿入は applyCommandsPhase で行われます(design.md World 分岐点2)。
     /// entity table への登録と ``Spawned`` イベントの発行は新旧共通です(要件 1-6)。
     func push(entityRecord: EntityRecordRef) {
-        if entityRecord.entity.generation == 0 {
-            self.entities.allocate()
-        }
-
         self.insert(entityRecord: entityRecord)
         if let archetypeStorage = self.worldStorage.archetypeStorageRef {
             archetypeStorage.spawnStagingQueue.append(entityRecord)

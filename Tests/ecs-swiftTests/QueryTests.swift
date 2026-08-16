@@ -135,6 +135,25 @@ final class QueryTests: XCTestCase {
         XCTAssertEqual(testEntityQuery5.components.data.count, 0)
     }
 
+    // query に一致しない entity が先に spawn された場合, query 内の sparse 配列は伸びません.
+    func testSpawnEntityWhoseSlotIsOutOfSparseArray() {
+        let testQuery = Query<TestComponent>()
+
+        let world = World()
+        world.worldStorage.chunkStorageRef.addChunk(testQuery)
+
+        let commands = world.worldStorage.commands
+
+        commands.spawn().addComponent(TestComponent2(content: "test2"))
+        commands.spawn().addComponent(TestComponent2(content: "test2"))
+        let testEntity = commands.spawn().addComponent(TestComponent(content: "test")).id()
+
+        world.update(currentTime: 0)
+
+        XCTAssertEqual(testQuery.components.data.count, 1)
+        XCTAssertEqual(testQuery.components(forEntity: testEntity)?.content, "test")
+    }
+
     // v0.2 以降は entity 追加直後の component 追加処理は扱いが変わるため, それ専用のテストも作成します.
     func testSpawnedEntityCommands() {
         let testQuery = Query<TestComponent>()
