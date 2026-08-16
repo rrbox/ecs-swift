@@ -12,11 +12,21 @@
 /// Commands はシステムから ``World`` 内のデータを操作します.
 /**
  ```swift
- func system(commands: Commands) {
-     let entity = commands.spawn() // spawn an entity
-         .addComponent(ComponentType())
-         .id()
-     commands.despawn(entity) // despawn the entity
+ func spawnBullet(commands: Commands) {
+     commands.spawn() // spawn an entity
+         .addComponent(Bullet(lifetime: 1))
+ }
+
+ func despawnExpiredBullets(
+     commands: Commands,
+     query: Query2<Entity, Bullet>,
+     deltaTime: Resource<DeltaTime>
+ ) {
+     query.update { entity, bullet in
+         bullet.lifetime -= deltaTime.resource.value
+         guard bullet.lifetime <= 0 else { return }
+         commands.despawn(entity: entity) // despawn the entity
+     }
  }
  ```
  */
