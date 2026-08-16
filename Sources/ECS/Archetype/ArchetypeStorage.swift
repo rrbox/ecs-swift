@@ -93,27 +93,22 @@ final class ArchetypeStorageRef {
     /// entity の所在を返します。
     ///
     /// 世代チェックを含みます(要件 1-4): despawn 済み、またはスロットが別世代で
-    /// (再)利用されている entity には nil を返します。世代の照合は
-    /// `SparseSet.value(forEntity:)` が dense に保存した entity と slot + generation の
-    /// 両方で比較することにより行われます。
+    /// (再)利用されている entity には nil を返します。境界チェックと世代照合は
+    /// `SparseSet.value(forEntity:)` が内包しています(issue #165 対応後の仕様)。
     /// - Parameter entity: 所在を調べる entity。
     /// - Returns: entity の所在。未登録・世代不一致の場合は nil。
     func location(of entity: Entity) -> EntityLocation? {
-        guard self.entityIndex.contains(entity) else { return nil }
-        return self.entityIndex.value(forEntity: entity)
+        self.entityIndex.value(forEntity: entity)
     }
 
     /// entity の所在を登録します。
     ///
-    /// `SparseSet` の `allocate()` 規約に従い、generation == 0 の entity(新規スロット)は
-    /// sparse 配列を伸ばしてから挿入します(現行実装の spawn 手順を踏襲、設計方針)。
+    /// sparse 配列の拡張は `SparseSet.insert` が行います(issue #165 対応で
+    /// 旧 `allocate()` 規約は廃止)。
     /// - Parameters:
     ///   - location: 登録する所在。
     ///   - entity: 対象の entity。
     func setLocation(_ location: EntityLocation, forEntity entity: Entity) {
-        if entity.generation == 0 {
-            self.entityIndex.allocate()
-        }
         self.entityIndex.insert(location, withEntity: entity)
     }
 
@@ -135,8 +130,16 @@ final class ArchetypeStorageRef {
     /// (`insert` は dedupe せず stale エントリが残るため)。
     ///
     /// 未登録・世代不一致の entity は no-op です(要件 1-4)。
+    ///
+    /// 同一 phase 内で spawn された entity(staging 中で未挿入)の despawn は
+    /// legacy 経路(`ChunkEntityInterface.despawn`)と同様にサポート外です
+    /// (issue #167 と同型の検出。デバッグビルドで assertion)。
     /// - Parameter entity: 削除する entity。
     func despawn(entity: Entity) {
+        assert(
+            !self.spawnStagingQueue.contains { $0.entity == entity },
+            "Despawning an entity in the same phase it was spawned is not supported: \(entity). The entity is never visible to any system."
+        )
         guard let location = self.location(of: entity) else { return }
         self.removeLocation(of: entity)
         guard let filler = location.archetype.swapRemoveRow(location.row) else { return }

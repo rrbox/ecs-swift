@@ -52,8 +52,12 @@ final class CommandsTests: XCTestCase {
         XCTAssertEqual(commands.commandQueue.count, 0)
         XCTAssertEqual(world.entities.data.count, 3)
 
-        // phase の終わりに相当する処理. spawn を chunk に反映してから despawn します.
-        world.worldStorage.chunkStorageRef.applySpawnedEntityQueue()
+        // phase の終わりに相当する処理. spawn を各バックエンドに反映してから despawn します.
+        if let archetypeStorage = world.worldStorage.archetypeStorageRef {
+            archetypeStorage.applySpawnStaging()
+        } else {
+            world.worldStorage.chunkStorageRef.applySpawnedEntityQueue()
+        }
 
         for testEntity in testEntities {
             commands.push(command: TestCommand_Despawn(entity: testEntity))

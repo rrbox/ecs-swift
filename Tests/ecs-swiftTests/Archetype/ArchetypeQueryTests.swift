@@ -190,9 +190,16 @@ struct ArchetypeQueryTests {
     /// ON: Query の register より前に生成済みの Archetype が、register 時の
     /// 遡及マッチで `archetypeMatches` に追加されることを確認します
     /// (addSystem を最初のフレーム後に呼ぶことで register を遅らせます)。
+    /// register 時点で既に Archetype が存在する場合の遡及マッチを storage レベルで
+    /// 検証します。
+    ///
+    /// issue #166 対応(setUpWorld 後の addSystem 禁止)により World 経由の遅延登録は
+    /// できなくなったため、`registerArchetypeBackend(_:)` を直接呼び出して検証します
+    /// (機構は storage の頑健性として維持)。
     @Test func registerRetroactivelyMatchesExistingArchetypes() throws {
         let world = World(experimentalOptions: [.archetypeStorage])
         let commands = world.worldStorage.commands
+        let storage = try #require(world.worldStorage.archetypeStorageRef)
 
         commands.spawn()
             .addComponent(ComponentA(value: 3))
@@ -200,21 +207,18 @@ struct ArchetypeQueryTests {
         // Query 未登録のままフレームを回し、Archetype を先に生成します。
         world.setUpWorld()
         world.update(currentTime: 0)
+        #expect(storage.archetypes.count == 1)
 
-        var observed = [Int]()
-        world.addSystem(.update) { (query: Query<ComponentA>) in
-            guard observed.isEmpty else { return }
-            query.update { component in
-                observed.append(component.value)
-            }
-        }
-
-        // register 時の遡及マッチで既存 Archetype が見えています。
-        let query = try #require(Query<ComponentA>.getParameter(from: world.worldStorage))
+        // 既存 Archetype がある状態で ON バックエンドに登録すると、遡及マッチで
+        // 既存 Archetype が見えます。
+        let query = Query<ComponentA>()
+        query.registerArchetypeBackend(storage)
         #expect(query.archetypeMatches.count == 1)
 
-        world.update(currentTime: 1)
-
+        var observed = [Int]()
+        query.update { component in
+            observed.append(component.value)
+        }
         #expect(observed == [3])
     }
 
