@@ -69,7 +69,7 @@ extension World {
         let removedOnStackNewStateQueue = stateStorage.removedOnStackNewStateQueue()
         let removedOnStackPreviousStateQueue = stateStorage.removedOnStackPreviousStateQueue()
         let removedOnInactiveNewStateQueue = stateStorage.removedOnInactiveNewStateQueue()
-        let removedOnInavtivePreviousStateQueue = stateStorage.removedOnInactivePreviousStateQueue()
+        let removedOnInactivePreviousStateQueue = stateStorage.removedOnInactivePreviousStateQueue()
 
         stateStorage.clearQueue()
 
@@ -100,7 +100,7 @@ extension World {
             stateSchedulesManager.removedSchedules.remove(previousState)
         }
 
-        for previousState in removedOnStackPreviousStateQueue {
+        for previousState in removedOnInactivePreviousStateQueue {
             stateSchedulesManager.removedSchedules.remove(previousState)
         }
 
