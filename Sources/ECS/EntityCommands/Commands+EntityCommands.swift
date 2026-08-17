@@ -30,8 +30,16 @@ public extension Commands {
     }
 
     /// Entity を削除します.
+    ///
+    /// slot の再利用は削除の予約時ではなく, ``DespawnCommand`` の適用時に entity の生存を
+    /// 確認してから行われます. すでに削除された entity を再度削除した場合は no-op です.
     func despawn(entity: Entity) {
-        self.generator.stack(entity: Entity(slot: entity.slot, generation: entity.generation+1))
         self.entityTransactions.append(DespawnCommand(entity: entity))
+    }
+}
+
+extension Commands {
+    func recycleSlot(of entity: Entity) {
+        self.generator.stack(entity: Entity(slot: entity.slot, generation: entity.generation+1))
     }
 }
