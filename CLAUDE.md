@@ -14,7 +14,12 @@ swift test                               # run all tests
 swift test --filter ecs-swiftTests       # run one test target
 swift test --filter WorldTests           # run one XCTestCase class
 swift test --filter WorldTests/testFoo   # run a single test method
+
+swift build -c release                   # release build
+swift test -c release                    # run the suite in release configuration
 ```
+
+Release runs matter because the two trap flavors behave differently: `precondition` (e.g. `addSystem` after `setUpWorld()`) still traps, while `assert` / `assertionFailure` (same-phase spawn→despawn, `SparseSet.pop` on a stale handle) is compiled out, so those paths silently fall through to their `guard` behaviour. Tests that verify an assertion are therefore guarded with `#if compiler(>=6.2) && DEBUG && (os(macOS) || os(Linux) || os(Windows))` (see `SamePhaseSpawnDespawnTests`) and are simply absent from a release run, so the swift-testing test count is lower there. When adding an assertion-based exit test, copy that guard, and cover the release-build behaviour with an ordinary test.
 
 CI (GitHub Actions on PRs to `main`/`develop`, plus CircleCI) runs `swift package resolve`, `swift build`, `swift test`. Both pin **Xcode 26.3** (GitHub Actions selects it via `xcode-select`), which is required by the swift-testing exit tests. There is no lint configuration.
 
