@@ -47,6 +47,7 @@ final public class World {
     var preUpdateSchedule: Schedule
     var updateSchedule: Schedule
     var postUpdateSchedule: Schedule
+    var isSetUpCompleted = false
     public let worldStorage: WorldStorageRef
 
     init(worldStorage: WorldStorageRef) {

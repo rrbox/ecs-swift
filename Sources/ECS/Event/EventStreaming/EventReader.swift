@@ -5,11 +5,23 @@
 //  Created by rrbox on 2023/08/14.
 //
 
-final public class EventReader<T>: SystemParameter, EventStorageElement {
-    public let events: [T]
+final public class EventReader<T: EventProtocol>: SystemParameter, EventStorageElement {
+    unowned let queue: EventQueue<T>
 
-    init(events: [T]) {
-        self.events = events
+    init(queue: EventQueue<T>) {
+        self.queue = queue
+    }
+
+    public var count: Int {
+        queue.countOfEvents
+    }
+
+    public var isEmpty: Bool {
+        count == 0
+    }
+
+    public func forEach(_ body: (T) -> ()) {
+        queue.forEach(body)
     }
 
     public static func register(to worldStorage: WorldStorageRef) {
@@ -17,6 +29,9 @@ final public class EventReader<T>: SystemParameter, EventStorageElement {
     }
 
     public static func getParameter(from worldStorage: WorldStorageRef) -> EventReader<T>? {
-        return worldStorage.eventStorage.valueRef(ofType: EventReader<T>.self)?.body
+        worldStorage
+            .eventStorage
+            .valueRef(ofType: EventReader<T>.self)?
+            .body
     }
 }

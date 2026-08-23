@@ -8,23 +8,15 @@
 import SpriteKit
 import ECS
 
-public struct Child: Component {
-    var _parent: Entity
-    public var parent: Entity {
-        self._parent
-    }
-}
+public struct Child: Component {}
 
-public struct Parent: Component {
-    var _children: Set<Entity>
-    public var children: Set<Entity> {
-        self._children
-    }
-}
+public struct Parent: Component {}
 
-struct _RemoveFromParentTransaction: Component {
+struct _RemoveFromParentTransaction: Component {}
 
-}
+struct _RemoveAllChildrenTransaction: Component {}
+
+struct _DespawnAllChildrenTransaction: Component {}
 
 final class AddChild: EntityCommand {
     let child: Entity
@@ -36,22 +28,20 @@ final class AddChild: EntityCommand {
     override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
         let childRecord = world.entityRecord(forEntity: self.child)!
         childRecord.addComponent(_AddChildNodeTransaction(parentEntity: self.entity))
+        world.worldStorage.chunkStorageRef.pushUpdated(entityRecord: childRecord)
     }
 
 }
 
 final class RemoveAllChildren: EntityCommand {
     override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
-        let node = record.component(ofType: Graphic.self)!.nodeRef
-        node.removeAllChildren()
-        record.componentRef(ofType: Parent.self)?.value._children = []
+        record.addComponent(_RemoveAllChildrenTransaction())
+    }
+}
 
-        for child in record.componentRef(ofType: Parent.self)!.value.children {
-            let childRecord = world.entityRecord(forEntity: child)!
-            childRecord.removeComponent(ofType: Child.self)
-            world.worldStorage.chunkStorageRef.pushUpdated(entityRecord: childRecord)
-        }
-
+final class DespawnAllChildren: EntityCommand {
+    override func runCommand(forRecord record: EntityRecordRef, inWorld world: World) {
+        record.addComponent(_DespawnAllChildrenTransaction())
     }
 }
 
@@ -104,45 +94,98 @@ public extension EntityCommands {
     }
 }
 
+// TODO: - Rerouce<Node> を使用する(WillDespawnEvent を廃止したい)
+
 func removeChildIfDespawned(
-    despawnEvent: EventReader<WillDespawnEvent>,
-    query: Query<Child>,
-    parentQuery: Query<Parent>
+    removed: Removed,
+    hierarchy: Resource<Hierarchy>,
+    commands: Commands
 ) {
-    for event in despawnEvent.events {
-        let entity = event.despawnedEntity
-        guard let parent = query.components(forEntity: entity)?.parent else { continue }
-        parentQuery.update(parent) { p in
-            p._children.remove(entity)
-        }
+    let hierarchy = hierarchy.resource
+    for despawnedEntity in removed.entities {
+        let parent = hierarchy.parent(of: despawnedEntity)
+        hierarchy.removeFromParent(despawnedEntity)
+        guard let parent, hierarchy.childrenIsEmpty(for: parent) else { continue }
+        commands.entity(parent)
+            .removeComponent(ofType: Parent.self)
     }
 }
 
-// これが実行される時点ですでに parentEntity から despawn した parent が消えている.
 func despawnChildRecursive(
     despawnedEntity: Entity,
-    children: Query2<Entity, Child>,
+    hierarchy: Resource<Hierarchy>,
     commands: Commands
 ) {
-    children.update { entity, child in
-        if child.parent == despawnedEntity {
-            despawnChildRecursive(despawnedEntity: entity, children: children, commands: commands)
-            commands.despawn(entity: entity)
-        }
+    guard let children = hierarchy.resource.children(of: despawnedEntity) else { return }
+    for child in children {
+        despawnChildRecursive(
+            despawnedEntity: child,
+            hierarchy: hierarchy,
+            commands: commands
+        )
+        commands.despawn(entity: child)
     }
 }
 
-// これが実行される時点ですでに parentEntity から despawn した parent が消えている.
 func despawnChildIfParentDespawned(
-    despawnedEntityEvent: EventReader<WillDespawnEvent>,
-    children: Query2<Entity, Child>,
+    removed: Removed,
+    hierarchy: Resource<Hierarchy>,
     commands: Commands
 ) {
-    // despawn した entity と自分の親が一致する子を despawn する.
-    for event in despawnedEntityEvent.events {
-        let despawnedEntity = event.despawnedEntity
-        despawnChildRecursive(despawnedEntity: despawnedEntity,
-                              children: children,
-                              commands: commands)
+    removed.forEach { despawnedEntity in
+        despawnChildRecursive(
+            despawnedEntity: despawnedEntity,
+            hierarchy: hierarchy,
+            commands: commands
+        )
+        hierarchy.resource.removeRecursively(entity: despawnedEntity)
+    }
+}
+
+/// - hirarchy から削除された child は despawn しません
+func removeAllChildren(
+    targetNodes: Filtered<Query2<Entity, Graphic<SKNode>>, And<With<Parent>, With<_RemoveAllChildrenTransaction>>>,
+    hierarchy: Resource<Hierarchy>,
+    commands: Commands
+) {
+    targetNodes.update { entity, node in
+        node.nodeRef.removeAllChildren()
+        commands
+            .entity(entity)
+            .removeComponent(ofType: Parent.self)
+            .removeComponent(ofType: _RemoveAllChildrenTransaction.self)
+        let children = hierarchy.resource.children(of: entity)
+        children?.forEach { child in
+            commands
+                .entity(child)
+                .removeComponent(ofType: Child.self)
+        }
+        hierarchy.resource.removeAllChildren(fromEntity: entity)
+    }
+}
+
+// FIXME: - post update で despawn が呼ばれた場合、Nodes の紐付けを削除できない(Removed 実装後)
+// - Nodes の仕組み上2重で削除しても問題ないので、防衛的にこのシステムで切り離してもいいかも
+@MainActor
+func despawnAllChildren(
+    targetNodes: Filtered<Query2<Entity, Graphic<SKNode>>, And<With<Parent>, With<_DespawnAllChildrenTransaction>>>,
+    hierarchy: Resource<Hierarchy>,
+    nodes: Resource<Nodes>,
+    commands: Commands
+) {
+    targetNodes.update { entity, node in
+        node.nodeRef.removeAllChildren()
+        commands
+            .entity(entity)
+            .removeComponent(ofType: Parent.self)
+            .removeComponent(ofType: _DespawnAllChildrenTransaction.self)
+
+        let children = hierarchy.resource.children(of: entity)
+        children?.forEach { child in
+            commands.despawn(entity: child)
+            // 防衛的に Nodes 経由で entity と SKNode の紐付けを削除する
+            nodes.resource.removeNode(forEntity: child)
+        }
+        hierarchy.resource.removeAllChildren(fromEntity: entity)
     }
 }

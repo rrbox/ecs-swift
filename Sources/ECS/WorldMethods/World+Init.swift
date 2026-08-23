@@ -32,15 +32,18 @@ public extension World {
         worldStorage.systemStorage.insertSchedule(.update)
         worldStorage.systemStorage.insertSchedule(.postUpdate)
 
+        // world buffer に removed system を保持する領域を確保します.
+        worldStorage.systemStorage.insertSchedule(.removed)
+
         // state storage に schedule 管理をするための準備をします.
         worldStorage.stateStorage.setUp()
 
         // world buffer に event queue を作成します.
-        worldStorage.eventStorage.registerEventReceivers()
+        worldStorage.eventStorage.registerEventQueues()
 
-        // world buffer に spawn/despawn event の streamer を登録します.
-        addCommandsEventStreamer(eventType: DidSpawnEvent.self)
-        addCommandsEventStreamer(eventType: WillDespawnEvent.self)
+        // world buffer に spawn event の streamer を登録します.
+        addEventStreamer(eventType: Spawned.self)
+        addRemovedEventStreamer()
 
         // world に一番最初のフレームで実行されるシステムを追加します.
         worldStorage.systemStorage.addSystem(.preStartUp, System(preUpdateSystemFirstFrameSystem(commands:)))

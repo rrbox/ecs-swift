@@ -13,25 +13,31 @@ import ECS
 ///   - query: entity heirarchy に入っていない entity の query.
 ///   - graphics: 親 entity の SKNode を検索するための query.
 ///   - scene: 親 entity が指定されていない場合に配置先となる scene.
-///   - commands: `_AddChildNodeTransaction` を削除するための commands.
+///   - commands: `_AddChildNodeTransaction` を削除するための commands.¥
 func _addChildNodeSystem(
     query: Filtered<Query3<Entity, _AddChildNodeTransaction, Graphic<SKNode>>, WithOut<Child>>,
-    graphics: Query2<Graphic<SKNode>, Parent>,
+    graphics: Query<Graphic<SKNode>>,
     scene: Resource<SceneResource>,
+    hierarchy: Resource<Hierarchy>,
     commands: Commands
 ) {
-    query.update { childEntity, parent, graphic in
-        if let parentEntity = parent.parentEntity {
-            graphics.update(parentEntity) { parentNode, children in
+    query.update { childEntity, transaction, graphic in
+        let childEntity = childEntity
+        let graphic = graphic
+        if let parentEntity = transaction.parentEntity {
+            graphics.update(parentEntity) { parentNode in
                 parentNode.nodeRef.addChild(graphic.nodeRef)
-                children._children.insert(childEntity)
+                if !hierarchy.resource.hasParentSlot(parentEntity) {
+                    commands.entity(parentEntity)
+                        .addComponent(Parent())
+                }
+                hierarchy.resource.insertChild(childEntity, forParent: parentEntity)
                 commands.entity(childEntity)
-                    .addComponent(Child(_parent: parentEntity))
+                    .addComponent(Child())
             }
         } else {
             scene.resource.scene.addChild(graphic.nodeRef)
         }
-
         commands
             .entity(childEntity)
             .removeComponent(ofType: _AddChildNodeTransaction.self)
@@ -45,17 +51,24 @@ func _addChildNodeSystem(
 ///   - commands: `_AddChildNodeTransaction` を削除するための commands.
 func _addChildNodeSystem(
     query: Filtered<Query3<Entity, _AddChildNodeTransaction, Graphic<SKNode>>, With<Child>>,
-    graphics: Query2<Graphic<SKNode>, Parent>,
+    graphics: Query<Graphic<SKNode>>,
+    hierarchy: Resource<Hierarchy>,
     commands: Commands
 ) {
-    query.update { childEntity, parent, graphic in
-        if let parentEntity = parent.parentEntity {
+    query.update { childEntity, transaction, graphic in
+        let childEntity = childEntity
+        let graphic = graphic
+        if let parentEntity = transaction.parentEntity {
             graphic.nodeRef.removeFromParent()
-            graphics.update(parentEntity) { parentNode, children in
+            graphics.update(parentEntity) { parentNode in
                 parentNode.nodeRef.addChild(graphic.nodeRef)
-                children._children.insert(childEntity)
+                if !hierarchy.resource.hasParentSlot(parentEntity) {
+                    commands.entity(parentEntity)
+                        .addComponent(Parent())
+                }
+                hierarchy.resource.insertChild(childEntity, forParent: parentEntity)
                 commands.entity(childEntity)
-                    .addComponent(Child(_parent: parentEntity))
+                    .addComponent(Child())
             }
         } else {
             fatalError("parent entity not found")
@@ -69,29 +82,36 @@ func _addChildNodeSystem(
 
 @MainActor
 func _removeFromParentSystem(
-    query: Filtered<Query3<Entity, Graphic<SKNode>, Child>, With<_RemoveFromParentTransaction>>,
-    parents: Query<Parent>,
+    query: Filtered<Query2<Entity, Graphic<SKNode>>, And<With<Child>, With<_RemoveFromParentTransaction>>>,
     nodes: Resource<Nodes>,
+    hierarchy: Resource<Hierarchy>,
     commands: Commands
 ) {
-    query.update { childEntity, childNode, child  in
+    query.update { childEntity, childNode  in
         childNode.nodeRef.removeFromParent()
         nodes.resource.removeNode(forEntity: childEntity)
         commands.entity(childEntity)
             .removeComponent(ofType: Child.self)
             .removeComponent(ofType: _RemoveFromParentTransaction.self)
 
-        parents.update(child.parent) { parent in
-            parent._children.remove(childEntity)
+        guard let parent = hierarchy.resource.parent(of: childEntity) else { return }
+        hierarchy.resource.removeFromParent(childEntity)
+        if hierarchy.resource.childrenIsEmpty(for: parent) {
+            commands.entity(parent)
+                .removeComponent(ofType: Parent.self)
         }
     }
 }
 
 @MainActor
-func _removeNodeIfDespawned(despawn: EventReader<WillDespawnEvent>, nodes: Resource<Nodes>) {
-    for event in despawn.events {
-        let despawnedEntity = event.despawnedEntity
-        nodes.resource.removeNode(forEntity: despawnedEntity)
+func _removeNodeIfDespawned(
+    removed: Removed,
+    nodes: Resource<Nodes>
+) {
+    removed.forEach { despawnedEntity in
+        nodes.resource
+            .removeNode(forEntity: despawnedEntity)?
+            .removeFromParent()
     }
 }
 
@@ -100,17 +120,14 @@ func _removeNodeIfDespawned(despawn: EventReader<WillDespawnEvent>, nodes: Resou
 public func graphicPlugIn(world: World) {
     world
         .addResource(Nodes())
-        .addSystem(.postStartUp, _addChildNodeSystem(query:graphics:scene:commands:))
-        .addSystem(.postStartUp, _addChildNodeSystem(query:graphics:commands:))
-        .addSystem(.postStartUp, _removeFromParentSystem(query:parents:nodes:commands:))
-        .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:scene:commands:))
-        .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:commands:))
-        .addSystem(.postUpdate, _removeFromParentSystem(query:parents:nodes:commands:))
-
-        .buildWillDespawnResponder { responder in
-            responder
-                .addSystem(.update, removeChildIfDespawned(despawnEvent:query:parentQuery:))
-                .addSystem(.update, despawnChildIfParentDespawned(despawnedEntityEvent:children:commands:))
-                .addSystem(.update, _removeNodeIfDespawned(despawn:nodes:))
-        }
+        .addResource(Hierarchy())
+        .addSystem(.postStartUp, _addChildNodeSystem(query:graphics:hierarchy:commands:))
+        .addSystem(.postStartUp, _addChildNodeSystem(query:graphics:scene:hierarchy:commands:))
+        .addSystem(.postStartUp, _removeFromParentSystem(query:nodes:hierarchy:commands:))
+        .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:hierarchy:commands:))
+        .addSystem(.postUpdate, _addChildNodeSystem(query:graphics:scene:hierarchy:commands:))
+        .addSystem(.postUpdate, _removeFromParentSystem(query:nodes:hierarchy:commands:))
+        .addSystem(.removed, removeChildIfDespawned(removed:hierarchy:commands:))
+        .addSystem(.removed, despawnChildIfParentDespawned(removed:hierarchy:commands:))
+        .addSystem(.removed, _removeNodeIfDespawned(removed:nodes:))
 }

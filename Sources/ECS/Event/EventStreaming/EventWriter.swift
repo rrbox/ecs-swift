@@ -5,16 +5,15 @@
 //  Created by rrbox on 2023/08/14.
 //
 
-// Commands と基本的な仕組みは同じ.
 final public class EventWriter<T: EventProtocol>: SystemParameter, EventStorageElement {
-    unowned let receiver: EventReceiver<T>
+    unowned let queue: EventQueue<T>
 
-    init(receiver: EventReceiver<T>) {
-        self.receiver = receiver
+    init(queue: EventQueue<T>) {
+        self.queue = queue
     }
 
-    public func send(value: T) {
-        receiver.eventBuffer.append(value)
+    public func send(_ value: T) {
+        queue.write(event: value)
     }
 
     public static func register(to worldStorage: WorldStorageRef) {
@@ -22,6 +21,9 @@ final public class EventWriter<T: EventProtocol>: SystemParameter, EventStorageE
     }
 
     public static func getParameter(from worldStorage: WorldStorageRef) -> EventWriter<T>? {
-        worldStorage.eventStorage.eventWriter(eventOfType: T.self)
+        worldStorage
+            .eventStorage
+            .valueRef(ofType: EventWriter<T>.self)?
+            .body
     }
 }
