@@ -12,18 +12,15 @@ private struct Victim: Component {}
 
 private final class Box {
     var victim: Entity?
-    var spawned: [Entity] = []
-    var despawnedFromRemoved = false
+    var spawnedAfterDoubleDespawn: [Entity] = []
+    var didDespawnFromRemovedSchedule = false
 }
 
-/// 二重 despawn が実際に成立する経路を確認するための検証用テスト.
-///
-/// 未修正のコードでは, 二重 despawn によって generator が汚染され,
-/// その後の2回の spawn が同一 Entity ID を受け取る. したがって
-/// `spawned[0] != spawned[1]` が失敗する経路は「二重 despawn が成立した」ことを意味する.
+private let despawnFrame = 1.0
+private let spawnFrame = 2.0
+
 struct DoubleDespawnPathTests {
-    /// A-2: 同一 phase の別々のシステムが, それぞれ Query 経由で同じ entity を despawn する.
-    @Test func samePhaseTwoSystems() {
+    @Test func twoSystemsInSamePhaseDespawnSameEntity() {
         let box = Box()
         let world = World()
             .addSystem(.startUp) { (commands: Commands) in
@@ -34,7 +31,7 @@ struct DoubleDespawnPathTests {
                 commands: Commands,
                 time: Resource<CurrentTime>
             ) in
-                guard time.resource.value == 1 else { return }
+                guard time.resource.value == despawnFrame else { return }
                 victims.update { entity in commands.despawn(entity: entity) }
             }
             .addSystem(.update) { (
@@ -42,80 +39,78 @@ struct DoubleDespawnPathTests {
                 commands: Commands,
                 time: Resource<CurrentTime>
             ) in
-                guard time.resource.value == 1 else { return }
+                guard time.resource.value == despawnFrame else { return }
                 victims.update { entity in commands.despawn(entity: entity) }
             }
             .addSystem(.update) { (commands: Commands, time: Resource<CurrentTime>) in
-                guard time.resource.value == 2 else { return }
-                box.spawned.append(commands.spawn().id())
-                box.spawned.append(commands.spawn().id())
+                guard time.resource.value == spawnFrame else { return }
+                box.spawnedAfterDoubleDespawn.append(commands.spawn().id())
+                box.spawnedAfterDoubleDespawn.append(commands.spawn().id())
             }
 
         world.setUpWorld()
         world.update(currentTime: -1)
-        world.update(currentTime: 1)
-        world.update(currentTime: 2)
+        world.update(currentTime: despawnFrame)
+        world.update(currentTime: spawnFrame)
 
-        #expect(box.spawned[0] != box.spawned[1])
+        #expect(box.spawnedAfterDoubleDespawn[0] != box.spawnedAfterDoubleDespawn[1])
     }
 
-    /// B: 同一フレームの update と postUpdate が, それぞれ同じ entity を despawn する.
-    @Test func sameFrameDifferentPhases() {
+    @Test func updateAndPostUpdateDespawnSameEntity() {
         let box = Box()
         let world = World()
             .addSystem(.startUp) { (commands: Commands) in
                 box.victim = commands.spawn().addComponent(Victim()).id()
             }
             .addSystem(.update) { (commands: Commands, time: Resource<CurrentTime>) in
-                guard time.resource.value == 1, let victim = box.victim else { return }
+                guard time.resource.value == despawnFrame, let victim = box.victim else { return }
                 commands.despawn(entity: victim)
             }
             .addSystem(.postUpdate) { (commands: Commands, time: Resource<CurrentTime>) in
-                guard time.resource.value == 1, let victim = box.victim else { return }
+                guard time.resource.value == despawnFrame, let victim = box.victim else { return }
                 commands.despawn(entity: victim)
             }
             .addSystem(.update) { (commands: Commands, time: Resource<CurrentTime>) in
-                guard time.resource.value == 2 else { return }
-                box.spawned.append(commands.spawn().id())
-                box.spawned.append(commands.spawn().id())
+                guard time.resource.value == spawnFrame else { return }
+                box.spawnedAfterDoubleDespawn.append(commands.spawn().id())
+                box.spawnedAfterDoubleDespawn.append(commands.spawn().id())
             }
 
         world.setUpWorld()
         world.update(currentTime: -1)
-        world.update(currentTime: 1)
-        world.update(currentTime: 2)
+        world.update(currentTime: despawnFrame)
+        world.update(currentTime: spawnFrame)
 
-        #expect(box.spawned[0] != box.spawned[1])
+        #expect(box.spawnedAfterDoubleDespawn[0] != box.spawnedAfterDoubleDespawn[1])
     }
 
-    /// Removed: `.removed` スケジュールで受け取った entity を despawn する.
-    @Test func despawnEntityReceivedFromRemoved() {
+    @Test func despawnEntityReceivedFromRemovedSchedule() {
         let box = Box()
         let world = World()
             .addSystem(.startUp) { (commands: Commands) in
                 box.victim = commands.spawn().addComponent(Victim()).id()
             }
             .addSystem(.update) { (commands: Commands, time: Resource<CurrentTime>) in
-                guard time.resource.value == 1, let victim = box.victim else { return }
+                guard time.resource.value == despawnFrame, let victim = box.victim else { return }
                 commands.despawn(entity: victim)
             }
             .addSystem(.removed) { (removed: Removed, commands: Commands) in
-                guard !box.despawnedFromRemoved else { return }
-                box.despawnedFromRemoved = true
+                guard !box.didDespawnFromRemovedSchedule else { return }
+                box.didDespawnFromRemovedSchedule = true
                 removed.forEach { commands.despawn(entity: $0) }
             }
             .addSystem(.update) { (commands: Commands, time: Resource<CurrentTime>) in
-                guard time.resource.value == 2 else { return }
-                box.spawned.append(commands.spawn().id())
-                box.spawned.append(commands.spawn().id())
+                guard time.resource.value == spawnFrame else { return }
+                box.spawnedAfterDoubleDespawn.append(commands.spawn().id())
+                box.spawnedAfterDoubleDespawn.append(commands.spawn().id())
             }
 
         world.setUpWorld()
         world.update(currentTime: -1)
-        world.update(currentTime: 1)
-        world.update(currentTime: 2)
+        world.update(currentTime: despawnFrame)
+        world.update(currentTime: spawnFrame)
 
-        #expect(box.despawnedFromRemoved)
-        #expect(box.spawned[0] != box.spawned[1])
+        #expect(box.didDespawnFromRemovedSchedule)
+        #expect(box.spawnedAfterDoubleDespawn[0] != box.spawnedAfterDoubleDespawn[1])
     }
 }

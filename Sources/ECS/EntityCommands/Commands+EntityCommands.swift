@@ -30,9 +30,6 @@ public extension Commands {
     }
 
     /// Entity を削除します.
-    ///
-    /// slot の再利用は削除の予約時ではなく, ``DespawnCommand`` の適用時に entity の生存を
-    /// 確認してから行われます. すでに削除された entity を再度削除した場合は no-op です.
     func despawn(entity: Entity) {
         self.entityTransactions.append(DespawnCommand(entity: entity))
     }
