@@ -35,7 +35,12 @@ public extension Commands {
     /// spawn は phase の終わりに反映されるため, その entity はどのシステムからも観測されず,
     /// despawn する意味を持ちません.
     func despawn(entity: Entity) {
-        self.generator.stack(entity: Entity(slot: entity.slot, generation: entity.generation+1))
         self.entityTransactions.append(DespawnCommand(entity: entity))
+    }
+}
+
+extension Commands {
+    func recycleSlot(of entity: Entity) {
+        self.generator.stack(entity: Entity(slot: entity.slot, generation: entity.generation+1))
     }
 }
